@@ -18,6 +18,8 @@ Plugin 'sheerun/vim-polyglot'          " syntax highlighting swiss army knife
 Plugin 'justinmk/vim-dirvish'          " :crabs: netrw is gone :crabs:
 Plugin 'tommcdo/vim-lion'              " for styling
 Plugin 'tpope/vim-rsi'                 " consistent experience in vim and terminal
+Plugin 'lervag/vimtex'                 " Using TeX (for now)
+Plugin 'tpope/vim-fugitive'            " vim + git
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -73,17 +75,17 @@ if maparg('<C-L>', 'n') ==# '' " Use <C-L> to clear search highlighting.
 endif
 
 " misc QOL
-set hidden   " For allowing hiding of unsaved files in our buffer
+set hidden          " For allowing hiding of unsaved files in our buffer
 set ruler
 set laststatus=2
 set wildmenu
 set splitbelow
 set splitright
-set showcmd  " Show keypress on bottom right
-set relativenumber   " Show relative line numbers
+set showcmd         " Show keypress on bottom right
+set relativenumber
 set updatetime=500  " for git gutter update
 set noshowmode
-set mouse=n  " allow mouse wheel scrolling in normal mode
+set mouse=n         " allow mouse wheel scrolling in normal mode
 
 " Terminal themes and colors:
 " Enable true color
@@ -95,14 +97,22 @@ endif
 
 " Plugin Variable Configurations:
 let g:gitgutter_override_sign_column_highlight = 1  " set column bg color
-let g:gitgutter_sign_added = '|+'
-let g:gitgutter_sign_modified = '|~'
-let g:gitgutter_sign_removed = '|-'
+let g:gitgutter_sign_added = '+'
+let g:gitgutter_sign_modified = '~'
+let g:gitgutter_sign_removed = '-'
 
 let g:rsi_no_meta = 1
 
 let g:airline_theme='gruvbox'
 let g:airline#extensions#tabline#enabled = 1
+
+let g:polyglot_disabled = ['latex']
+
+let g:tex_flavor='latex'
+let g:vimtex_view_method='zathura'
+let g:vimtex_quickfix_mode=0
+set conceallevel=1
+let g:tex_conceal='abdmg'
 
 " Configure themes:
 let g:gruvbox_contrast_dark = 'hard'
