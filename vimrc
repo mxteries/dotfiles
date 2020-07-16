@@ -8,18 +8,18 @@ call vundle#begin()
 " Keep Plugin commands between vundle#begin/end.
 Plugin 'VundleVim/Vundle.vim'          " required
 Plugin 'morhetz/gruvbox'
-Plugin 'vim-airline/vim-airline'       " vim status bar
-Plugin 'ludovicchabant/vim-gutentags'  " TAGS
 Plugin 'airblade/vim-gitgutter'        " for showing git diff info in the gutter
+Plugin 'itchyny/lightline.vim'         " airline replacement on csa
 Plugin 'tpope/vim-surround'            " for adding surrounding characters
 Plugin 'tpope/vim-repeat'              " for repeating
 Plugin 'tpope/vim-commentary'          " for commenting
+Plugin 'ludovicchabant/vim-gutentags'  " auto tags
 Plugin 'sheerun/vim-polyglot'          " syntax highlighting swiss army knife
 Plugin 'justinmk/vim-dirvish'          " :crabs: netrw is gone :crabs:
 Plugin 'tommcdo/vim-lion'              " for styling
 Plugin 'tpope/vim-rsi'                 " consistent experience in vim and terminal
-Plugin 'lervag/vimtex'                 " Using TeX (for now)
 Plugin 'tpope/vim-fugitive'            " vim + git
+Plugin 'urbainvaes/vim-ripple'         " interfacing with REPL
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -47,7 +47,8 @@ set directory=~/.vim/tmp,.
 set viminfo+=n~/.vim/viminfo
 
 " Formatting indents
-set softtabstop=4 shiftwidth=4 expandtab
+" set softtabstop=4 shiftwidth=4 expandtab
+set softtabstop=0 shiftwidth=0 noexpandtab
 set autoindent
 set copyindent  " copy previous indenting when auto indenting
 set backspace=indent,eol,start
@@ -63,8 +64,6 @@ set ignorecase " ignore case when searching, unless...
 set smartcase  " the search has capital letters (:h ignorecase)
 set incsearch  " show search as you type
 set hlsearch   " highlight search (clear with :noh or <C-L> mapping)
-
-" My Mappings (I like vim quite vanilla, use with caution)
 
 " in command-line-window, press enter in insert mode
 nnoremap <Enter> :
@@ -83,7 +82,7 @@ set splitbelow
 set splitright
 set showcmd         " Show keypress on bottom right
 set relativenumber
-set updatetime=500  " for git gutter update
+set updatetime=100  " for git gutter update
 set noshowmode
 set mouse=n         " allow mouse wheel scrolling in normal mode
 
@@ -103,17 +102,6 @@ let g:gitgutter_sign_removed = '-'
 
 let g:rsi_no_meta = 1
 
-let g:airline_theme='gruvbox'
-let g:airline#extensions#tabline#enabled = 1
-
-let g:polyglot_disabled = ['latex']
-
-let g:tex_flavor='latex'
-let g:vimtex_view_method='zathura'
-let g:vimtex_quickfix_mode=0
-set conceallevel=1
-let g:tex_conceal='abdmg'
-
 " Configure themes:
 let g:gruvbox_contrast_dark = 'hard'
 let g:gruvbox_contrast_light = 'medium'
@@ -127,3 +115,15 @@ if !exists('g:loaded_matchit') && findfile('plugin/matchit.vim', &rtp) ==# ''
   runtime! macros/matchit.vim
 endif
 
+if &term =~ '256color'
+    " Disable Background Color Erase (BCE) so that color schemes
+    " work properly when Vim is used inside tmux and GNU screen.
+    set t_ut=
+endif
+
+func Eatchar(pat)
+    let c = nr2char(getchar(0))
+    return (c =~ a:pat) ? '' : c
+endfunc
+
+source ~/.vim/abbr.vim
