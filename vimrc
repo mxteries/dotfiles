@@ -1,31 +1,33 @@
-" Vundle plugin configuration start:
-filetype off
+" Vim-Plug: Download if does not exist
+if empty(glob('~/.vim/autoload/plug.vim'))
+  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
 
-" set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
+" Plugins will be downloaded under the specified directory.
+call plug#begin('~/.vim/plugged')
 
-" Keep Plugin commands between vundle#begin/end.
-Plugin 'VundleVim/Vundle.vim'          " required
-Plugin 'morhetz/gruvbox'
-Plugin 'airblade/vim-gitgutter'        " for showing git diff info in the gutter
-Plugin 'itchyny/lightline.vim'         " airline replacement on csa
-Plugin 'tpope/vim-surround'            " for adding surrounding characters
-Plugin 'tpope/vim-repeat'              " for repeating
-Plugin 'tpope/vim-commentary'          " for commenting
-Plugin 'ludovicchabant/vim-gutentags'  " auto tags
-Plugin 'sheerun/vim-polyglot'          " syntax highlighting swiss army knife
-Plugin 'justinmk/vim-dirvish'          " :crabs: netrw is gone :crabs:
-Plugin 'tommcdo/vim-lion'              " for styling
-Plugin 'tpope/vim-rsi'                 " consistent experience in vim and terminal
-Plugin 'tpope/vim-fugitive'            " vim + git
-Plugin 'urbainvaes/vim-ripple'         " interfacing with REPL
+Plug 'morhetz/gruvbox'
+Plug 'airblade/vim-gitgutter'        " for showing git diff info in the gutter
+Plug 'itchyny/lightline.vim'         " status bar
+Plug 'tpope/vim-surround'            " for adding surrounding characters
+Plug 'tpope/vim-repeat'              " for repeating
+Plug 'tpope/vim-commentary'          " for commenting
+Plug 'tpope/vim-rsi'                 " consistent experience in vim and terminal
+Plug 'tpope/vim-fugitive'            " vim + git
+Plug 'ludovicchabant/vim-gutentags'  " auto tags
+Plug 'sheerun/vim-polyglot'          " syntax highlighting swiss army knife
+Plug 'justinmk/vim-dirvish'          " :crabs: netrw is gone :crabs:
+Plug 'tommcdo/vim-exchange'          " for swapping text
+Plug 'unblevable/quick-scope'        " highlight f,t
 
-" All of your Plugins must be added before the following line
-call vundle#end()            " required
-filetype plugin indent on    " required
-" :PluginInstall (see :h vundle for more details or wiki for FAQ)
-" Vundle setup end
+" fzf integration
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+
+" List ends here. Plugins become visible to Vim after this call.
+call plug#end()
 
 if has('syntax')
   syntax enable
@@ -69,6 +71,7 @@ set hlsearch   " highlight search (clear with :noh or <C-L> mapping)
 nnoremap <Enter> :
 " from :help Y
 nnoremap Y y$
+
 if maparg('<C-L>', 'n') ==# '' " Use <C-L> to clear search highlighting.
   nnoremap <silent> <C-L> :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
 endif
@@ -85,14 +88,7 @@ set relativenumber
 set updatetime=100  " for git gutter update
 set noshowmode
 set mouse=n         " allow mouse wheel scrolling in normal mode
-
-" Terminal themes and colors:
-" Enable true color
-if exists('+termguicolors')
-  let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-  let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
-  set termguicolors
-endif
+set cursorline
 
 " Plugin Variable Configurations:
 let g:gitgutter_override_sign_column_highlight = 1  " set column bg color
@@ -102,7 +98,17 @@ let g:gitgutter_sign_removed = '-'
 
 let g:rsi_no_meta = 1
 
-" Configure themes:
+let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
+let g:python_highlight_all = 1
+
+" Terminal themes and colors:
+" Enable true color
+if exists('+termguicolors')
+  let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+  let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+  set termguicolors
+endif
+
 let g:gruvbox_contrast_dark = 'hard'
 let g:gruvbox_contrast_light = 'medium'
 set background=dark  " gruvbox dark mode
@@ -121,9 +127,6 @@ if &term =~ '256color'
     set t_ut=
 endif
 
-func Eatchar(pat)
-    let c = nr2char(getchar(0))
-    return (c =~ a:pat) ? '' : c
-endfunc
-
-source ~/.vim/abbr.vim
+" Set quickscope colors (after defining colorscheme)
+highlight QuickScopePrimary guifg='LightGreen' gui=underline ctermfg=155 cterm=underline
+highlight QuickScopeSecondary guifg='#ffa0a0' gui=underline ctermfg=81 cterm=underline
