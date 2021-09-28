@@ -1,12 +1,13 @@
 set runtimepath^=~/.vim runtimepath+=~/.vim/after
 let &packpath=&runtimepath
-source ~/.vim/vimrc
+source ~/.vim/neovimrc
 
 " LSP settings
-lua << EOF
-require'lspconfig'.pyright.setup{}
-require'lspconfig'.terraformls.setup{}
-require'lspconfig'.bashls.setup{}
+lua <<EOF
+-- local nvim_lsp = require('lspconfig')
+-- local coq = require('coq')
+-- nvim_lsp.pyright.setup{coq.lsp_ensure_capabilities()}
+-- nvim_lsp.bashls.setup{coq.lsp_ensure_capabilities()}
 EOF
 
 " Treesitter
@@ -23,18 +24,50 @@ require'nvim-treesitter.configs'.setup {
     -- Instead of true it can also be a list of languages
     additional_vim_regex_highlighting = false,
   },
-  incremental_selection = {
-    enable = false,
-    keymaps = {
-      init_selection = "gnn",
-      node_incremental = "grn",
-      scope_incremental = "grc",
-      node_decremental = "grm",
-    },
-  },
   indent = {
     enable = true
   },
+  textobjects = {
+    select = {
+      enable = true,
+      -- Automatically jump forward to textobj, similar to targets.vim
+      lookahead = true,
+      keymaps = {
+        -- You can use the capture groups defined in textobjects.scm
+        ["af"] = "@function.outer",
+        ["if"] = "@function.inner",
+        ["ac"] = "@class.outer",
+        ["ic"] = "@class.inner",
+      },
+    },
+    move = {
+      enable = false,
+      set_jumps = true, -- whether to set jumps in the jumplist
+      goto_next_start = {
+        ["]m"] = "@function.outer",
+        ["]]"] = "@class.outer",
+      },
+      goto_next_end = {
+        ["]M"] = "@function.outer",
+        ["]["] = "@class.outer",
+      },
+      goto_previous_start = {
+        ["[m"] = "@function.outer",
+        ["[["] = "@class.outer",
+      },
+      goto_previous_end = {
+        ["[M"] = "@function.outer",
+        ["[]"] = "@class.outer",
+      },
+    },
+    lsp_interop = {
+      enable = false,
+      border = 'none',
+      peek_definition_code = {
+        ["<leader>pf"] = "@function.outer",
+        ["<leader>pF"] = "@class.outer",
+      },
+    },
+  },
 }
 EOF
-
