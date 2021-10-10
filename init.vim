@@ -2,12 +2,15 @@ set runtimepath^=~/.vim runtimepath+=~/.vim/after
 let &packpath=&runtimepath
 source ~/.vim/neovimrc
 
-" LSP settings
+" LSP + misc
 lua <<EOF
--- local nvim_lsp = require('lspconfig')
--- local coq = require('coq')
--- nvim_lsp.pyright.setup{coq.lsp_ensure_capabilities()}
--- nvim_lsp.bashls.setup{coq.lsp_ensure_capabilities()}
+local nvim_lsp = require('lspconfig')
+local coq = require('coq')
+nvim_lsp.pyright.setup{coq.lsp_ensure_capabilities()}
+require('gitsigns').setup()
+local neogit = require('neogit')
+neogit.config.use_magit_keybindings()
+neogit.setup {}
 EOF
 
 " Treesitter
@@ -25,7 +28,8 @@ require'nvim-treesitter.configs'.setup {
     additional_vim_regex_highlighting = false,
   },
   indent = {
-    enable = true
+    enable = true,
+    disable = {"python"}
   },
   textobjects = {
     select = {
