@@ -19,7 +19,6 @@ Plug 'nvim-treesitter/nvim-treesitter-textobjects'
 Plug 'ms-jpq/coq_nvim', {'branch': 'coq'}
   let g:coq_settings = { 'auto_start': v:true, 'keymap.jump_to_mark': "<F8>", 'display.pum.fast_close': v:false, 'display.icons.mode': 'none' }
 
-Plug 'TimUntersberger/neogit'
 Plug 'lewis6991/gitsigns.nvim'
 Plug 'numToStr/FTerm.nvim'
   nnoremap got :lua require('FTerm').run({'cd', vim.fn.expand('%:p:h')})<CR>
@@ -32,9 +31,8 @@ Plug 'sainnhe/sonokai'
   let g:sonokai_diagnostic_text_highlight = 1
 
 Plug 'morhetz/gruvbox'
-Plug 'itchyny/lightline.vim'         " status bar
-  let g:lightline = {'colorscheme' : 'sonokai'}
-
+Plug 'tpope/vim-fugitive', { 'on': 'G' }
+  nnoremap <Leader>gd :Gdiff<CR>
 Plug 'tpope/vim-surround'            " for adding surrounding characters
 Plug 'tpope/vim-repeat'              " for repeating
 Plug 'tpope/vim-commentary'          " for commenting
@@ -47,7 +45,6 @@ Plug 'hashivim/vim-terraform'
 Plug 'mbbill/undotree', { 'on': 'UndotreeToggle' }
   nnoremap U :UndotreeToggle<CR>
   let g:undotree_WindowLayout = 2
-Plug 'junegunn/rainbow_parentheses.vim'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
   let $FZF_DEFAULT_COMMAND = 'rg --files'
@@ -109,6 +106,20 @@ set linebreak       " more readable text wrapping
 " Enable mouse for scrolling and clicking, but disable all selection
 set mouse=nv
 noremap <LeftRelease> <Nop>
+
+function! s:statusline_expr()
+  let ts  = " %{strftime('%H:%M')} │ "
+  let mod = "%{&modified ? '│ + ' : !&modifiable ? '[x] ' : ''}"
+  let ro  = "%{&readonly ? '[RO] ' : ''}"
+  let ft  = "%{len(&filetype) ? '['.&filetype.'] ' : ''}"
+  let fug = "%{exists('g:loaded_fugitive') ? fugitive#statusline() : ''}"
+  let sep = ' %= '
+  let pos = ' %-12(%l : %c%V%) '
+  let pct = ' %P'
+  return ts.'[%n] %F %<'.mod.ro.ft.fug.sep.pos.'%*'.pct
+endfunction
+let &statusline = s:statusline_expr()
+
 " Mappings
 nnoremap Y y$
 nnoremap <BS> <C-^>
