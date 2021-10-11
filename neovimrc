@@ -1,3 +1,6 @@
+nnoremap <SPACE> <Nop>
+let mapleader=" "
+
 " Vim-Plug: Download if does not exist
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
@@ -14,25 +17,48 @@ Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'nvim-treesitter/nvim-treesitter-textobjects'
 Plug 'ms-jpq/coq_nvim', {'branch': 'coq'}
-" Plug 'ms-jpq/coq.artifacts', {'branch': 'artifacts'}
-Plug 'sainnhe/sonokai'
-Plug 'morhetz/gruvbox'
+  let g:coq_settings = { 'auto_start': v:true, 'keymap.jump_to_mark': "<F8>", 'display.pum.fast_close': v:false, 'display.icons.mode': 'none' }
+
+Plug 'TimUntersberger/neogit'
 Plug 'lewis6991/gitsigns.nvim'
+Plug 'numToStr/FTerm.nvim'
+  nnoremap got :lua require('FTerm').run({'cd', vim.fn.expand('%:p:h')})<CR>
+  tnoremap <C-h> <C-\><C-n>:lua require("FTerm").toggle()<CR>
+  nnoremap <C-h> :lua require("FTerm").toggle()<CR>
+
+Plug 'sainnhe/sonokai'
+  let g:sonokai_style = 'maia'
+  let g:sonokai_disable_italic_comment = 1
+  let g:sonokai_diagnostic_text_highlight = 1
+
+Plug 'morhetz/gruvbox'
 Plug 'itchyny/lightline.vim'         " status bar
+  let g:lightline = {'colorscheme' : 'sonokai'}
+
 Plug 'tpope/vim-surround'            " for adding surrounding characters
 Plug 'tpope/vim-repeat'              " for repeating
 Plug 'tpope/vim-commentary'          " for commenting
 Plug 'justinmk/vim-dirvish'          " :crabs: netrw is gone :crabs:
-Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
+Plug 'iamcco/markdown-preview.nvim', { 'do': ':call mkdp#util#install()', 'for': 'markdown', 'on': 'MarkdownPreview' }
 Plug 'tommcdo/vim-exchange'          " for swapping text
 Plug 'tommcdo/vim-lion'
 Plug 'hashivim/vim-terraform'
-Plug 'numToStr/FTerm.nvim'
-Plug 'TimUntersberger/neogit'
 
-" fzf integration
+Plug 'mbbill/undotree', { 'on': 'UndotreeToggle' }
+  nnoremap U :UndotreeToggle<CR>
+  let g:undotree_WindowLayout = 2
+Plug 'junegunn/rainbow_parentheses.vim'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
+  let $FZF_DEFAULT_COMMAND = 'rg --files'
+  nnoremap <Leader>r :History:<CR>
+  nnoremap <Leader>; :Commands<CR>
+  nnoremap <Leader>K :Help<CR>
+  nnoremap gb :Bu<CR>
+" Rg in the current buffer's directory
+command! -bang -nargs=* Rgd
+  \ call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case "
+  \ .shellescape(<q-args>), 1, {'dir': expand('%:p:h') }, <bang>0)
 
 " List ends here. Plugins become visible to Vim after this call.
 call plug#end()
@@ -82,7 +108,6 @@ set linebreak       " more readable text wrapping
 
 " Enable mouse for scrolling and clicking, but disable all selection
 set mouse=nv
-noremap <LeftDrag> <Nop>
 noremap <LeftRelease> <Nop>
 " Mappings
 nnoremap Y y$
@@ -90,40 +115,17 @@ nnoremap <BS> <C-^>
 nnoremap <silent> <C-L> :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
 inoremap <C-A> <C-O>^
 inoremap <C-E> <C-O>$
-" Have Esc enter normal mode in term, except when FZF
 " vnoremap P "0p
-
-" Leader and plugin mappings
-nnoremap <SPACE> <Nop>
-let mapleader=" "
+nnoremap <leader>cc :cclose<bar>lclose<cr>
 nnoremap <Leader>cd :tcd %:p:h<CR>:pwd<CR>
 nnoremap <Leader>cg :tcd `git rev-parse --show-toplevel`<CR>:pwd<CR>
-nnoremap <Leader>r :History:<CR>
-nnoremap <Leader>; :Commands<CR>
-nnoremap <Leader>K :Help<CR>
-nnoremap gb :Bu<CR>
-nnoremap got :lua require('FTerm').run({'cd', vim.fn.expand('%:p:h')})<CR>
-
-" Rg in the current buffer's directory
-command! -bang -nargs=* Rgd
-  \ call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case "
-  \ .shellescape(<q-args>), 1, {'dir': expand('%:p:h') }, <bang>0)
-
-tnoremap <C-h> <C-\><C-n>:lua require("FTerm").toggle()<CR>
-nnoremap <C-h> :lua require("FTerm").toggle()<CR>
+nnoremap <Leader>o o<Esc>
+nnoremap <Leader>O O<Esc>
 
 " Have cake files use c# syntax
 autocmd BufRead,BufNewFile *.cake set filetype=cs
 " Auto remove trailing spaces
 autocmd BufWritePre * %s/\s\+$//e
-
-" Plugin Variable Configurations:
-" FZF search hidden but not .git
-let $FZF_DEFAULT_COMMAND = 'rg --files'
-
-let g:coq_settings = { 'auto_start': v:true, 'keymap.jump_to_mark': "<F8>", 'display.pum.fast_close': v:false, 'display.icons.mode': 'none' }
-" let g:lightline = {'colorscheme' : 'gruvbox'}
-let g:lightline = {'colorscheme' : 'sonokai'}
 
 " Terminal themes and colors:
 " Enable true color
@@ -133,9 +135,6 @@ if exists('+termguicolors')
   set termguicolors
 endif
 
-let g:sonokai_style = 'maia'
-let g:sonokai_disable_italic_comment = 1
-let g:sonokai_diagnostic_text_highlight = 1
 set background=dark
 
 " colorscheme gruvbox
