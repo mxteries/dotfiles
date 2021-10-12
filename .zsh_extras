@@ -1,0 +1,18 @@
+alias vim='nvim'
+alias la='ls -Alh'
+alias ll='ls -Alh'
+
+# Git alises
+alias gitlog='git log --all --decorate --oneline --graph'
+alias gpo='git push origin $(git branch --show-current)'
+
+# Tmux
+alias ts='tmux attach-session -t $(tmux ls | fzf | awk "{print \$1}")'
+
+export HISTORY_IGNORE="fg"
+export EDITOR=/usr/local/bin/vim
+export MANPAGER="vim -M +MANPAGER -"  # Uses vim to read manpages
+export FZF_DEFAULT_COMMAND='rg --files'
+export FZF_DEFAULT_OPTS="--height=25 --multi --no-mouse --cycle"
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
