@@ -1,7 +1,9 @@
 unlet! skip_defaults_vim
 source $VIMRUNTIME/defaults.vim
+runtime! ftplugin/man.vim  " Read man pages
 
 let mapleader=" "
+let maplocalleader=" "
 
 " Vim-Plug: Download if does not exist
 if empty(glob('~/.vim/autoload/plug.vim'))
@@ -41,7 +43,6 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 nnoremap <Leader>r :History:<CR>
 nnoremap <Leader>; :Commands<CR>
-nnoremap <Leader>K :Help<CR>
 nnoremap gb :Bu<CR>
 " Rg in the current buffer's directory
 command! -bang -nargs=* Rgd
@@ -51,7 +52,6 @@ command! -bang -nargs=* Rgd
 " List ends here. Plugins become visible to Vim after this call.
 call plug#end()
 
-runtime! ftplugin/man.vim  " Read man pages
 
 set backup     " keep a copy of the original file (vimrc~)
 set undofile   " keep an undo file (%home%...%vimrc)
@@ -107,7 +107,7 @@ function! s:statusline_expr()
   let ro  = "%{&readonly ? '[RO] ' : ''}"
   let ft  = "%{len(&filetype) ? '['.&filetype.'] ' : ''}"
   let fug = "%{exists('g:loaded_fugitive') ? fugitive#statusline() : ''}"
-  let ts  = " │ %{strftime('%c')} │ "
+  let ts  = " │ %{strftime('%H:%M')} │ "
   let sep = ' %= '
   let pos = ' %-12(%l : %c%V%) '
   let pct = ' %P'
@@ -120,8 +120,6 @@ let &statusline = s:statusline_expr()
 nnoremap Y y$
 nnoremap <BS> <C-^>
 nnoremap <silent> <C-L> :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
-inoremap <C-A> <C-O>^
-inoremap <C-E> <C-O>$
 " Have Esc enter normal mode in term, except when FZF
 tnoremap <expr> <Esc> (&filetype == "fzf") ? "<Esc>" : "<c-\><c-n>"
 " vnoremap P "0p
@@ -132,12 +130,23 @@ nnoremap <Leader>cd :tcd %:p:h<CR>:pwd<CR>
 nnoremap <Leader>cg :tcd `git rev-parse --show-toplevel`<CR>:pwd<CR>
 nnoremap <Leader>o o<Esc>
 nnoremap <Leader>O O<Esc>
+nnoremap <Leader>K :Help<CR>
+
+function! CleverTab()
+    if strpart( getline('.'), 0, col('.')-1 ) =~ '^\s*$'
+        return "\<Tab>"
+    else
+        return "\<C-P>"
+    endif
+endfunction
+function! ShiftTab()
+    return "\<C-N>"
+endfunction
+inoremap <Tab> <C-R>=CleverTab()<CR>
+inoremap <S-Tab> <C-R>=ShiftTab()<CR>
 
 " Auto remove trailing spaces
 autocmd BufWritePre * %s/\s\+$//e
-
-" Plugin Variable Configurations:
-let $FZF_DEFAULT_COMMAND = 'rg --files'
 
 " Terminal themes and colors:
 " Enable true color
