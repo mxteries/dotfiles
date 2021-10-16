@@ -2,6 +2,10 @@ unlet! skip_defaults_vim
 source $VIMRUNTIME/defaults.vim
 runtime! ftplugin/man.vim  " Read man pages
 
+augroup vimrc
+  autocmd!
+augroup END
+
 let mapleader=" "
 let maplocalleader=" "
 
@@ -81,7 +85,9 @@ set list  " show information about spaces and tabs
 
 " Formatting search
 set path=.,**,,  " exclude /usr/include and search ** by default
-autocmd FileType c,cpp      setlocal path+=/usr/include
+augroup vimrc
+    autocmd FileType c,cpp      setlocal path+=/usr/include
+augroup END
 " ignore patterns (node_modules) for :find
 set wildignore+=tags,*/node_modules/*,*.o,*.class,*/__pycache__,*/tools/*
 set ignorecase smartcase
@@ -145,8 +151,12 @@ endfunction
 inoremap <Tab> <C-R>=CleverTab()<CR>
 inoremap <S-Tab> <C-R>=ShiftTab()<CR>
 
-" Auto remove trailing spaces
-autocmd BufWritePre * %s/\s\+$//e
+augroup vimrc
+    " Auto remove trailing spaces
+    autocmd BufWritePre * %s/\s\+$//e
+    " on tab creation, tcd to git root (https://stackoverflow.com/a/38082157/10634812)
+    " autocmd TabNew * :tcd %:h | exe 'tcd ' . fnameescape(get(systemlist('git rev-parse --show-toplevel'), 0))
+augroup END
 
 " Terminal themes and colors:
 " Enable true color
