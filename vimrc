@@ -131,16 +131,18 @@ set mouse=n
 noremap <LeftRelease> <Nop>
 
 function! s:statusline_expr()
+  let ts  = " %{strftime('%H:%M')} │ "
+  let cwd = "[%{fnamemodify(getcwd(),':p:~')}]"
+  let rel = " %{expand('%:~:.')} "
+  let ft  = "%{len(&filetype) ? '['.&filetype.'] ' : ''}"
   let mod = "%{&modified ? '│ + ' : !&modifiable ? '[x] ' : ''}"
   let ro  = "%{&readonly ? '[RO] ' : ''}"
-  let ft  = "%{len(&filetype) ? '['.&filetype.'] ' : ''}"
-  let fug = "%{exists('g:loaded_fugitive') ? fugitive#statusline() : ''}"
-  let ts  = " │ %{strftime('%H:%M')} │ "
+  let fug = "%{exists('g:loaded_fugitive') ? fugitive#head() : ''}"
   let sep = ' %= '
   let pos = ' %-12(%l : %c%V%) '
   let pct = ' %P'
 
-  return '[%n] %F %<'.mod.ro.ft.fug.ts.sep.pos.'%*'.pct
+  return ts.cwd.rel.'%<'.ft.mod.ro.fug.sep.pos.'%*'.pct
 endfunction
 let &statusline = s:statusline_expr()
 
