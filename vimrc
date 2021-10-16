@@ -18,10 +18,8 @@ endif
 
 " Plugins will be downloaded under the specified directory.
 call plug#begin('~/.vim/plugged')
-highlight GitGutterAdd    guifg=#eaffe8 ctermfg=2
-
 Plug 'morhetz/gruvbox'
-Plug 'tpope/vim-fugitive', { 'on': 'G' }
+Plug 'tpope/vim-fugitive'
   nnoremap <Leader>gd :Gdiff<CR>
 Plug 'airblade/vim-gitgutter'        " for showing git diff info in the gutter
   let g:gitgutter_override_sign_column_highlight = 1  " set column bg color
@@ -47,9 +45,11 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 nnoremap <Leader>r :History:<CR>
 nnoremap <Leader>; :Commands<CR>
-nnoremap gb :Bu<CR>
+nnoremap <Leader>K :Help<CR>
+nnoremap gb :Buffers<CR>
+nnoremap <Leader>t :Windows<CR>
 " Rg in the current buffer's directory
-command! -bang -nargs=* Rgd
+command! -bang -nargs=* Rgb
   \ call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case "
   \ .shellescape(<q-args>), 1, {'dir': expand('%:p:h') }, <bang>0)
 
@@ -136,7 +136,6 @@ nnoremap <Leader>cd :tcd %:p:h<CR>:pwd<CR>
 nnoremap <Leader>cg :tcd `git rev-parse --show-toplevel`<CR>:pwd<CR>
 nnoremap <Leader>o o<Esc>
 nnoremap <Leader>O O<Esc>
-nnoremap <Leader>K :Help<CR>
 
 function! CleverTab()
     if strpart( getline('.'), 0, col('.')-1 ) =~ '^\s*$'
