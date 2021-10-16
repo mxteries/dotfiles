@@ -32,7 +32,21 @@ Plug 'airblade/vim-gitgutter'        " for showing git diff info in the gutter
 Plug 'tpope/vim-surround'            " for adding surrounding characters
 Plug 'tpope/vim-repeat'              " for repeating
 Plug 'tpope/vim-commentary'          " for commenting
-Plug 'justinmk/vim-dirvish'          " better netrw
+Plug 'justinmk/vim-dirvish'
+" disable netrw and use dirvish
+let g:loaded_netrw       = 1
+let g:loaded_netrwPlugin = 1
+command! -nargs=? -complete=dir Explore Dirvish <args>
+command! -nargs=? -complete=dir Sexplore split | silent Dirvish <args>
+command! -nargs=? -complete=dir Vexplore vsplit | silent Dirvish <args>
+augroup dirvish_config
+    autocmd!
+    " Map `t` to open in new tab.
+    autocmd FileType dirvish
+      \  nnoremap <silent><buffer> t :call dirvish#open('tabedit', 0) \| tcd %<CR>
+      \ |xnoremap <silent><buffer> t :call dirvish#open('tabedit', 0) \| tabdo tcd %<CR>
+augroup END
+
 Plug 'iamcco/markdown-preview.nvim', { 'do': ':call mkdp#util#install()', 'for': 'markdown', 'on': 'MarkdownPreview' }
 Plug 'tommcdo/vim-exchange'          " for swapping text
 Plug 'tommcdo/vim-lion'
@@ -95,6 +109,7 @@ set incsearch  " show search as you type
 set hlsearch   " highlight search (clear with :noh or <C-L> mapping)
 set ttimeoutlen=50      " wait up to 50ms after Esc for special key
 set autowrite
+set autoread
 set hidden          " For allowing hiding of unsaved files in our buffer
 set laststatus=2
 set wildmode=longest:full:lastused,full " zsh tab behavior + "lastused"
@@ -103,6 +118,7 @@ set splitright
 set updatetime=250
 set cursorline
 set linebreak       " more readable text wrapping
+set history=10000
 
 " Enable mouse for scrolling and clicking, but disable all selection
 set mouse=n
@@ -126,8 +142,7 @@ let &statusline = s:statusline_expr()
 nnoremap Y y$
 nnoremap <BS> <C-^>
 nnoremap <silent> <C-L> :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
-" Have Esc enter normal mode in term, except when FZF
-tnoremap <expr> <Esc> (&filetype == "fzf") ? "<Esc>" : "<c-\><c-n>"
+nnoremap gt :tabs<CR>:tabnext<Space>
 " vnoremap P "0p
 unmap Q
 nnoremap <leader>y "+y
