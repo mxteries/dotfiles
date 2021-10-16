@@ -57,6 +57,12 @@ Plug 'mbbill/undotree', { 'on': 'UndotreeToggle' }
 " fzf integration
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
+let g:fzf_buffers_jump = 1  " open existing windows in :Buffers
+let g:fzf_action = {
+  \ 'enter': 'drop',
+  \ 'ctrl-t': 'tab drop',
+  \ 'ctrl-x': 'split',
+  \ 'ctrl-v': 'vsplit' }
 nnoremap <Leader>r :History:<CR>
 nnoremap <Leader>; :Commands<CR>
 nnoremap <Leader>K :Help<CR>
