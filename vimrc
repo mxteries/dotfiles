@@ -39,12 +39,9 @@ let g:loaded_netrwPlugin = 1
 command! -nargs=? -complete=dir Explore Dirvish <args>
 command! -nargs=? -complete=dir Sexplore split | silent Dirvish <args>
 command! -nargs=? -complete=dir Vexplore vsplit | silent Dirvish <args>
-augroup dirvish_config
-    autocmd!
+augroup vimrc
     " Map `t` to open in new tab.
-    autocmd FileType dirvish
-      \  nnoremap <silent><buffer> t :call dirvish#open('tabedit', 0) \| tcd %<CR>
-      \ |xnoremap <silent><buffer> t :call dirvish#open('tabedit', 0) \| tabdo tcd %<CR>
+    autocmd FileType dirvish nnoremap <silent><buffer> t :tabe <c-r><c-f><cr>
 augroup END
 
 Plug 'iamcco/markdown-preview.nvim', { 'do': ':call mkdp#util#install()', 'for': 'markdown', 'on': 'MarkdownPreview' }
@@ -63,15 +60,19 @@ let g:fzf_action = {
   \ 'ctrl-t': 'tab drop',
   \ 'ctrl-x': 'split',
   \ 'ctrl-v': 'vsplit' }
-nnoremap <Leader>r :History:<CR>
-nnoremap <Leader>; :Commands<CR>
-nnoremap <Leader>K :Help<CR>
-nnoremap gb :Buffers<CR>
-nnoremap <Leader>t :Windows<CR>
+nnoremap <leader>fh <cmd>History:<cr>
+nnoremap <leader>fc <cmd>Commands<cr>
+nnoremap <leader>K  <cmd>Help<cr>
+nnoremap <leader>fb <cmd>Buffers<cr>
+nnoremap <leader>fw <cmd>Windows<cr>
 " Rg in the current buffer's directory
 command! -bang -nargs=* Rgb
   \ call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case "
   \ .shellescape(<q-args>), 1, {'dir': expand('%:p:h') }, <bang>0)
+
+" restore original c-w functionality (my termwinkey)
+autocmd! FileType fzf
+autocmd  FileType fzf tnoremap <buffer> <c-w> <c-w>
 
 " List ends here. Plugins become visible to Vim after this call.
 call plug#end()
@@ -112,7 +113,7 @@ augroup END
 set wildignore+=tags,*/node_modules/*,*.o,*.class,*/__pycache__,*/tools/*
 set ignorecase smartcase
 set incsearch  " show search as you type
-set hlsearch   " highlight search (clear with :noh or <C-L> mapping)
+set hlsearch
 set ttimeoutlen=50      " wait up to 50ms after Esc for special key
 set autowrite
 set autoread
@@ -125,9 +126,9 @@ set updatetime=250
 set cursorline
 set linebreak       " more readable text wrapping
 set history=10000
-
 " Enable mouse for scrolling and clicking, but disable all selection
 set mouse=n
+set showtabline=0
 noremap <LeftRelease> <Nop>
 
 function! s:statusline_expr()
@@ -149,7 +150,6 @@ let &statusline = s:statusline_expr()
 " Mappings
 nnoremap Y y$
 nnoremap <BS> <C-^>
-nnoremap <silent> <C-L> :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
 nnoremap gt :tabs<CR>:tabnext<Space>
 " vnoremap P "0p
 unmap Q
@@ -159,25 +159,37 @@ nnoremap <Leader>cd :tcd %:p:h<CR>:pwd<CR>
 nnoremap <Leader>cg :tcd `git rev-parse --show-toplevel`<CR>:pwd<CR>
 nnoremap <Leader>o o<Esc>
 nnoremap <Leader>O O<Esc>
+nnoremap <silent> <leader>l :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
 
-function! CleverTab()
+" Functions
+function! CleverTab(direction)
     if strpart( getline('.'), 0, col('.')-1 ) =~ '^\s*$'
         return "\<Tab>"
     else
-        return "\<C-P>"
+        if a:direction > 0
+            return "\<C-N>"
+        else
+            return "\<C-P>"
     endif
 endfunction
-function! ShiftTab()
-    return "\<C-N>"
+inoremap <Tab> <C-R>=CleverTab(-1)<CR>
+inoremap <S-Tab> <C-R>=CleverTab(1)<CR>
+
+let t:entering_new_tab = 0
+function! AutoTcd()
+    " on tab creation, tcd to git root (https://stackoverflow.com/a/38082157/10634812)
+    if t:entering_new_tab == 1
+        let t:entering_new_tab = 0
+        :tcd %:h | exe 'tcd ' . fnameescape(get(systemlist('git rev-parse --show-toplevel'), 0))
+    endif
 endfunction
-inoremap <Tab> <C-R>=CleverTab()<CR>
-inoremap <S-Tab> <C-R>=ShiftTab()<CR>
 
 augroup vimrc
     " Auto remove trailing spaces
+    " Auto tcd on new tabs
     autocmd BufWritePre * %s/\s\+$//e
-    " on tab creation, tcd to git root (https://stackoverflow.com/a/38082157/10634812)
-    " autocmd TabNew * :tcd %:h | exe 'tcd ' . fnameescape(get(systemlist('git rev-parse --show-toplevel'), 0))
+    autocmd TabNew * let t:entering_new_tab = 1
+    autocmd BufEnter * call AutoTcd()
 augroup END
 
 " Terminal themes and colors:
