@@ -41,7 +41,9 @@ command! -nargs=? -complete=dir Sexplore split | silent Dirvish <args>
 command! -nargs=? -complete=dir Vexplore vsplit | silent Dirvish <args>
 augroup vimrc
     " Map `t` to open in new tab.
-    autocmd FileType dirvish nnoremap <silent><buffer> t :tabe <c-r><c-f><cr>
+    autocmd FileType dirvish
+      \  nnoremap <silent><buffer> t :call dirvish#open('tabedit', 0) \| tcd %:h<CR>
+      \ |xnoremap <silent><buffer> t :call dirvish#open('tabedit', 0) \| tabdo tcd %:h<CR>
 augroup END
 
 Plug 'iamcco/markdown-preview.nvim', { 'do': ':call mkdp#util#install()', 'for': 'markdown', 'on': 'MarkdownPreview' }
@@ -76,7 +78,6 @@ autocmd  FileType fzf tnoremap <buffer> <c-w> <c-w>
 
 " List ends here. Plugins become visible to Vim after this call.
 call plug#end()
-
 
 set backup     " keep a copy of the original file (vimrc~)
 set undofile   " keep an undo file (%home%...%vimrc)
@@ -175,21 +176,9 @@ endfunction
 inoremap <Tab> <C-R>=CleverTab(-1)<CR>
 inoremap <S-Tab> <C-R>=CleverTab(1)<CR>
 
-let t:entering_new_tab = 0
-function! AutoTcd()
-    " on tab creation, tcd to git root (https://stackoverflow.com/a/38082157/10634812)
-    if t:entering_new_tab == 1
-        let t:entering_new_tab = 0
-        :tcd %:h | exe 'tcd ' . fnameescape(get(systemlist('git rev-parse --show-toplevel'), 0))
-    endif
-endfunction
-
 augroup vimrc
     " Auto remove trailing spaces
-    " Auto tcd on new tabs
     autocmd BufWritePre * %s/\s\+$//e
-    autocmd TabNew * let t:entering_new_tab = 1
-    autocmd BufEnter * call AutoTcd()
 augroup END
 
 " Terminal themes and colors:
