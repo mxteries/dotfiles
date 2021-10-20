@@ -58,11 +58,11 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 let g:fzf_buffers_jump = 1  " open existing windows in :Buffers
 let g:fzf_action = {
-  \ 'enter': 'drop',
+  \ 'enter': 'edit',
   \ 'ctrl-t': 'tab drop',
   \ 'ctrl-x': 'split',
   \ 'ctrl-v': 'vsplit' }
-nnoremap <leader>fh <cmd>History:<cr>
+nnoremap <leader>r <cmd>History:<cr>
 nnoremap <leader>fc <cmd>Commands<cr>
 nnoremap <leader>K  <cmd>Help<cr>
 nnoremap <leader>fb <cmd>Buffers<cr>
@@ -113,16 +113,14 @@ augroup END
 " ignore patterns (node_modules) for :find
 set wildignore+=tags,*/node_modules/*,*.o,*.class,*/__pycache__,*/tools/*
 set ignorecase smartcase
-set incsearch  " show search as you type
-set hlsearch
+set incsearch hlsearch
 set ttimeoutlen=50      " wait up to 50ms after Esc for special key
 set autowrite
 set autoread
 set hidden          " For allowing hiding of unsaved files in our buffer
 set laststatus=2
 set wildmode=longest:full:lastused,full " zsh tab behavior + "lastused"
-set splitbelow
-set splitright
+set splitbelow splitright
 set updatetime=250
 set cursorline
 set linebreak       " more readable text wrapping
