@@ -1,5 +1,3 @@
-set runtimepath^=~/.nvim runtimepath+=~/.nvim/after
-let &packpath=&runtimepath
 augroup vimrc
   autocmd!
 augroup END
@@ -9,14 +7,14 @@ let maplocalleader=" "
 runtime! ftplugin/man.vim  " Read man pages
 
 " Vim-Plug: Download if does not exist
-if empty(glob('~/.nvim/autoload/plug.vim'))
+if empty(glob('~/.config/nvim/autoload/plug.vim'))
   silent !curl -fLo ~/.nvim/autoload/plug.vim --create-dirs
     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
 " Plugins will be downloaded under the specified directory.
-call plug#begin('~/.nvim/plugged')
+call plug#begin('~/.config/nvim/plugged')
 
 Plug 'tpope/vim-surround'            " for adding surrounding characters
 Plug 'tpope/vim-repeat'              " for repeating
@@ -29,11 +27,16 @@ Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'lewis6991/gitsigns.nvim'
 Plug 'junegunn/vim-slash'
+
+" Testing
 Plug 'kristijanhusak/orgmode.nvim'
+Plug 'SirVer/ultisnips'
+Plug 'junegunn/gv.vim'
 
 Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
+Plug 'hrsh7th/cmp-nvim-lua'
 "   nnoremap got :lua require('FTerm').run({'cd', vim.fn.expand('%:p:h')})<CR>
 "   tnoremap <C-h> <C-\><C-n>:lua require("FTerm").toggle()<CR>
 "   nnoremap <C-h> :lua require("FTerm").toggle()<CR>
@@ -42,6 +45,8 @@ Plug 'morhetz/gruvbox'
   let g:gruvbox_invert_selection=0
   let g:gruvbox_sign_column='bg0'
   let g:gruvbox_hls_cursor='purple'
+  let g:gruvbox_italic=1
+  let g:gruvbox_bold=1
 
 Plug 'tpope/vim-fugitive'
   nnoremap <Leader>gd :Gdiff<CR>
@@ -66,6 +71,7 @@ Plug 'mbbill/undotree', { 'on': 'UndotreeToggle' }
 " fzf integration
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
+  let g:fzf_tags_command = 'ctags -R --exclude=.git --exclude=.terraform'
   let g:fzf_buffers_jump = 1  " open existing windows in :Buffers
   let g:fzf_action = {
     \ 'enter': 'edit',
@@ -92,7 +98,7 @@ capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
 
 -- Enable some language servers with the additional completion capabilities offered by nvim-cmp
 local nvim_lsp = require('lspconfig')
-local servers = { 'pyright' }
+local servers = { 'pyright', 'tflint', 'vimls' }
 for _, lsp in ipairs(servers) do
   nvim_lsp[lsp].setup {
     -- on_attach = my_custom_on_attach,
@@ -131,8 +137,10 @@ cmp.setup {
     end,
   },
   sources = {
-    { name = 'nvim_lsp' },
-    { name = 'buffer' },
+    { name = 'buffer', keyword_length = 5,
+        opts = { get_bufnrs = function() return vim.api.nvim_list_bufs() end }},
+    { name = 'nvim_lua', keyword_length = 2 },
+    { name = 'nvim_lsp', keyword_length = 2 },
   },
 }
 
@@ -140,19 +148,19 @@ require('gitsigns').setup()
 EOF
 
 " Store everything in the .nvim directory
-if !isdirectory($HOME."/.nvim/tmp")
-    call mkdir($HOME."/.nvim/tmp", "", 0700)
+if !isdirectory($HOME."/.config/nvim/tmp")
+    call mkdir($HOME."/.config/nvim/tmp", "", 0700)
 endif
 set undofile   " keep an undo file (%home%...%vimrc)
-set undodir=~/.nvim/tmp,.
-set directory=~/.nvim/tmp,.
+set undodir=~/.config/nvim/tmp,.
+set directory=~/.config/nvim/tmp,.
 
 " Formatting indents
 set softtabstop=4 shiftwidth=4 expandtab  " use spaces
 set autoindent
 set copyindent  " copy usage of spaces or tabs
-set listchars=tab:>-,trail:.  " configure list
-set list  " show information about spaces and tabs
+" set listchars=tab:>-,trail:.  " configure list
+" set list  " show information about spaces and tabs
 
 " Formatting search
 set path=.,**,,  " exclude /usr/include and search ** by default
@@ -175,9 +183,12 @@ set splitbelow splitright
 set updatetime=250
 set cursorline
 set linebreak       " more readable text wrapping
+set confirm
+set iskeyword+=-    " - counts as part of a word for w and C-]
 
 " Enable mouse for scrolling and clicking, but disable all selection
 set mouse=nv
+set showtabline=0
 noremap <LeftRelease> <Nop>
 
 function! s:statusline_expr()
@@ -224,3 +235,4 @@ endif
 
 set background=dark
 colorscheme gruvbox
+hi CursorLine ctermfg=white
