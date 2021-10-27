@@ -29,6 +29,7 @@ Plug 'lewis6991/gitsigns.nvim'
 Plug 'junegunn/vim-slash'
 
 " Testing
+Plug 'nvim-telescope/telescope.nvim', { 'on': 'Telescope'}
 Plug 'kristijanhusak/orgmode.nvim'
 Plug 'SirVer/ultisnips'
 Plug 'junegunn/gv.vim'
@@ -37,10 +38,6 @@ Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-nvim-lua'
-"   nnoremap got :lua require('FTerm').run({'cd', vim.fn.expand('%:p:h')})<CR>
-"   tnoremap <C-h> <C-\><C-n>:lua require("FTerm").toggle()<CR>
-"   nnoremap <C-h> :lua require("FTerm").toggle()<CR>
-
 Plug 'morhetz/gruvbox'
   let g:gruvbox_invert_selection=0
   let g:gruvbox_sign_column='bg0'
@@ -51,8 +48,7 @@ Plug 'morhetz/gruvbox'
 Plug 'tpope/vim-fugitive'
   nnoremap <Leader>gd :Gdiff<CR>
 Plug 'justinmk/vim-dirvish'
-  " disable netrw and use dirvish
-  let g:loaded_netrw       = 1
+  " disable netrw plugins but keep autoloaded funcs
   let g:loaded_netrwPlugin = 1
   command! -nargs=? -complete=dir Explore Dirvish <args>
   command! -nargs=? -complete=dir Sexplore split | silent Dirvish <args>
@@ -72,14 +68,11 @@ Plug 'mbbill/undotree', { 'on': 'UndotreeToggle' }
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
   let g:fzf_tags_command = 'ctags -R --exclude=.git --exclude=.terraform'
-  let g:fzf_buffers_jump = 1  " open existing windows in :Buffers
-  let g:fzf_action = {
-    \ 'enter': 'edit',
-    \ 'ctrl-t': 'tab drop',
-    \ 'ctrl-x': 'split',
-    \ 'ctrl-v': 'vsplit' }
+  " let g:fzf_buffers_jump = 1  " open existing windows in :Buffers
   nnoremap gb <cmd>Buffers<cr>
   nnoremap <leader>r <cmd>History:<cr>
+  nnoremap <leader>ag :Rg <c-r><c-w><cr>
+  xnoremap <leader>ag y:Rg <c-r>"<cr>
   nnoremap <leader>K  <cmd>Help<cr>
   nnoremap <leader>fw <cmd>Windows<cr>
   nnoremap <leader>fc <cmd>Commands<cr>
@@ -98,7 +91,7 @@ capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
 
 -- Enable some language servers with the additional completion capabilities offered by nvim-cmp
 local nvim_lsp = require('lspconfig')
-local servers = { 'pyright', 'tflint', 'vimls' }
+local servers = { 'pyright', 'vimls' }
 for _, lsp in ipairs(servers) do
   nvim_lsp[lsp].setup {
     -- on_attach = my_custom_on_attach,
@@ -175,7 +168,6 @@ set incsearch hlsearch
 if exists('+clipboard')
     set clipboard=unnamedplus
 endif
-set guicursor=i:block
 set autowrite
 set hidden          " For allowing hiding of unsaved files in our buffer
 set wildmode=longest:full:lastused,full " zsh tab behavior + "lastused"
