@@ -8,7 +8,7 @@ runtime! ftplugin/man.vim  " Read man pages
 
 " Vim-Plug: Download if does not exist
 if empty(glob('~/.config/nvim/autoload/plug.vim'))
-  silent !curl -fLo ~/.nvim/autoload/plug.vim --create-dirs
+  silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs
     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
@@ -29,10 +29,12 @@ Plug 'lewis6991/gitsigns.nvim'
 Plug 'junegunn/vim-slash'
 
 " Testing
+Plug 'tpope/vim-endwise'
+Plug 'wellle/targets.vim'
 Plug 'nvim-telescope/telescope.nvim', { 'on': 'Telescope'}
 Plug 'kristijanhusak/orgmode.nvim'
-Plug 'SirVer/ultisnips'
 Plug 'junegunn/gv.vim'
+Plug 'rhysd/git-messenger.vim'  " leader gm to trigger
 
 Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-nvim-lsp'
@@ -112,7 +114,6 @@ cmp.setup {
     ['<C-e>'] = cmp.mapping.close(),
     ['<CR>'] = cmp.mapping.confirm {
       behavior = cmp.ConfirmBehavior.Replace,
-      select = true,
     },
     ['<Tab>'] = function(fallback)
       if cmp.visible() then
@@ -204,6 +205,9 @@ nnoremap Y y$
 nnoremap <BS> <C-^>
 nnoremap gt :tabs<CR>:tabnext<Space>
 " vnoremap P "0p
+
+" map <leader><leader> to prompt for a mapping, "<" has to be escaped via <lt>
+nmap <leader><leader> :nmap <lt>buffer> <lt>leader><lt>leader>
 nnoremap <leader>cc :cclose<bar>lclose<cr>
 nnoremap <Leader>cd :tcd %:p:h<CR>:pwd<CR>
 nnoremap <Leader>cg :tcd `git rev-parse --show-toplevel`<CR>:pwd<CR>
@@ -211,10 +215,14 @@ nnoremap <Leader>o o<Esc>
 nnoremap <Leader>O O<Esc>
 nnoremap <silent> <leader>l :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
 
+" Use ctrl v for terminal related mappings
+tnoremap <c-v><c-v> <c-\><c-n>
+
 augroup vimrc
     " Auto remove trailing spaces
     autocmd BufRead,BufNewFile *.cake set filetype=cs
     autocmd BufWritePre * %s/\s\+$//e
+    autocmd TextYankPost * lua vim.highlight.on_yank {higroup="IncSearch", timeout=150, on_visual=true}
 augroup END
 
 " Terminal themes and colors:
