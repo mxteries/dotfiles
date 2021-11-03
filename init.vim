@@ -29,6 +29,10 @@ Plug 'lewis6991/gitsigns.nvim'
 Plug 'junegunn/vim-slash'
 
 " Testing
+" Plug 'sheerun/vim-polyglot'
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'nvim-treesitter/nvim-treesitter-textobjects'
+Plug 'nvim-treesitter/playground'
 Plug 'nvim-telescope/telescope.nvim', { 'on': 'Telescope'}
 Plug 'kristijanhusak/orgmode.nvim'
 Plug 'SirVer/ultisnips'
