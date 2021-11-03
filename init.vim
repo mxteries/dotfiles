@@ -29,8 +29,10 @@ Plug 'lewis6991/gitsigns.nvim'
 Plug 'junegunn/vim-slash'
 
 " Testing
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'nvim-treesitter/nvim-treesitter-textobjects'
+Plug 'nvim-treesitter/playground'
 Plug 'tpope/vim-endwise'
-Plug 'wellle/targets.vim'
 Plug 'nvim-telescope/telescope.nvim', { 'on': 'Telescope'}
 Plug 'kristijanhusak/orgmode.nvim'
 Plug 'junegunn/gv.vim'
@@ -137,24 +139,60 @@ cmp.setup {
     { name = 'nvim_lsp', keyword_length = 2 },
   },
 }
-
+require'nvim-treesitter.configs'.setup {
+  ensure_installed = { "go", "bash", "hcl", "lua", "vim", "python", "ruby", "query" },
+  highlight = {
+    enable = true,
+  },
+  textobjects = {
+    select = {
+      enable = true,
+      -- Automatically jump forward to textobj, similar to targets.vim
+      lookahead = true,
+      keymaps = {
+        -- You can use the capture groups defined in textobjects.scm
+        ["af"] = "@function.outer",
+        ["if"] = "@function.inner",
+        ["ac"] = "@conditional.outer",
+        ["ic"] = "@conditional.inner",
+        ["aa"] = "@parameter.outer",
+        ["ia"] = "@parameter.inner",
+        ["ab"] = "@block.outer",
+        ["ib"] = "@block.inner",
+        -- Or you can define your own textobjects like this
+--         ["iF"] = {
+--           python = "(function_definition) @function",
+--           cpp = "(function_definition) @function",
+--           c = "(function_definition) @function",
+--           java = "(method_declaration) @function",
+--         },
+      },
+    },
+  },
+  playground = {
+    enable = true,
+    disable = {},
+    updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
+    persist_queries = false, -- Whether the query persists across vim sessions
+    keybindings = {
+      toggle_query_editor = 'o',
+      toggle_hl_groups = 'i',
+      toggle_injected_languages = 't',
+      toggle_anonymous_nodes = 'a',
+      toggle_language_display = 'I',
+      focus_language = 'f',
+      unfocus_language = 'F',
+      update = 'R',
+      goto_node = '<cr>',
+      show_help = '?',
+    },
+  }
+}
 require('gitsigns').setup()
 EOF
 
-" Store everything in the .nvim directory
-if !isdirectory($HOME."/.config/nvim/tmp")
-    call mkdir($HOME."/.config/nvim/tmp", "", 0700)
-endif
-set undofile   " keep an undo file (%home%...%vimrc)
-set undodir=~/.config/nvim/tmp,.
-set directory=~/.config/nvim/tmp,.
-
-" Formatting indents
-set softtabstop=4 shiftwidth=4 expandtab  " use spaces
-set autoindent
-set copyindent  " copy usage of spaces or tabs
-" set listchars=tab:>-,trail:.  " configure list
-" set list  " show information about spaces and tabs
+" Indent spaces
+set softtabstop=4 shiftwidth=4 expandtab autoindent " copyindent
 
 " Formatting search
 set path=.,**,,  " exclude /usr/include and search ** by default
@@ -162,14 +200,15 @@ augroup vimrc
     autocmd FileType c,cpp      setlocal path+=/usr/include
 augroup END
 " ignore patterns (node_modules) for :find
-set wildignore+=tags,*/node_modules/*,*.o,*.class,*/__pycache__,*/tools/*
+set wildignore+=.git,.hg,.svn
+set wildignore+=*__pycache__
+set wildignore+=*/node_modules/*
+set wildignore+=*/tools/*
+
 set ignorecase smartcase
 set incsearch hlsearch
-
-if exists('+clipboard')
-    set clipboard=unnamedplus
-endif
-set autowrite
+set clipboard=unnamedplus
+set undofile        " keep an undo file (looks like %home%...%vimrc)
 set hidden          " For allowing hiding of unsaved files in our buffer
 set wildmode=longest:full:lastused,full " zsh tab behavior + "lastused"
 set splitbelow splitright
@@ -178,11 +217,14 @@ set cursorline
 set linebreak       " more readable text wrapping
 set confirm
 set iskeyword+=-    " - counts as part of a word for w and C-]
+set showtabline=0   " Turn off tabline
 
-" Enable mouse for scrolling and clicking, but disable all selection
-set mouse=nv
-set showtabline=0
+" Enable mouse for scrolling
+set mouse=n
+noremap <LeftMouse> <Nop>
 noremap <LeftRelease> <Nop>
+noremap <LeftDrag> <Nop>
+noremap <2-LeftMouse> <Nop>
 
 function! s:statusline_expr()
   let ts  = " %{strftime('%H:%M')} │ "
@@ -204,16 +246,17 @@ let &statusline = s:statusline_expr()
 nnoremap Y y$
 nnoremap <BS> <C-^>
 nnoremap gt :tabs<CR>:tabnext<Space>
-" vnoremap P "0p
-
+vnoremap P "0p
 " map <leader><leader> to prompt for a mapping, "<" has to be escaped via <lt>
 nmap <leader><leader> :nmap <lt>buffer> <lt>leader><lt>leader>
+
 nnoremap <leader>cc :cclose<bar>lclose<cr>
 nnoremap <Leader>cd :tcd %:p:h<CR>:pwd<CR>
 nnoremap <Leader>cg :tcd `git rev-parse --show-toplevel`<CR>:pwd<CR>
 nnoremap <Leader>o o<Esc>
 nnoremap <Leader>O O<Esc>
 nnoremap <silent> <leader>l :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
+cnoremap <C-A> <Home>
 
 " Use ctrl v for terminal related mappings
 tnoremap <c-v><c-v> <c-\><c-n>
