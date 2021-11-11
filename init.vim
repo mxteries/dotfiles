@@ -16,32 +16,38 @@ endif
 " Plugins will be downloaded under the specified directory.
 call plug#begin('~/.config/nvim/plugged')
 
-Plug 'tpope/vim-surround'            " for adding surrounding characters
-Plug 'tpope/vim-repeat'              " for repeating
+Plug 'tpope/vim-unimpaired'          " Useful mappings
 Plug 'tpope/vim-commentary'          " for commenting
+Plug 'tpope/vim-repeat'              " for repeating
+Plug 'tpope/vim-surround'            " for adding surrounding characters
 Plug 'iamcco/markdown-preview.nvim', { 'do': ':call mkdp#util#install()', 'for': 'markdown', 'on': 'MarkdownPreview' }
 Plug 'tommcdo/vim-exchange'          " for swapping text
-Plug 'tommcdo/vim-lion'
 Plug 'hashivim/vim-terraform'
 Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'lewis6991/gitsigns.nvim'
-Plug 'junegunn/vim-slash'
-
-" Testing
+Plug 'Vimjas/vim-python-pep8-indent'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'nvim-treesitter/nvim-treesitter-textobjects'
 Plug 'nvim-treesitter/playground'
-Plug 'tpope/vim-endwise'
+Plug 'rhysd/git-messenger.vim'  " leader gm to trigger
+
+" Testing
+Plug 'tommcdo/vim-lion'
+Plug 'junegunn/limelight.vim'
+Plug 'junegunn/goyo.vim'
 Plug 'nvim-telescope/telescope.nvim', { 'on': 'Telescope'}
 Plug 'kristijanhusak/orgmode.nvim'
 Plug 'junegunn/gv.vim'
-Plug 'rhysd/git-messenger.vim'  " leader gm to trigger
 
-Plug 'hrsh7th/nvim-cmp'
+" Completion
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-nvim-lua'
+Plug 'hrsh7th/cmp-path'
+Plug 'hrsh7th/cmp-cmdline'
+Plug 'hrsh7th/nvim-cmp'
+
 Plug 'morhetz/gruvbox'
   let g:gruvbox_invert_selection=0
   let g:gruvbox_sign_column='bg0'
@@ -50,7 +56,6 @@ Plug 'morhetz/gruvbox'
   let g:gruvbox_bold=1
 
 Plug 'tpope/vim-fugitive'
-  nnoremap <Leader>gd :Gdiff<CR>
 Plug 'justinmk/vim-dirvish'
   " disable netrw plugins but keep autoloaded funcs
   let g:loaded_netrwPlugin = 1
@@ -72,15 +77,12 @@ Plug 'mbbill/undotree', { 'on': 'UndotreeToggle' }
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
   let g:fzf_tags_command = 'ctags -R --exclude=.git --exclude=.terraform'
-  " let g:fzf_buffers_jump = 1  " open existing windows in :Buffers
-  nnoremap gb <cmd>Buffers<cr>
+  nnoremap <leader>K <cmd>Help<cr>
   nnoremap <leader>r <cmd>History:<cr>
-  nnoremap <leader>ag :Rg <c-r><c-w><cr>
-  xnoremap <leader>ag y:Rg <c-r>"<cr>
-  nnoremap <leader>K  <cmd>Help<cr>
-  nnoremap <leader>fw <cmd>Windows<cr>
+  xnoremap <leader>rg y:Rg <c-r>"<cr>
   nnoremap <leader>fc <cmd>Commands<cr>
   nnoremap <leader>ff <cmd>Files<cr>
+  nnoremap <leader>fb <cmd>Buffers<cr>
   " Rg in the current buffer's directory
   command! -bang -nargs=* Rgb
     \ call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case "
@@ -105,32 +107,46 @@ end
 -- Set completeopt to have a better completion experience
 vim.o.completeopt = 'menu,menuone,noselect'
 -- nvim-cmp setup
-local cmp = require 'cmp'
+local has_words_before = function()
+  local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+  return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
+end
+
+local cmp = require'cmp'
 cmp.setup {
   mapping = {
-    ['<C-p>'] = cmp.mapping.select_prev_item(),
-    ['<C-n>'] = cmp.mapping.select_next_item(),
     ['<C-d>'] = cmp.mapping.scroll_docs(-4),
     ['<C-f>'] = cmp.mapping.scroll_docs(4),
-    ['<C-Space>'] = cmp.mapping.complete(),
-    ['<C-e>'] = cmp.mapping.close(),
+    ['<C-e>'] = cmp.mapping.abort(),
     ['<CR>'] = cmp.mapping.confirm {
       behavior = cmp.ConfirmBehavior.Replace,
     },
-    ['<Tab>'] = function(fallback)
-      if cmp.visible() then
-        cmp.select_next_item()
-      else
-        fallback()
-      end
-    end,
-    ['<S-Tab>'] = function(fallback)
+    ['<Tab>'] = cmp.mapping({
+    -- Tab trigger completion in insert mode only
+        i = function(fallback)
+            if cmp.visible() then
+                cmp.select_next_item()
+            elseif has_words_before() then
+                cmp.complete()
+            else
+                fallback()
+            end
+        end,
+        c = function(fallback)
+            if cmp.visible() then
+                cmp.select_next_item()
+            else
+                fallback()
+            end
+        end,
+    }),
+    ['<S-Tab>'] = cmp.mapping(function(fallback)
       if cmp.visible() then
         cmp.select_prev_item()
       else
         fallback()
       end
-    end,
+    end, { 'i', 'c'}),
   },
   sources = {
     { name = 'buffer', keyword_length = 5,
@@ -139,6 +155,23 @@ cmp.setup {
     { name = 'nvim_lsp', keyword_length = 2 },
   },
 }
+-- Use buffer source for / and ?
+cmp.setup.cmdline('/', {
+  sources = {
+    { name = 'buffer', keyword_length = 2 }
+  }
+})
+cmp.setup.cmdline('?', {
+  sources = {
+    { name = 'buffer', keyword_length = 2 }
+  }
+})
+-- Use path source for ':'
+cmp.setup.cmdline(':', {
+  sources = cmp.config.sources({
+    { name = 'path' }
+  })
+})
 require'nvim-treesitter.configs'.setup {
   ensure_installed = { "go", "bash", "hcl", "lua", "vim", "python", "ruby", "query" },
   highlight = {
@@ -262,8 +295,9 @@ cnoremap <C-A> <Home>
 tnoremap <c-v><c-v> <c-\><c-n>
 
 augroup vimrc
-    " Auto remove trailing spaces
+    autocmd BufRead,BufNewFile *.md setlocal textwidth=72
     autocmd BufRead,BufNewFile *.cake set filetype=cs
+    " Auto remove trailing spaces
     autocmd BufWritePre * %s/\s\+$//e
     autocmd TextYankPost * lua vim.highlight.on_yank {higroup="IncSearch", timeout=150, on_visual=true}
 augroup END
