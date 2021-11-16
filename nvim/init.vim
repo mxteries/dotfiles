@@ -15,13 +15,33 @@ end
 call plug#begin(s:plugdir)
 " Testing
 Plug 'tpope/vim-speeddating'
-Plug 'habamax/vim-godot'
-Plug 'rhysd/clever-f.vim'
 Plug 'tommcdo/vim-lion'
 Plug 'junegunn/limelight.vim'
 Plug 'junegunn/goyo.vim'
-Plug 'junegunn/gv.vim'
+augroup vimrc
+    autocmd User GoyoEnter Limelight0.75
+    autocmd User GoyoLeave Limelight!
+augroup END
 
+Plug 'junegunn/gv.vim'
+Plug 'lervag/wiki.vim'  " Simple wiki
+let g:wiki_root = '~/me/wamy'
+let g:wiki_filetypes = ['md']
+let g:wiki_link_extension = '.md'
+let g:wiki_link_target_type='md'
+let g:wiki_global_load=0
+  nnoremap <leader>wf <cmd>WikiFzfPages<cr>
+let g:wiki_journal = {
+    \ 'name': 'journal',
+    \ 'frequency': 'weekly',
+    \ 'date_format': {
+    \   'daily' : '%Y-%m-%d',
+    \   'weekly' : '%Y_w%V',
+    \   'monthly' : '%Y_m%m',
+    \ },
+    \}
+
+Plug 'tpope/vim-markdown' | let g:markdown_folding = 1
 Plug 'tpope/vim-unimpaired'          " Useful mappings
 Plug 'tpope/vim-commentary'          " for commenting
 Plug 'tpope/vim-repeat'              " for repeating
@@ -35,12 +55,12 @@ Plug 'mbbill/undotree', { 'on': 'UndotreeToggle' }
 Plug 'nvim-lua/plenary.nvim'
 Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-telescope/telescope.nvim', { 'on': 'Telescope'}
+Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-nvim-lua'
 Plug 'hrsh7th/cmp-path'
 Plug 'hrsh7th/cmp-cmdline'
-Plug 'hrsh7th/nvim-cmp'
 Plug 'lewis6991/gitsigns.nvim'
 Plug 'rhysd/git-messenger.vim'  " leader gm to trigger
 if !s:windows
@@ -110,7 +130,7 @@ set wildignore+=*/node_modules/*
 set wildignore+=*/tools/*
 set ignorecase smartcase
 set incsearch hlsearch
-" set clipboard=unnamedplus
+set clipboard=unnamedplus
 set undofile        " keep an undo file (looks like %home%...%vimrc)
 set hidden          " For allowing hiding of unsaved files in our buffer
 set wildmode=longest:full:lastused,full " zsh tab behavior + "lastused"
@@ -119,8 +139,9 @@ set updatetime=250
 set cursorline
 set linebreak       " more readable text wrapping
 set confirm
-set iskeyword+=-    " - counts as part of a word for w and C-]
-set showtabline=0   " Turn off tabline
+set iskeyword+=-      " - counts as part of a word for w and C-]
+set showtabline=0     " Turn off tabline
+set conceallevel=2    " Allow custom concealment
 
 " Enable mouse for scrolling only
 set mouse=n
@@ -166,6 +187,7 @@ nnoremap <leader>R :source $MYVIMRC<cr>
 nnoremap <leader>cc :cclose<bar>lclose<cr>
 nnoremap <Leader>cd :tcd %:p:h<CR>:pwd<CR>
 nnoremap <Leader>cg :tcd `git rev-parse --show-toplevel`<CR>:pwd<CR>
+nnoremap <Leader>cw :execute 'lcd' fnameescape(g:wiki_root)<CR>:pwd<cr>
 nnoremap <silent> <leader>l :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
 cnoremap <C-A> <Home>
 
@@ -181,6 +203,12 @@ augroup vimrc
     autocmd BufWritePost $MYVIMRC source $MYVIMRC | echo "Reloaded $MYVIMRC"
     autocmd TextYankPost * lua vim.highlight.on_yank {higroup="IncSearch", timeout=150, on_visual=true}
 augroup END
+
+" call SynGroup() to get hl group under cursor
+function! SynGroup()
+    let l:s = synID(line('.'), col('.'), 1)
+    echo synIDattr(l:s, 'name') . ' -> ' . synIDattr(synIDtrans(l:s), 'name')
+endfun
 
 " Enable true color
 if exists('+termguicolors')

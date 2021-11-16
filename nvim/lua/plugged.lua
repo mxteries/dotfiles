@@ -4,6 +4,11 @@ local windows = vim.fn.has('win64') == 1
 local nvim_lsp = require('lspconfig')
 local servers = {}  -- fill out lsps here
 
+-- TODO: LSP Keybindings
+-- Read through nvim lsp/lspconfig docs
+-- copy configs:
+-- https://github.com/mitchellh/vim-misc/blob/master/lua/vim-misc.lua
+-- https://github.com/justinmk/config/blob/master/.config/nvim/lua/plugins.lua
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
 
@@ -23,6 +28,7 @@ else
         }
     end
 end
+
 
 --- nvim.cmp ---
 local cmp = require'cmp'
@@ -80,12 +86,12 @@ cmp.setup {
 -- Use buffer source for / and ?
 cmp.setup.cmdline('/', {
     sources = {
-        { name = 'buffer', keyword_length = 2 }
+        { name = 'buffer', keyword_length = 3 }
     }
 })
 cmp.setup.cmdline('?', {
     sources = {
-        { name = 'buffer', keyword_length = 2 }
+        { name = 'buffer', keyword_length = 3 }
     }
 })
 -- Use path source for ':'
