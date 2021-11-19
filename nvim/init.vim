@@ -17,11 +17,6 @@ call plug#begin(s:plugdir)
 Plug 'tpope/vim-speeddating'
 Plug 'tommcdo/vim-lion'
 Plug 'junegunn/goyo.vim'
-augroup vimrc
-    autocmd User GoyoEnter Limelight0.75
-    autocmd User GoyoLeave Limelight!
-augroup END
-
 Plug 'junegunn/gv.vim'
 Plug 'lervag/wiki.vim'  " Simple wiki
 let g:wiki_root = '~/me/wamy'
@@ -128,7 +123,7 @@ set wildignore+=*/node_modules/*
 set wildignore+=*/tools/*
 set ignorecase smartcase
 set incsearch hlsearch
-set clipboard=unnamedplus
+" set clipboard=unnamedplus
 set undofile        " keep an undo file (looks like %home%...%vimrc)
 set hidden          " For allowing hiding of unsaved files in our buffer
 set wildmode=longest:full:lastused,full " zsh tab behavior + "lastused"
@@ -183,6 +178,8 @@ vnoremap P "0p
 " map <leader><leader> to prompt for a mapping, "<" has to be escaped via <lt>
 nmap <leader><leader> :nmap <lt>buffer> <lt>leader><lt>leader>
 
+nnoremap <leader>y "+y
+nnoremap <leader>p "+p
 nnoremap <leader>R :source $MYVIMRC<cr>
 nnoremap <leader>cc :cclose<bar>lclose<cr>
 nnoremap <Leader>cd :tcd %:p:h<CR>:pwd<CR>
@@ -202,6 +199,8 @@ augroup vimrc
     " Auto source init vim
     autocmd BufWritePost $MYVIMRC source $MYVIMRC | echo "Reloaded $MYVIMRC"
     autocmd TextYankPost * lua vim.highlight.on_yank {higroup="IncSearch", timeout=150, on_visual=true}
+    " Fold git file (fugitive)
+    autocmd FileType git,gitcommit set foldmethod=syntax
 augroup END
 
 " call SynGroup() to get hl group under cursor
