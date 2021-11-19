@@ -16,7 +16,6 @@ call plug#begin(s:plugdir)
 " Testing
 Plug 'tpope/vim-speeddating'
 Plug 'tommcdo/vim-lion'
-Plug 'junegunn/limelight.vim'
 Plug 'junegunn/goyo.vim'
 augroup vimrc
     autocmd User GoyoEnter Limelight0.75
@@ -47,7 +46,6 @@ Plug 'tpope/vim-commentary'          " for commenting
 Plug 'tpope/vim-repeat'              " for repeating
 Plug 'tpope/vim-surround'            " for adding surrounding characters
 Plug 'iamcco/markdown-preview.nvim', { 'do': ':call mkdp#util#install()', 'for': 'markdown', 'on': 'MarkdownPreview' }
-Plug 'tommcdo/vim-exchange'          " for swapping text
 Plug 'Vimjas/vim-python-pep8-indent'
 Plug 'mbbill/undotree', { 'on': 'UndotreeToggle' }
 
@@ -142,6 +140,8 @@ set confirm
 set iskeyword+=-      " - counts as part of a word for w and C-]
 set showtabline=0     " Turn off tabline
 set conceallevel=2    " Allow custom concealment
+set listchars+=lead:. " show leading spaces
+set list
 
 " Enable mouse for scrolling only
 set mouse=n
