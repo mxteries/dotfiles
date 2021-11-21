@@ -137,13 +137,15 @@ set showtabline=0     " Turn off tabline
 set conceallevel=2    " Allow custom concealment
 set listchars+=lead:. " show leading spaces
 set list
+set scrolloff=5       " scroll before cursor reaches edge of screen
+set cmdwinheight=2    " height of q:
 
 " Enable mouse for scrolling only
 set mouse=n
 noremap <LeftMouse> <Nop>
-noremap <LeftRelease> <Nop>
-noremap <LeftDrag> <Nop>
 noremap <2-LeftMouse> <Nop>
+noremap <LeftDrag> <Nop>
+noremap <LeftRelease> <Nop>
 
 if s:windows
     set completeslash="slash"
@@ -157,6 +159,7 @@ end
 function! s:statusline_expr()
   let ts  = " %{strftime('%H:%M')} │ "
   let cwd = "[%{fnamemodify(getcwd(),':p:~')}]"
+  " Filename relative to cwd
   let rel = " %{expand('%:~:.')} "
   let ft  = "%{len(&filetype) ? '['.&filetype.'] ' : ''}"
   let mod = "%{&modified ? '│ + ' : !&modifiable ? '[x] ' : ''}"
@@ -176,7 +179,7 @@ nnoremap <BS> <C-^>
 nnoremap gt :tabs<CR>:tabnext<Space>
 vnoremap P "0p
 " map <leader><leader> to prompt for a mapping, "<" has to be escaped via <lt>
-nmap <leader><leader> :nmap <lt>buffer> <lt>leader><lt>leader>
+nmap <leader><leader> :nmap <lt>localleader><lt>localleader><space>
 
 nnoremap <leader>y "+y
 nnoremap <leader>p "+p
@@ -200,7 +203,8 @@ augroup vimrc
     autocmd BufWritePost $MYVIMRC source $MYVIMRC | echo "Reloaded $MYVIMRC"
     autocmd TextYankPost * lua vim.highlight.on_yank {higroup="IncSearch", timeout=150, on_visual=true}
     " Fold git file (fugitive)
-    autocmd FileType git,gitcommit set foldmethod=syntax
+    autocmd FileType git,gitcommit setlocal foldmethod=syntax foldlevel=1
+    autocmd FileType gitcommit setlocal spell
 augroup END
 
 " call SynGroup() to get hl group under cursor
