@@ -143,12 +143,12 @@ cmp.setup {
 -- Use buffer source for / and ?
 cmp.setup.cmdline('/', {
     sources = {
-        { name = 'buffer', keyword_length = 3 }
+        { name = 'buffer', keyword_length = 5 }
     }
 })
 cmp.setup.cmdline('?', {
     sources = {
-        { name = 'buffer', keyword_length = 3 }
+        { name = 'buffer', keyword_length = 5 }
     }
 })
 -- Use path source for ':'
@@ -213,3 +213,4 @@ end
 
 --- everything else ---
 require('gitsigns').setup()
+require'hop'.setup()

@@ -14,6 +14,8 @@ end
 
 call plug#begin(s:plugdir)
 " Testing
+Plug 'phaazon/hop.nvim'
+nnoremap \ <cmd>HopWord<cr>
 Plug 'tpope/vim-speeddating'
 Plug 'tommcdo/vim-lion'
 Plug 'junegunn/goyo.vim'
@@ -205,6 +207,12 @@ augroup vimrc
     " Fold git file (fugitive)
     autocmd FileType git,gitcommit setlocal foldmethod=syntax foldlevel=1
     autocmd FileType gitcommit setlocal spell
+    " Turn on hlsearch only when searching (/?). (ps: Use 'yoh' from unimpaired)
+    autocmd CmdlineEnter /,\? set hlsearch
+    autocmd CmdlineLeave /,\? set nohlsearch
+    " Turn off smartcase when typing commands (:)
+    autocmd CmdlineEnter : set nosmartcase
+    autocmd CmdlineLeave : set smartcase
 augroup END
 
 " call SynGroup() to get hl group under cursor
