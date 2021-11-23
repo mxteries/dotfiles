@@ -223,3 +223,4 @@ endif
 set background=dark
 colorscheme gruvbox
 hi CursorLine ctermfg=white
+set guifont=JetBrains\ Mono:h15
