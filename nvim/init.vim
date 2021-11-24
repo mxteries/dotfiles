@@ -20,22 +20,8 @@ Plug 'tpope/vim-speeddating'
 Plug 'tommcdo/vim-lion'
 Plug 'junegunn/goyo.vim'
 Plug 'junegunn/gv.vim'
-Plug 'lervag/wiki.vim'  " Simple wiki
-let g:wiki_root = '~/me/wamy'
-let g:wiki_filetypes = ['md']
-let g:wiki_link_extension = '.md'
-let g:wiki_link_target_type='md'
-let g:wiki_global_load=0
-  nnoremap <leader>wf <cmd>WikiFzfPages<cr>
-let g:wiki_journal = {
-    \ 'name': 'journal',
-    \ 'frequency': 'weekly',
-    \ 'date_format': {
-    \   'daily' : '%Y-%m-%d',
-    \   'weekly' : '%Y_w%V',
-    \   'monthly' : '%Y_m%m',
-    \ },
-    \}
+nnoremap <leader>ww <cmd>edit ~/me \| lcd %:p:h<cr>
+
 
 Plug 'tpope/vim-markdown' | let g:markdown_folding = 1
 Plug 'tpope/vim-unimpaired'          " Useful mappings
@@ -79,10 +65,15 @@ Plug 'justinmk/vim-dirvish'
   command! -nargs=? -complete=dir Sexplore split | silent Dirvish <args>
   command! -nargs=? -complete=dir Vexplore vsplit | silent Dirvish <args>
   augroup vimrc
-      " Map `t` to open in new tab.
+      " Map t to open in new tab
+      " map f to lcd then start searching for files
+      " map r to lcd then start :Rg
       autocmd FileType dirvish
-        \  nnoremap <silent><buffer> t :call dirvish#open('tabedit', 0) \| tcd %:h<CR>
-        \ |xnoremap <silent><buffer> t :call dirvish#open('tabedit', 0) \| tabdo tcd %:h<CR>
+        \  nnoremap <buffer> t :tabedit <c-r><c-p><CR>
+        \|nnoremap <buffer> f :lcd <c-r><c-p>\|Files<cr>
+        \|nnoremap <buffer> r :lcd <c-r><c-p> \| Rg<space>
+        \|nnoremap <buffer> R :lcd <c-r><c-p> \| Rg<cr>
+      autocmd FileType dirvish silent! unmap <buffer> /
   augroup END
 
 " fzf integration
@@ -99,6 +90,12 @@ Plug 'junegunn/fzf.vim'
   command! -bang -nargs=* Rgb
     \ call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case "
     \ .shellescape(<q-args>), 1, {'dir': expand('%:p:h') }, <bang>0)
+  " Overwrite <c-t> to not use :tab
+  let g:fzf_action = {
+    \ 'ctrl-t': 'tabedit',
+    \ 'ctrl-x': 'split',
+    \ 'ctrl-v': 'vsplit' }
+
 
 " Windows specific plugin settings
 if s:windows
@@ -125,7 +122,6 @@ set wildignore+=*/node_modules/*
 set wildignore+=*/tools/*
 set ignorecase smartcase
 set incsearch hlsearch
-" set clipboard=unnamedplus
 set undofile        " keep an undo file (looks like %home%...%vimrc)
 set hidden          " For allowing hiding of unsaved files in our buffer
 set wildmode=longest:full:lastused,full " zsh tab behavior + "lastused"
@@ -135,12 +131,10 @@ set cursorline
 set linebreak       " more readable text wrapping
 set confirm
 set iskeyword+=-      " - counts as part of a word for w and C-]
+set list listchars+=lead:.  " show leading spaces
 set showtabline=0     " Turn off tabline
-set conceallevel=2    " Allow custom concealment
-set listchars+=lead:. " show leading spaces
-set list
 set scrolloff=5       " scroll before cursor reaches edge of screen
-set cmdwinheight=2    " height of q:
+set foldlevelstart=1
 
 " Enable mouse for scrolling only
 set mouse=n
@@ -159,7 +153,6 @@ if s:windows
 end
 
 function! s:statusline_expr()
-  let ts  = " %{strftime('%H:%M')} │ "
   let cwd = "[%{fnamemodify(getcwd(),':p:~')}]"
   " Filename relative to cwd
   let rel = " %{expand('%:~:.')} "
@@ -167,11 +160,10 @@ function! s:statusline_expr()
   let mod = "%{&modified ? '│ + ' : !&modifiable ? '[x] ' : ''}"
   let ro  = "%{&readonly ? '[RO] ' : ''}"
   let fug = "%{exists('g:loaded_fugitive') ? fugitive#head() : ''}"
-  let sep = ' %= '
-  let pos = ' %-12(%l : %c%V%) '
+  let sep = '%='
+  let pos = '%-12(%l:%c%V%)'
   let pct = ' %P'
-
-  return ts.cwd.rel.'%<'.ft.mod.ro.fug.sep.pos.'%*'.pct
+  return cwd.rel.'%<'.ft.mod.ro.fug.sep.pos.'%*'.pct
 endfunction
 let &statusline = s:statusline_expr()
 
@@ -181,32 +173,41 @@ nnoremap <BS> <C-^>
 nnoremap gt :tabs<CR>:tabnext<Space>
 vnoremap P "0p
 " map <leader><leader> to prompt for a mapping, "<" has to be escaped via <lt>
-nmap <leader><leader> :nmap <lt>localleader><lt>localleader><space>
+nmap <leader><leader> :nmap <buffer> <lt>localleader><lt>localleader><space>
 
 nnoremap <leader>y "+y
+xnoremap <leader>y "+y
 nnoremap <leader>p "+p
+xnoremap <leader>p "+p
 nnoremap <leader>R :source $MYVIMRC<cr>
-nnoremap <leader>cc :cclose<bar>lclose<cr>
-nnoremap <Leader>cd :tcd %:p:h<CR>:pwd<CR>
+nnoremap cd <cmd>lcd %:p:h<cr>
 nnoremap <Leader>cg :tcd `git rev-parse --show-toplevel`<CR>:pwd<CR>
-nnoremap <Leader>cw :execute 'lcd' fnameescape(g:wiki_root)<CR>:pwd<cr>
 nnoremap <silent> <leader>l :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
 cnoremap <C-A> <Home>
+tnoremap <c-\><c-\> <c-\><c-n>
 
-" Use ctrl v for terminal related mappings
-tnoremap <c-v><c-v> <c-\><c-n>
+"testing
+nnoremap f <Nop>
+nnoremap t <Nop>
+nnoremap T <Nop>
+nnoremap F <Nop>
+onoremap f <Nop>
+onoremap t <Nop>
+onoremap T <Nop>
+onoremap F <Nop>
 
 augroup vimrc
-    autocmd BufRead,BufNewFile *.md setlocal textwidth=72
     autocmd BufRead,BufNewFile *.cake set filetype=cs
     " Auto remove trailing spaces
     autocmd BufWritePre * %s/\s\+$//e
-    " Auto source init vim
-    autocmd BufWritePost $MYVIMRC source $MYVIMRC | echo "Reloaded $MYVIMRC"
+    autocmd BufWritePost $MYVIMRC source $MYVIMRC
     autocmd TextYankPost * lua vim.highlight.on_yank {higroup="IncSearch", timeout=150, on_visual=true}
-    " Fold git file (fugitive)
-    autocmd FileType git,gitcommit setlocal foldmethod=syntax foldlevel=1
     autocmd FileType gitcommit setlocal spell
+
+    " Markdown Link
+    autocmd Filetype markdown nmap <buffer> <leader>md ysiW)i[]<c-o>hlink<esc>
+    autocmd Filetype markdown setlocal textwidth=80
+
     " Turn on hlsearch only when searching (/?). (ps: Use 'yoh' from unimpaired)
     autocmd CmdlineEnter /,\? set hlsearch
     autocmd CmdlineLeave /,\? set nohlsearch
@@ -230,5 +231,5 @@ endif
 
 set background=dark
 colorscheme gruvbox
-hi CursorLine ctermfg=white
+highlight CursorLine ctermfg=white
 set guifont=JetBrains\ Mono:h15
