@@ -11,14 +11,9 @@ let s:windows = has('win32') || has('win64')
 let s:plugdir = s:configdir . '/plugged'
 
 call plug#begin(s:plugdir)
-" Testing
-Plug 'phaazon/hop.nvim'
-nnoremap \ <cmd>HopWord<cr>
 Plug 'tpope/vim-speeddating'
 Plug 'tommcdo/vim-lion'
 Plug 'junegunn/goyo.vim'
-Plug 'junegunn/gv.vim'
-
 Plug 'tpope/vim-markdown' | let g:markdown_folding = 1
 Plug 'tpope/vim-unimpaired'          " Useful mappings
 Plug 'tpope/vim-commentary'          " for commenting
@@ -67,9 +62,10 @@ Plug 'justinmk/vim-dirvish'
       autocmd FileType dirvish
         \  nnoremap <buffer> t :tabedit <c-r><c-p><CR>
         \|nnoremap <buffer> f :lcd <c-r><c-p>\|Files<cr>
-        \|nnoremap <buffer> r :lcd <c-r><c-p> \| Rg<space>
-        \|nnoremap <buffer> R :lcd <c-r><c-p> \| Rg<cr>
+        \|nnoremap <buffer> R :lcd <c-r><c-p> \| Rg<space>
+        \|nnoremap <buffer> r :lcd <c-r><c-p> \| Rg<cr>
       autocmd FileType dirvish silent! unmap <buffer> /
+      autocmd FileType dirvish silent! unmap <buffer> <c-p>
   augroup END
 
 " fzf integration
@@ -77,7 +73,7 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
   let g:fzf_tags_command = 'ctags -R --exclude=.git --exclude=.terraform'
   nnoremap <leader>K <cmd>Help<cr>
-  nnoremap <leader>r <cmd>History:<cr>
+  nnoremap <leader>h <cmd>History:<cr>
   xnoremap <leader>rg y:Rg <c-r>"<cr>
   nnoremap <leader>fc <cmd>Commands<cr>
   nnoremap <leader>ff <cmd>Files<cr>
@@ -109,7 +105,7 @@ if !empty(expand(glob(s:configdir . '/local_settings.vim')))
 endif
 
 " Indent spaces
-set softtabstop=4 shiftwidth=4 expandtab autoindent " copyindent
+set softtabstop=4 shiftwidth=4 expandtab autoindent copyindent
 
 " Formatting search
 set path=.,**,,  " exclude /usr/include and search ** by default
@@ -122,17 +118,16 @@ set wildignore+=*__pycache__
 set wildignore+=*/node_modules/*
 set wildignore+=*/tools/*
 set ignorecase smartcase
-set incsearch hlsearch
+set incsearch nohlsearch
 set undofile        " keep an undo file (looks like %home%...%vimrc)
 set wildmode=longest:full:lastused,full " zsh tab behavior + "lastused"
 set splitbelow splitright
 set updatetime=250
 set cursorline
-set linebreak       " more readable text wrapping
+set linebreak         " more readable text wrapping
 set confirm
 set iskeyword+=-      " - counts as part of a word for w and C-]
 set list listchars+=lead:.  " show leading spaces
-set showtabline=0     " Turn off tabline
 set scrolloff=5       " scroll before cursor reaches edge of screen
 set foldlevelstart=1
 
@@ -169,7 +164,6 @@ let &statusline = s:statusline_expr()
 
 " Mappings
 nnoremap <BS> <C-^>
-nnoremap gt :tabs<CR>:tabnext<Space>
 vnoremap P "0p
 " map <leader><leader> to prompt for a mapping, "<" has to be escaped via <lt>
 nmap <leader><leader> :nmap <buffer> <lt>localleader><lt>localleader><space>
@@ -194,7 +188,6 @@ nnoremap T <Nop>
 nnoremap F <Nop>
 onoremap f <Nop>
 onoremap t <Nop>
-onoremap T <Nop>
 onoremap F <Nop>
 
 augroup vimrc
@@ -207,11 +200,13 @@ augroup vimrc
 
     " Markdown Link
     autocmd Filetype markdown nmap <buffer> <leader>md ysiW)i[]<c-o>hlink<esc>
-    autocmd Filetype markdown setlocal textwidth=80
+    autocmd Filetype markdown setlocal textwidth=72
+    autocmd Filetype markdown nnoremap <buffer> j gj
+    autocmd Filetype markdown nnoremap <buffer> k gk
 
-    " Turn on hlsearch only when searching (/?). (ps: Use 'yoh' from unimpaired)
-    autocmd CmdlineEnter /,\? set hlsearch
-    autocmd CmdlineLeave /,\? set nohlsearch
+    " Turn on hlsearch when searching /? (and also for :s :g)
+    autocmd CmdlineEnter :,/,\? set hlsearch
+    autocmd CmdlineLeave :,/,\? set nohlsearch
     " Turn off smartcase when typing commands (:)
     autocmd CmdlineEnter : set nosmartcase
     autocmd CmdlineLeave : set smartcase
