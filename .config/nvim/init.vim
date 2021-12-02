@@ -6,11 +6,9 @@ let maplocalleader=" "
 
 runtime! ftplugin/man.vim  " Read man pages
 
+let s:configdir = stdpath('config')
 let s:windows = has('win32') || has('win64')
-let s:plugdir = '~/.config/nvim/plugged'
-if s:windows
-    let s:plugdir = '~/AppData/Local/nvim/plugged'
-end
+let s:plugdir = s:configdir . '/plugged'
 
 call plug#begin(s:plugdir)
 " Testing
@@ -20,8 +18,6 @@ Plug 'tpope/vim-speeddating'
 Plug 'tommcdo/vim-lion'
 Plug 'junegunn/goyo.vim'
 Plug 'junegunn/gv.vim'
-nnoremap <leader>ww <cmd>edit ~/me \| lcd %:p:h<cr>
-
 
 Plug 'tpope/vim-markdown' | let g:markdown_folding = 1
 Plug 'tpope/vim-unimpaired'          " Useful mappings
@@ -107,6 +103,11 @@ call plug#end()
 " Lua plugin configs
 lua require('plugged')
 
+" Private stuff
+if !empty(expand(glob(s:configdir . '/local_settings.vim')))
+    execute 'source ' . s:configdir . '/local_settings.vim'
+endif
+
 " Indent spaces
 set softtabstop=4 shiftwidth=4 expandtab autoindent " copyindent
 
@@ -123,7 +124,6 @@ set wildignore+=*/tools/*
 set ignorecase smartcase
 set incsearch hlsearch
 set undofile        " keep an undo file (looks like %home%...%vimrc)
-set hidden          " For allowing hiding of unsaved files in our buffer
 set wildmode=longest:full:lastused,full " zsh tab behavior + "lastused"
 set splitbelow splitright
 set updatetime=250
@@ -168,7 +168,6 @@ endfunction
 let &statusline = s:statusline_expr()
 
 " Mappings
-nnoremap Y y$
 nnoremap <BS> <C-^>
 nnoremap gt :tabs<CR>:tabnext<Space>
 vnoremap P "0p
@@ -186,7 +185,9 @@ nnoremap <silent> <leader>l :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR
 cnoremap <C-A> <Home>
 tnoremap <c-\><c-\> <c-\><c-n>
 
-"testing
+" testing
+" remember 1k filemarks
+set shada=!,'1000,<50,s10,h
 nnoremap f <Nop>
 nnoremap t <Nop>
 nnoremap T <Nop>
@@ -215,12 +216,6 @@ augroup vimrc
     autocmd CmdlineEnter : set nosmartcase
     autocmd CmdlineLeave : set smartcase
 augroup END
-
-" call SynGroup() to get hl group under cursor
-function! SynGroup()
-    let l:s = synID(line('.'), col('.'), 1)
-    echo synIDattr(l:s, 'name') . ' -> ' . synIDattr(synIDtrans(l:s), 'name')
-endfun
 
 " Enable true color
 if exists('+termguicolors')

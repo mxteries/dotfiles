@@ -75,8 +75,11 @@ elseif linux then
                     globals = { 'vim' },
                 },
                 workspace = {
-                    -- Make the server aware of Neovim runtime files
-                    library = vim.api.nvim_get_runtime_file('', true),
+                    -- Love2d
+                    library = {
+                        [sumneko_root_path .. '/meta/3rd/love2d/library'] = true
+                    },
+                    checkThirdParty = false
                 },
                 telemetry = {
                     enable = false,
@@ -101,6 +104,7 @@ cmp.setup {
         ['<C-d>'] = cmp.mapping.scroll_docs(-4),
         ['<C-f>'] = cmp.mapping.scroll_docs(4),
         ['<C-e>'] = cmp.mapping.abort(),
+        ['<C-Space>'] = cmp.mapping(cmp.mapping.complete(), { 'i', 'c' }),
         ['<CR>'] = cmp.mapping.confirm {
             behavior = cmp.ConfirmBehavior.Replace,
         },
@@ -136,8 +140,8 @@ cmp.setup {
         -- source all buffers in insert mode
         { name = 'buffer', keyword_length = 5,
         opts = { get_bufnrs = function() return vim.api.nvim_list_bufs() end }},
-        { name = 'nvim_lua', keyword_length = 2 },
-        { name = 'nvim_lsp', keyword_length = 2 },
+        { name = 'nvim_lua', keyword_length = 5 },
+        { name = 'nvim_lsp', keyword_length = 3 },
     },
 }
 -- Use buffer source for / and ?
@@ -189,6 +193,15 @@ if not windows then
                     },
                 },
             },
+        },
+        incremental_selection = {
+            enable = true,
+            keymaps = {
+                init_selection = '<CR>',
+                scope_incremental = '<CR>',
+                node_incremental = '<TAB>',
+                node_decremental = '<S-TAB>',
+            }
         },
         playground = {
             enable = true,
