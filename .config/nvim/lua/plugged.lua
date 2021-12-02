@@ -89,7 +89,6 @@ elseif linux then
     }
 end
 
-
 --- nvim.cmp ---
 local cmp = require'cmp'
 local has_words_before = function()
@@ -139,7 +138,7 @@ cmp.setup {
     sources = {
         -- source all buffers in insert mode
         { name = 'buffer', keyword_length = 5,
-        opts = { get_bufnrs = function() return vim.api.nvim_list_bufs() end }},
+        options = { get_bufnrs = function() return vim.api.nvim_list_bufs() end }},
         { name = 'nvim_lua', keyword_length = 5 },
         { name = 'nvim_lsp', keyword_length = 3 },
     },
@@ -226,4 +225,3 @@ end
 
 --- everything else ---
 require('gitsigns').setup()
-require'hop'.setup()
