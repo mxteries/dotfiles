@@ -2,9 +2,18 @@ local windows = vim.fn.has('win64') == 1
 local mac = vim.fn.has('mac') == 1
 local linux = vim.fn.has('unix') == 1
 
+local servers = {}    -- lsp servers
+local ts_parsers = {} -- treesitter
+if mac then
+    servers = { 'pyright', 'vimls' }
+    ts_parsers = { "go", "bash", "hcl", "lua", "vim", "python", "ruby", "query" }
+elseif linux then
+    ts_parsers = { "lua", "vim", "python", "query" }
+end
+
 --- lsp ---
 local nvim_lsp = require('lspconfig')
-local servers = {}  -- fill out lsps here
+
 
 -- LSP Keybindings
 local on_attach = function(_, bufnr)
@@ -164,7 +173,7 @@ cmp.setup.cmdline(':', {
 --- Tree-sitter ---
 if not windows then
     require'nvim-treesitter.configs'.setup {
-        ensure_installed = { "lua", "vim", "python", "query" },
+        ensure_installed = ts_parsers,
         highlight = {
             enable = true,
         },

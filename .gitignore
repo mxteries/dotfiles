@@ -1,3 +1,12 @@
+tags
+.DS_Store
+logs
+*.ini
+*.txt
+!requirements.txt
+.terraform
+tools
+import_providers_do_not_upload.tf
+.terraform.lock.hcl
 .dotfiles
 local_settings.vim
-

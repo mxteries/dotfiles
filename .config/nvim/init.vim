@@ -94,15 +94,16 @@ if s:windows
     let g:fzf_preview_window=''
     nnoremap <leader>K <cmd>Telescope help_tags<cr>
 end
-call plug#end()
-
-" Lua plugin configs
-lua require('plugged')
 
 " Private stuff
 if !empty(expand(glob(s:configdir . '/local_settings.vim')))
     execute 'source ' . s:configdir . '/local_settings.vim'
 endif
+
+call plug#end()
+
+" Lua plugin configs
+lua require('plugged')
 
 " Indent spaces
 set softtabstop=4 shiftwidth=4 expandtab autoindent copyindent
