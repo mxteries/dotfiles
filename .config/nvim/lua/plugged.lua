@@ -5,7 +5,7 @@ local linux = vim.fn.has('unix') == 1
 local servers = {}    -- lsp servers
 local ts_parsers = {} -- treesitter
 if mac then
-    servers = { 'pyright', 'vimls' }
+    servers = { 'pyright' }
     ts_parsers = { "go", "bash", "hcl", "lua", "vim", "python", "ruby", "query" }
 elseif linux then
     ts_parsers = { "lua", "vim", "python", "query" }
