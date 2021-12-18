@@ -223,5 +223,4 @@ endif
 
 set background=dark
 colorscheme zenbones
-highlight CursorLine ctermfg=white
 set guifont=JetBrains\ Mono:h15
