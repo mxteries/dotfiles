@@ -11,6 +11,7 @@ let s:windows = has('win32') || has('win64')
 let s:plugdir = s:configdir . '/plugged'
 
 call plug#begin(s:plugdir)
+Plug 'mcchrish/zenbones.nvim' | let g:zenbones_compat = 1
 Plug 'tpope/vim-speeddating'
 Plug 'tommcdo/vim-lion'
 Plug 'junegunn/goyo.vim'
@@ -221,6 +222,6 @@ if exists('+termguicolors')
 endif
 
 set background=dark
-colorscheme gruvbox
+colorscheme zenbones
 highlight CursorLine ctermfg=white
 set guifont=JetBrains\ Mono:h15
