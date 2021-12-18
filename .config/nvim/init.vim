@@ -168,7 +168,7 @@ let &statusline = s:statusline_expr()
 nnoremap <BS> <C-^>
 vnoremap P "0p
 " map <leader><leader> to prompt for a mapping, "<" has to be escaped via <lt>
-nmap <leader><leader> :nmap <buffer> <lt>localleader><lt>localleader><space>
+nmap <leader><leader> :nmap <buffer> <lt>leader><lt>leader><space>
 
 nnoremap <leader>y "+y
 xnoremap <leader>y "+y
@@ -176,21 +176,23 @@ nnoremap <leader>p "+p
 xnoremap <leader>p "+p
 nnoremap <leader>R :source $MYVIMRC<cr>
 nnoremap cd <cmd>lcd %:p:h<cr>
-nnoremap <Leader>cg :tcd `git rev-parse --show-toplevel`<CR>:pwd<CR>
+nnoremap <leader>cg :lcd `git rev-parse --show-toplevel`<CR>:pwd<CR>
+
+" change every word on this line
+nnoremap <leader>ciw :s/<c-r><c-w>//g<left><left>
+nnoremap <leader>ciW :s/<c-r><c-a>//g<left><left>
+
 nnoremap <silent> <leader>l :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
 cnoremap <C-A> <Home>
-tnoremap <c-\><c-\> <c-\><c-n>
+tnoremap <expr> <Esc> (&filetype == "fzf") ? "<Esc>" : "<c-\><c-n>"
 
 " testing
 " remember 1k filemarks
 set shada=!,'1000,<50,s10,h
-nnoremap f <Nop>
+nnoremap f <cmd>Files<cr>
 nnoremap t <Nop>
 nnoremap T <Nop>
 nnoremap F <Nop>
-onoremap f <Nop>
-onoremap t <Nop>
-onoremap F <Nop>
 
 augroup vimrc
     autocmd BufRead,BufNewFile *.cake set filetype=cs
@@ -224,3 +226,4 @@ endif
 set background=dark
 colorscheme zenbones
 set guifont=JetBrains\ Mono:h15
+
