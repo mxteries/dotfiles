@@ -167,6 +167,12 @@ let &statusline = s:statusline_expr()
 " Mappings
 nnoremap <BS> <C-^>
 vnoremap P "0p
+nnoremap <left> 3<c-w><c-<>
+nnoremap <right> 3<c-w><c->>
+nnoremap <up> 2<c-w><c-->
+nnoremap <down> 2<c-w><c-+>
+set winheight=10
+set winwidth=50
 " map <leader><leader> to prompt for a mapping, "<" has to be escaped via <lt>
 nmap <leader><leader> :nmap <buffer> <lt>leader><lt>leader><space>
 
@@ -178,7 +184,7 @@ nnoremap <leader>R :source $MYVIMRC<cr>
 nnoremap cd <cmd>lcd %:p:h<cr>
 nnoremap <leader>cg :lcd `git rev-parse --show-toplevel`<CR>:pwd<CR>
 
-" change every word on this line
+" replace every occurrence of word under cursor on this line
 nnoremap <leader>ciw :s/<c-r><c-w>//g<left><left>
 nnoremap <leader>ciW :s/<c-r><c-a>//g<left><left>
 
