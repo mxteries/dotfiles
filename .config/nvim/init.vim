@@ -4,8 +4,6 @@ augroup END
 let mapleader=" "
 let maplocalleader=" "
 
-runtime! ftplugin/man.vim  " Read man pages
-
 let s:configdir = stdpath('config')
 let s:windows = has('win32') || has('win64')
 let s:plugdir = s:configdir . '/plugged'
@@ -15,7 +13,6 @@ Plug 'mcchrish/zenbones.nvim' | let g:zenbones_compat = 1
 Plug 'tpope/vim-speeddating'
 Plug 'tommcdo/vim-lion'
 Plug 'junegunn/goyo.vim'
-Plug 'tpope/vim-markdown' | let g:markdown_folding = 1
 Plug 'tpope/vim-unimpaired'          " Useful mappings
 Plug 'tpope/vim-commentary'          " for commenting
 Plug 'tpope/vim-repeat'              " for repeating
@@ -23,6 +20,9 @@ Plug 'tpope/vim-surround'            " for adding surrounding characters
 Plug 'iamcco/markdown-preview.nvim', { 'do': ':call mkdp#util#install()', 'for': 'markdown', 'on': 'MarkdownPreview' }
 Plug 'Vimjas/vim-python-pep8-indent'
 Plug 'mbbill/undotree', { 'on': 'UndotreeToggle' }
+
+Plug 'wellle/targets.vim'
+" todo: gitconfig make verbose default, add commit template
 
 " nvim plugins
 Plug 'nvim-lua/plenary.nvim'
@@ -101,6 +101,7 @@ if !empty(expand(glob(s:configdir . '/local_settings.vim')))
     execute 'source ' . s:configdir . '/local_settings.vim'
 endif
 
+let g:markdown_folding = 1
 call plug#end()
 
 " Lua plugin configs
@@ -206,7 +207,7 @@ augroup vimrc
     autocmd BufWritePre * %s/\s\+$//e
     autocmd BufWritePost $MYVIMRC source $MYVIMRC
     autocmd TextYankPost * lua vim.highlight.on_yank {higroup="IncSearch", timeout=150, on_visual=true}
-    autocmd FileType gitcommit setlocal spell
+    autocmd FileType gitcommit setlocal spell textwidth=72
 
     " Markdown Link
     autocmd Filetype markdown nmap <buffer> <leader>md ysiW)i[]<c-o>hlink<esc>

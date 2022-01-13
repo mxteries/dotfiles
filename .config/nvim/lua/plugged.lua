@@ -43,15 +43,7 @@ end
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
 
-if windows then
-    -- Godot LSP stuff
-    -- https://www.reddit.com/r/neovim/comments/oiani5/need_help_setting_up_native_lsp_for_godot/
-    nvim_lsp.gdscript.setup{
-        cmd = { [[C:\Users\mxter\Documents\godot_projects\ncat.exe]], "localhost", "6008" },
-        on_attach = on_attach,
-        capabilities = capabilities,
-    }
-elseif mac then
+if mac then
     for _, lsp in ipairs(servers) do
         nvim_lsp[lsp].setup {
             on_attach = on_attach,
@@ -109,13 +101,16 @@ end
 vim.o.completeopt = 'menu,menuone,noselect'
 cmp.setup {
     mapping = {
-        ['<C-d>'] = cmp.mapping.scroll_docs(-4),
-        ['<C-f>'] = cmp.mapping.scroll_docs(4),
-        ['<C-e>'] = cmp.mapping.abort(),
+        ['<S-Up>'] = cmp.mapping(cmp.mapping.scroll_docs(-4), { 'i', 'c' }),
+        ['<S-Down>'] = cmp.mapping(cmp.mapping.scroll_docs(4), { 'i', 'c' }),
+        ['<C-e>'] = cmp.mapping(cmp.mapping.abort(), { 'i', 'c' }),
         ['<C-Space>'] = cmp.mapping(cmp.mapping.complete(), { 'i', 'c' }),
-        ['<CR>'] = cmp.mapping.confirm {
-            behavior = cmp.ConfirmBehavior.Replace,
-        },
+        ['<CR>'] = cmp.mapping(
+            cmp.mapping.confirm {
+                behavior = cmp.ConfirmBehavior.Replace
+            },
+            { 'i', 'c' }
+        ),
         ['<Tab>'] = cmp.mapping({
             -- Tab trigger completion in insert mode
             -- Tab only navigates in cmd mode
@@ -145,22 +140,22 @@ cmp.setup {
         end, { 'i', 'c'}),
     },
     sources = {
-        -- source all buffers in insert mode
         { name = 'buffer', keyword_length = 5,
-        options = { get_bufnrs = function() return vim.api.nvim_list_bufs() end }},
+            options = { get_bufnrs = function() return vim.api.nvim_list_bufs() end }},
         { name = 'nvim_lua', keyword_length = 5 },
         { name = 'nvim_lsp', keyword_length = 3 },
     },
 }
 -- Use buffer source for / and ?
+-- trigger with <c-space>
 cmp.setup.cmdline('/', {
     sources = {
-        { name = 'buffer', keyword_length = 5 }
+        { name = 'buffer', keyword_length = 10 }
     }
 })
 cmp.setup.cmdline('?', {
     sources = {
-        { name = 'buffer', keyword_length = 5 }
+        { name = 'buffer', keyword_length = 10 }
     }
 })
 -- Use path source for ':'
