@@ -46,9 +46,9 @@ export _Z_DATA="$XDG_CACHE_HOME/.z"
 # git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
 plugins=(z zsh-autosuggestions zsh-syntax-highlighting)
 
-if [ -f $ZSH/oh-my-zsh.sh ];
+if [ -f "$ZSH/oh-my-zsh.sh" ];
 then
-  source $ZSH/oh-my-zsh.sh
+  source "$ZSH/oh-my-zsh.sh"
 else
   echo 'ohmyzsh not found, try: wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh'
 fi
@@ -78,6 +78,7 @@ elif command -v rg > /dev/null; then
 fi
 
 export FZF_DEFAULT_OPTS="--height=25 --multi --no-mouse --cycle"
+export FZF_COMPLETION_TRIGGER=',,'
 # export LS_COLORS='ow=01;36;40'
 
 if [ "$PLATFORM" = 'Darwin' ]; then
@@ -92,22 +93,28 @@ if [ "$PLATFORM" = 'Darwin' ]; then
   # vault autocompletion
   autoload -U +X bashcompinit && bashcompinit
   complete -o nospace -C /usr/local/bin/vault vault
+
+  # AWS autocompletion and auto prompting
+  autoload -Uz compinit && compinit
+  complete -C '/usr/local/bin/aws_completer' aws
+  export AWS_CLI_AUTO_PROMPT=on-partial
+  export AWS_DEFAULT_OUTPUT=table  # use '--output text' in scripts
 fi
 
 # Generic aliases
 alias l='ls -Alh'
 alias la='ls -Alh'
 alias ll='ls -lh'
-alias vi=$EDITOR
-alias vim=$EDITOR
+alias vi="$EDITOR"
+alias vim="$EDITOR"
 alias gst='git status'
 alias gpo='git push origin $(git branch --show-current)'
-alias dot='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+alias -g dot='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 
 # Start in home dir in WSL
-[ -n "$WSL_DISTRO_NAME" ] && cd $HOME
+[ -n "$WSL_DISTRO_NAME" ] && cd "$HOME"
 
 # custom stuff
-if [ -f $XDG_DATA_HOME/utils/.bash_aliases ]; then
-  . $XDG_DATA_HOME/utils/.bash_aliases
+if [ -f "$XDG_DATA_HOME/utils/.bash_aliases" ]; then
+  . "$XDG_DATA_HOME/utils/.bash_aliases"
 fi

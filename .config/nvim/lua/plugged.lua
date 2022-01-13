@@ -5,7 +5,8 @@ local linux = vim.fn.has('unix') == 1
 local servers = {}    -- lsp servers
 local ts_parsers = {} -- treesitter
 if mac then
-    servers = { 'pyright' }
+    -- servers = { 'pyright' }
+    servers = {}
     ts_parsers = { "go", "bash", "hcl", "lua", "vim", "python", "ruby", "query" }
 elseif linux then
     ts_parsers = { "lua", "vim", "python", "query" }
@@ -234,3 +235,15 @@ end
 
 --- everything else ---
 require('gitsigns').setup()
+
+require('lint').linters_by_ft = {
+    python = {'pylint'},
+    sh = {'shellcheck'},
+    zsh = {'shellcheck'},
+    yaml = {'yamllint',},
+    rb = {'ruby',},
+}
+
+vim.api.nvim_command([[
+    autocmd! BufWritePost * lua require('lint').try_lint()
+]])

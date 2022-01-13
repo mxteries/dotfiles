@@ -35,13 +35,14 @@ Plug 'hrsh7th/cmp-nvim-lua'
 Plug 'hrsh7th/cmp-path'
 Plug 'hrsh7th/cmp-cmdline'
 Plug 'lewis6991/gitsigns.nvim'
-Plug 'rhysd/git-messenger.vim'  " leader gm to trigger
+Plug 'mfussenegger/nvim-lint'
 if !s:windows
     Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
     Plug 'nvim-treesitter/nvim-treesitter-textobjects'
     Plug 'nvim-treesitter/playground'
 end
 
+Plug 'rhysd/git-messenger.vim'  " leader gm to trigger
 Plug 'tpope/vim-fugitive'
 Plug 'morhetz/gruvbox'
   let g:gruvbox_invert_selection=0
@@ -74,7 +75,7 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
   let g:fzf_tags_command = 'ctags -R --exclude=.git --exclude=.terraform'
   nnoremap <leader>K <cmd>Help<cr>
-  nnoremap <leader>h <cmd>History:<cr>
+  nnoremap <leader>r <cmd>History:<cr>
   xnoremap <leader>rg y:Rg <c-r>"<cr>
   nnoremap <leader>fc <cmd>Commands<cr>
   nnoremap <leader>ff <cmd>Files<cr>
@@ -132,6 +133,7 @@ set iskeyword+=-      " - counts as part of a word for w and C-]
 set list listchars+=lead:.  " show leading spaces
 set scrolloff=5       " scroll before cursor reaches edge of screen
 set foldlevelstart=1
+set pumblend=20
 
 " Enable mouse for scrolling only
 set mouse=n
@@ -202,17 +204,18 @@ nnoremap F <Nop>
 
 augroup vimrc
     autocmd BufRead,BufNewFile *.cake set filetype=cs
-    " Auto remove trailing spaces
+
+    " Linting
     autocmd BufWritePre * %s/\s\+$//e
-    autocmd BufWritePost $MYVIMRC source $MYVIMRC
-    autocmd TextYankPost * lua vim.highlight.on_yank {higroup="IncSearch", timeout=150, on_visual=true}
     autocmd FileType gitcommit setlocal spell
 
     " Markdown Link
     autocmd Filetype markdown nmap <buffer> <leader>md ysiW)i[]<c-o>hlink<esc>
-    autocmd Filetype markdown setlocal textwidth=72
     autocmd Filetype markdown nnoremap <buffer> j gj
     autocmd Filetype markdown nnoremap <buffer> k gk
+
+    autocmd BufWritePost $MYVIMRC source $MYVIMRC
+    autocmd TextYankPost * lua vim.highlight.on_yank {higroup="IncSearch", timeout=150, on_visual=true}
 
     " Turn on hlsearch when searching /? (and also for :s :g)
     autocmd CmdlineEnter :,/,\? set hlsearch
@@ -230,6 +233,6 @@ if exists('+termguicolors')
 endif
 
 set background=dark
-colorscheme zenbones
+colorscheme gruvbox
 set guifont=JetBrains\ Mono:h15
 
