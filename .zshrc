@@ -5,6 +5,9 @@ export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:=$HOME/.config}"
 export XDG_DATA_HOME="${XDG_DATA_HOME:=$HOME/.local/share}"
 export XDG_CACHE_HOME="${XDG_CACHE_HOME:=$HOME/.cache}"
 
+# Include local bin
+export PATH="$PATH:$HOME/.local/bin"
+
 # Path to your oh-my-zsh installation.
 export ZSH="$XDG_CONFIG_HOME/oh-my-zsh"
 ZSH_THEME="common"
@@ -67,14 +70,14 @@ setopt globdots
 # For a full list of active aliases, run `alias`.
 export EDITOR='nvim'
 export HISTORY_IGNORE="fg"
-export MANPAGER="vim -M +MANPAGER -"  # Uses vim to read manpages
+export MANPAGER='nvim +Man!'  # Use neovim to read manpages
 
 if command -v fd > /dev/null; then
   export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
   export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git'
   export FZF_CTRL_T_COMMAND='fd --type f --type d --hidden --follow --exclude .git'
 elif command -v rg > /dev/null; then
-  export FZF_DEFAULT_COMMAND='rg --files'
+  export FZF_DEFAULT_COMMAND='rg --files --hidden'
 fi
 
 export FZF_DEFAULT_OPTS="--height=25 --multi --no-mouse --cycle"
