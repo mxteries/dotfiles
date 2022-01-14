@@ -242,3 +242,4 @@ require('lint').linters_by_ft = {
 vim.api.nvim_command([[
     autocmd! BufWritePost * lua require('lint').try_lint()
 ]])
+

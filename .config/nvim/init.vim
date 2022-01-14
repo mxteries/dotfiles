@@ -170,12 +170,32 @@ let &statusline = s:statusline_expr()
 " Mappings
 nnoremap <BS> <C-^>
 vnoremap P "0p
+
 nnoremap <left> 3<c-w><c-<>
 nnoremap <right> 3<c-w><c->>
-nnoremap <up> 2<c-w><c-->
 nnoremap <down> 2<c-w><c-+>
-set winheight=10
-set winwidth=50
+nnoremap <up> 2<c-w><c-->
+
+" Terminal mappings ':h terminal-input'
+tnoremap <expr> <Esc> (&filetype == "fzf") ? "<Esc>" : "<c-\><c-n>"
+tnoremap <A-h> <C-\><C-N><C-w>h
+tnoremap <A-j> <C-\><C-N><C-w>j
+tnoremap <A-k> <C-\><C-N><C-w>k
+tnoremap <A-l> <C-\><C-N><C-w>l
+inoremap <A-h> <C-\><C-N><C-w>h
+inoremap <A-j> <C-\><C-N><C-w>j
+inoremap <A-k> <C-\><C-N><C-w>k
+inoremap <A-l> <C-\><C-N><C-w>l
+nnoremap <A-h> <C-w>h
+nnoremap <A-j> <C-w>j
+nnoremap <A-k> <C-w>k
+nnoremap <A-l> <C-w>l
+
+" Weirder terminal mappings
+nnoremap ts <cmd>botright split <bar> term<cr>
+nnoremap tv <cmd>vsplit <bar> term<cr>
+nnoremap tn <cmd>tabnew <bar> term<cr>
+
 " map <leader><leader> to prompt for a mapping, "<" has to be escaped via <lt>
 nmap <leader><leader> :nmap <buffer> <lt>leader><lt>leader><space>
 
@@ -193,32 +213,27 @@ nnoremap <leader>ciW :s/<c-r><c-a>//g<left><left>
 
 nnoremap <silent> <leader>l :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
 cnoremap <C-A> <Home>
-tnoremap <expr> <Esc> (&filetype == "fzf") ? "<Esc>" : "<c-\><c-n>"
 
 " testing
 " remember 1k filemarks
 set shada=!,'1000,<50,s10,h
 nnoremap f <cmd>Files<cr>
-nnoremap t <Nop>
 nnoremap T <Nop>
 nnoremap F <Nop>
 
 augroup vimrc
-    autocmd BufRead,BufNewFile *.cake set filetype=cs
-
-    " Linting
-    autocmd BufWritePre * %s/\s\+$//e
     autocmd BufWritePost $MYVIMRC source $MYVIMRC
+    autocmd BufWritePre * %s/\s\+$//e
     autocmd TextYankPost * lua vim.highlight.on_yank {higroup="IncSearch", timeout=150, on_visual=true}
-    autocmd FileType gitcommit setlocal spell textwidth=72
+    autocmd TermOpen * startinsert
 
-    " Markdown Link
+    " Filetypes
+    autocmd FileType gitcommit setlocal spell textwidth=72
     autocmd Filetype markdown nmap <buffer> <leader>md ysiW)i[]<c-o>hlink<esc>
     autocmd Filetype markdown nnoremap <buffer> j gj
     autocmd Filetype markdown nnoremap <buffer> k gk
+    autocmd BufRead,BufNewFile *.cake set filetype=cs
 
-    autocmd BufWritePost $MYVIMRC source $MYVIMRC
-    autocmd TextYankPost * lua vim.highlight.on_yank {higroup="IncSearch", timeout=150, on_visual=true}
 
     " Turn on hlsearch when searching /? (and also for :s :g)
     autocmd CmdlineEnter :,/,\? set hlsearch
@@ -238,4 +253,3 @@ endif
 set background=dark
 colorscheme gruvbox
 set guifont=JetBrains\ Mono:h15
-

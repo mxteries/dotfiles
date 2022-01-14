@@ -49,12 +49,15 @@ export _Z_DATA="$XDG_CACHE_HOME/.z"
 # git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
 plugins=(z zsh-autosuggestions zsh-syntax-highlighting)
 
+
 if [ -f "$ZSH/oh-my-zsh.sh" ];
 then
   source "$ZSH/oh-my-zsh.sh"
 else
   echo 'ohmyzsh not found, try: wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh'
 fi
+
+ZSH_HIGHLIGHT_STYLES[comment]=fg=245  # make comments show up on black bg
 
 ## User Config
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
