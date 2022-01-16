@@ -9,7 +9,7 @@ if mac then
     servers = {}
     ts_parsers = { "go", "bash", "hcl", "lua", "vim", "python", "ruby", "query" }
 elseif linux then
-    ts_parsers = { "lua", "vim", "python", "query" }
+    ts_parsers = { "lua", "vim", "python", "query", "org" }
 end
 
 --- lsp ---
@@ -172,6 +172,8 @@ if not windows then
         ensure_installed = ts_parsers,
         highlight = {
             enable = true,
+            disable = {'org'},
+            additional_vim_regex_highlighting = {'org'}, -- Required since TS highlighter doesn't support all syntax features (conceal)
         },
         textobjects = {
             select = {
@@ -230,7 +232,7 @@ end
 
 --- everything else ---
 require('gitsigns').setup()
-
+require("which-key").setup {}
 require('lint').linters_by_ft = {
     python = {'pylint'},
     sh = {'shellcheck'},
@@ -243,3 +245,11 @@ vim.api.nvim_command([[
     autocmd! BufWritePost * lua require('lint').try_lint()
 ]])
 
+require('orgmode').setup({
+    -- treesitter parser must be installed, easiest to just
+    -- compile it and drop in the parser dir imo unless you have npm installed
+    -- https://github.com/milisims/tree-sitter-org
+    -- gcc -o org.so -I./src src/parser.c src/scanner.cc -shared -Os -lstdc++
+    org_agenda_files = {'~/me/org/*'},
+    org_default_notes_file = '~/me/org/notes.org',
+})

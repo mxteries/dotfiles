@@ -9,7 +9,6 @@ let s:windows = has('win32') || has('win64')
 let s:plugdir = s:configdir . '/plugged'
 
 call plug#begin(s:plugdir)
-Plug 'mcchrish/zenbones.nvim' | let g:zenbones_compat = 1
 Plug 'tpope/vim-speeddating'
 Plug 'tommcdo/vim-lion'
 Plug 'junegunn/goyo.vim'
@@ -21,28 +20,30 @@ Plug 'iamcco/markdown-preview.nvim', { 'do': ':call mkdp#util#install()', 'for':
 Plug 'Vimjas/vim-python-pep8-indent'
 Plug 'mbbill/undotree', { 'on': 'UndotreeToggle' }
 
-Plug 'wellle/targets.vim'
+Plug 'rhysd/git-messenger.vim'  " leader gm to trigger
 " todo: gitconfig make verbose default, add commit template
 
 " nvim plugins
 Plug 'nvim-lua/plenary.nvim'
+  Plug 'nvim-telescope/telescope.nvim'
+  Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
+  Plug 'lewis6991/gitsigns.nvim'
 Plug 'neovim/nvim-lspconfig'
-Plug 'nvim-telescope/telescope.nvim', { 'on': 'Telescope'}
 Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-nvim-lua'
 Plug 'hrsh7th/cmp-path'
 Plug 'hrsh7th/cmp-cmdline'
-Plug 'lewis6991/gitsigns.nvim'
 Plug 'mfussenegger/nvim-lint'
+Plug 'folke/which-key.nvim'
+Plug 'nvim-orgmode/orgmode'
 if !s:windows
     Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
     Plug 'nvim-treesitter/nvim-treesitter-textobjects'
     Plug 'nvim-treesitter/playground'
 end
 
-Plug 'rhysd/git-messenger.vim'  " leader gm to trigger
 Plug 'tpope/vim-fugitive'
 Plug 'morhetz/gruvbox'
   let g:gruvbox_invert_selection=0
@@ -81,15 +82,14 @@ Plug 'junegunn/fzf.vim'
   nnoremap <leader>ff <cmd>Files<cr>
   nnoremap <leader>fb <cmd>Buffers<cr>
   " Rg in the current buffer's directory
-  command! -bang -nargs=* Rgb
-    \ call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case "
-    \ .shellescape(<q-args>), 1, {'dir': expand('%:p:h') }, <bang>0)
+  " command! -bang -nargs=* Rgb
+  "   \ call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case "
+  "   \ .shellescape(<q-args>), 1, {'dir': expand('%:p:h') }, <bang>0)
   " Overwrite <c-t> to not use :tab
   let g:fzf_action = {
     \ 'ctrl-t': 'tabedit',
     \ 'ctrl-x': 'split',
     \ 'ctrl-v': 'vsplit' }
-
 
 " Windows specific plugin settings
 if s:windows
@@ -97,16 +97,16 @@ if s:windows
     nnoremap <leader>K <cmd>Telescope help_tags<cr>
 end
 
-" Private stuff
-if !empty(expand(glob(s:configdir . '/local_settings.vim')))
-    execute 'source ' . s:configdir . '/local_settings.vim'
-endif
-
 let g:markdown_folding = 1
 call plug#end()
 
 " Lua plugin configs
 lua require('plugged')
+
+" Private stuff
+if !empty(expand(glob(s:configdir . '/local_settings.vim')))
+    execute 'source ' . s:configdir . '/local_settings.vim'
+endif
 
 " Indent spaces
 set softtabstop=4 shiftwidth=4 expandtab autoindent copyindent
@@ -132,7 +132,7 @@ set linebreak         " more readable text wrapping
 set confirm
 set iskeyword+=-      " - counts as part of a word for w and C-]
 set list listchars+=lead:.  " show leading spaces
-set scrolloff=5       " scroll before cursor reaches edge of screen
+" set scrolloff=5       " scroll before cursor reaches edge of screen
 set foldlevelstart=1
 set pumblend=20
 
@@ -177,7 +177,7 @@ nnoremap <down> 2<c-w><c-+>
 nnoremap <up> 2<c-w><c-->
 
 " Terminal mappings ':h terminal-input'
-tnoremap <expr> <Esc> (&filetype == "fzf") ? "<Esc>" : "<c-\><c-n>"
+" tnoremap <expr> <Esc> (&filetype == "fzf") ? "<Esc>" : "<c-\><c-n>"
 tnoremap <A-h> <C-\><C-N><C-w>h
 tnoremap <A-j> <C-\><C-N><C-w>j
 tnoremap <A-k> <C-\><C-N><C-w>k
@@ -210,8 +210,6 @@ nnoremap <leader>cg :lcd `git rev-parse --show-toplevel`<CR>:pwd<CR>
 " replace every occurrence of word under cursor on this line
 nnoremap <leader>ciw :s/<c-r><c-w>//g<left><left>
 nnoremap <leader>ciW :s/<c-r><c-a>//g<left><left>
-
-nnoremap <silent> <leader>l :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
 cnoremap <C-A> <Home>
 
 " testing
@@ -233,7 +231,6 @@ augroup vimrc
     autocmd Filetype markdown nnoremap <buffer> j gj
     autocmd Filetype markdown nnoremap <buffer> k gk
     autocmd BufRead,BufNewFile *.cake set filetype=cs
-
 
     " Turn on hlsearch when searching /? (and also for :s :g)
     autocmd CmdlineEnter :,/,\? set hlsearch
