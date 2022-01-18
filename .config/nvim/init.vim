@@ -191,13 +191,17 @@ nnoremap <A-j> <C-w>j
 nnoremap <A-k> <C-w>k
 nnoremap <A-l> <C-w>l
 
-" Weirder terminal mappings
-nnoremap ts <cmd>botright split <bar> term<cr>
-nnoremap tv <cmd>vsplit <bar> term<cr>
-nnoremap tn <cmd>tabnew <bar> term<cr>
+" Alternative C-i mapping for when tab is mapped over
+nnoremap <A-i> <C-i>
+nnoremap <A-o> <C-o>
 
-" map <leader><leader> to prompt for a mapping, "<" has to be escaped via <lt>
-nmap <leader><leader> :nmap <buffer> <lt>leader><lt>leader><space>
+" Weirder terminal mappings
+nnoremap <leader>ts <cmd>botright split <bar> term<cr>
+nnoremap <leader>tv <cmd>vsplit <bar> term<cr>
+nnoremap <leader>tn <cmd>tabnew <bar> term<cr>
+
+" map <leader>\ to prompt for a mapping, "<" has to be escaped via <lt>
+nmap <leader>\ :nmap <buffer> <lt>leader><lt>leader><space>
 
 nnoremap <leader>y "+y
 xnoremap <leader>y "+y

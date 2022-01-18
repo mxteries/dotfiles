@@ -118,7 +118,10 @@ alias gpo='git push origin $(git branch --show-current)'
 alias -g dot='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 
 # Start in home dir in WSL
-[ -n "$WSL_DISTRO_NAME" ] && cd "$HOME"
+if [ -n "$WSL_DISTRO_NAME" ]; then
+    export LS_COLORS='ow=01;36;40'
+    cd "$HOME"
+fi
 
 # custom stuff
 if [ -f "$XDG_DATA_HOME/utils/.bash_aliases" ]; then

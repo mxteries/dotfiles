@@ -231,8 +231,32 @@ if not windows then
 end
 
 --- everything else ---
+require('telescope').load_extension('fzf')
 require('gitsigns').setup()
-require("which-key").setup {}
+local presets = require("which-key.plugins.presets")
+presets.operators = {}
+require("which-key").setup {
+    presets = {
+        operators = false,
+        motions = false, -- adds help for motions
+        text_objects = false, -- help for text objects triggered after entering an operator
+        windows = true, -- default bindings on <c-w>
+        nav = true, -- misc bindings to work with windows
+        z = true, -- bindings for folds, spelling and others prefixed with z
+        g = true, -- bindings for prefixed with g
+    },
+    window = {
+        border = "single", -- none, single, double, shadow
+        margin = { 0, 0, 0, 0 }, -- extra window margin [top, right, bottom, left]
+        padding = { 1, 1, 1, 1 }, -- extra window padding [top, right, bottom, left]
+        winblend = 20
+    },
+    layout = {
+        width = { min = 20, max = 100 }, -- min and max width of the columns
+        spacing = 3, -- spacing between columns
+        align = "left", -- align columns left, center or right
+    },
+}
 require('lint').linters_by_ft = {
     python = {'pylint'},
     sh = {'shellcheck'},
