@@ -9,7 +9,7 @@ if mac then
     servers = {}
     ts_parsers = { "go", "bash", "hcl", "lua", "vim", "python", "ruby", "query", "org" }
 elseif linux then
-    ts_parsers = { "lua", "vim", "python", "query", "org" }
+    ts_parsers = { "vim", "python", "query", "org" }
 end
 
 --- lsp ---
@@ -263,12 +263,3 @@ require('lint').linters_by_ft = {
 vim.api.nvim_command([[
     autocmd! BufWritePost * lua require('lint').try_lint()
 ]])
-
-require('orgmode').setup({
-    -- treesitter parser must be installed, easiest to just
-    -- compile it and drop in the parser dir imo unless you have npm installed
-    -- https://github.com/milisims/tree-sitter-org
-    -- gcc -o org.so -I./src src/parser.c src/scanner.cc -shared -Os -lstdc++
-    org_agenda_files = {'~/me/org/*'},
-    org_default_notes_file = '~/me/org/notes.org',
-})
