@@ -214,7 +214,12 @@ nnoremap <leader>cg :lcd `git rev-parse --show-toplevel`<CR>:pwd<CR>
 " replace every occurrence of word under cursor on this line
 nnoremap <leader>ciw :s/<c-r><c-w>//g<left><left>
 nnoremap <leader>ciW :s/<c-r><c-a>//g<left><left>
+xnoremap <leader>c  y:s/<c-r>"//g<left><left>
 cnoremap <C-A> <Home>
+
+nnoremap <leader>do <cmd>lua vim.diagnostic.open_float()<cr>
+nnoremap <leader>dn <cmd>lua vim.diagnostic.goto_next()<CR>
+nnoremap <leader>dp <cmd>lua vim.diagnostic.goto_prev()<CR>
 
 " testing
 " remember 1k filemarks
