@@ -28,6 +28,7 @@ Plug 'nvim-lua/plenary.nvim'
   Plug 'nvim-telescope/telescope.nvim'
   Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
   Plug 'lewis6991/gitsigns.nvim'
+Plug 'numToStr/FTerm.nvim'
 Plug 'neovim/nvim-lspconfig'
 Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-nvim-lsp'
@@ -160,10 +161,11 @@ function! s:statusline_expr()
   let mod = "%{&modified ? '│ + ' : !&modifiable ? '[x] ' : ''}"
   let ro  = "%{&readonly ? '[RO] ' : ''}"
   let fug = "%{exists('g:loaded_fugitive') ? fugitive#head() : ''}"
+  let org = "%{v:lua.orgmode.statusline()}"
   let sep = '%='
   let pos = '%-12(%l:%c%V%)'
   let pct = ' %P'
-  return cwd.rel.'%<'.ft.mod.ro.fug.sep.pos.'%*'.pct
+  return cwd.rel.'%<'.ft.mod.ro.fug.org.sep.pos.'%*'.pct
 endfunction
 let &statusline = s:statusline_expr()
 

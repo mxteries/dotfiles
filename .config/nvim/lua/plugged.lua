@@ -141,6 +141,7 @@ cmp.setup {
             options = { get_bufnrs = function() return vim.api.nvim_list_bufs() end }},
         { name = 'nvim_lua', keyword_length = 5 },
         { name = 'nvim_lsp', keyword_length = 3 },
+        { name = 'orgmode', keyword_length = 2 },
     },
 }
 -- Use buffer source for / and ?
