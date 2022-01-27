@@ -37,11 +37,11 @@ Plug 'hrsh7th/cmp-nvim-lua'
 Plug 'hrsh7th/cmp-path'
 Plug 'hrsh7th/cmp-cmdline'
 Plug 'mfussenegger/nvim-lint'
-Plug 'folke/which-key.nvim'
+Plug 'folke/which-key.nvim' | set timeoutlen=350
 Plug 'nvim-orgmode/orgmode'
 if !s:windows
     Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-    Plug 'nvim-treesitter/nvim-treesitter-textobjects'
+    " Plug 'nvim-treesitter/nvim-treesitter-textobjects'
     Plug 'nvim-treesitter/playground'
 end
 
@@ -77,6 +77,7 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
   let g:fzf_tags_command = 'ctags -R --exclude=.git --exclude=.terraform'
   nnoremap <leader>K <cmd>Help<cr>
+  xnoremap <leader>K y:Help<cr><c-\><c-n>pi
   nnoremap <leader>r <cmd>History:<cr>
   xnoremap <leader>rg y:Rg <c-r>"<cr>
   nnoremap <leader>fc <cmd>Commands<cr>
@@ -160,8 +161,9 @@ function! s:statusline_expr()
   let ft  = "%{len(&filetype) ? '['.&filetype.'] ' : ''}"
   let mod = "%{&modified ? '│ + ' : !&modifiable ? '[x] ' : ''}"
   let ro  = "%{&readonly ? '[RO] ' : ''}"
-  let fug = "%{exists('g:loaded_fugitive') ? fugitive#head() : ''}"
-  let org = "%{v:lua.orgmode.statusline()}"
+  " gets branch or commit if detached head (see plugin/fugitive.vim)
+  let fug = "%{exists('g:loaded_fugitive') ? FugitiveHead(7) : ''}"
+  let org = " %{v:lua.orgmode.statusline()}"
   let sep = '%='
   let pos = '%-12(%l:%c%V%)'
   let pct = ' %P'
@@ -169,16 +171,13 @@ function! s:statusline_expr()
 endfunction
 let &statusline = s:statusline_expr()
 
+
 " Mappings
-nnoremap <BS> <C-^>
-vnoremap P "0p
+nnoremap cd <cmd>lcd %:p:h<cr>
+nnoremap cD <cmd>lcd ..<cr>
+nnoremap <leader>cg :lcd `git rev-parse --show-toplevel`<CR>:pwd<CR>
 
-nnoremap <left> 3<c-w><c-<>
-nnoremap <right> 3<c-w><c->>
-nnoremap <down> 2<c-w><c-+>
-nnoremap <up> 2<c-w><c-->
-
-" Terminal mappings ':h terminal-input'
+" ':h terminal-input'
 " tnoremap <expr> <Esc> (&filetype == "fzf") ? "<Esc>" : "<c-\><c-n>"
 tnoremap <A-h> <C-\><C-N><C-w>h
 tnoremap <A-j> <C-\><C-N><C-w>j
@@ -192,36 +191,41 @@ nnoremap <A-h> <C-w>h
 nnoremap <A-j> <C-w>j
 nnoremap <A-k> <C-w>k
 nnoremap <A-l> <C-w>l
-
-" Alternative C-i mapping for when tab is mapped over
-nnoremap <A-i> <C-i>
-nnoremap <A-o> <C-o>
-
-" Weirder terminal mappings
 nnoremap <leader>ts <cmd>botright split <bar> term<cr>
 nnoremap <leader>tv <cmd>vsplit <bar> term<cr>
 nnoremap <leader>tn <cmd>tabnew <bar> term<cr>
 
-" map <leader>\ to prompt for a mapping, "<" has to be escaped via <lt>
-nmap <leader>\ :nmap <buffer> <lt>leader><lt>leader><space>
-
+nnoremap <leader>Y "+Y
 nnoremap <leader>y "+y
 xnoremap <leader>y "+y
 nnoremap <leader>p "+p
 xnoremap <leader>p "+p
+vnoremap P "0p
+
 nnoremap <leader>R :source $MYVIMRC<cr>
-nnoremap cd <cmd>lcd %:p:h<cr>
-nnoremap <leader>cg :lcd `git rev-parse --show-toplevel`<CR>:pwd<CR>
 
 " replace every occurrence of word under cursor on this line
 nnoremap <leader>ciw :s/<c-r><c-w>//g<left><left>
 nnoremap <leader>ciW :s/<c-r><c-a>//g<left><left>
 xnoremap <leader>c  y:s/<c-r>"//g<left><left>
+
+nnoremap <leader>lo <cmd>lua vim.diagnostic.open_float()<cr>
+nnoremap <leader>ln <cmd>lua vim.diagnostic.goto_next()<CR>
+nnoremap <leader>lp <cmd>lua vim.diagnostic.goto_prev()<CR>
+
+" Alternative C-i mapping for when tab is mapped over
+nnoremap <A-i> <C-i>
+nnoremap <A-o> <C-o>
+nnoremap <BS> <C-^>
 cnoremap <C-A> <Home>
 
-nnoremap <leader>do <cmd>lua vim.diagnostic.open_float()<cr>
-nnoremap <leader>dn <cmd>lua vim.diagnostic.goto_next()<CR>
-nnoremap <leader>dp <cmd>lua vim.diagnostic.goto_prev()<CR>
+nnoremap <left> 3<c-w><c-<>
+nnoremap <right> 3<c-w><c->>
+nnoremap <down> 2<c-w><c-+>
+nnoremap <up> 2<c-w><c-->
+
+" map <leader>\ to prompt for a mapping, "<" has to be escaped via <lt>
+nmap <leader>\ :nmap <buffer> <lt>leader><lt>leader><space>
 
 " testing
 " remember 1k filemarks
