@@ -12,6 +12,7 @@ export XDG_CACHE_HOME="${XDG_CACHE_HOME:=$HOME/.cache}"
 export HISTFILE="$XDG_DATA_HOME/.zsh_history"
 export HISTSIZE=50000
 export SAVEHIST=50000
+# see more history options here https://zsh.sourceforge.io/Doc/Release/Options.html
 
 # Include local bin
 export PATH="$PATH:$HOME/.local/bin"
@@ -38,37 +39,36 @@ export UPDATE_ZSH_DAYS=30
 # see 'man strftime' for details.
 HIST_STAMPS="%Y/%m/%d %H:%M:%S"
 
-# Plugin config
-# Standard plugins can be found in $ZSH/plugins/
-# Custom plugins may be added to $ZSH_CUSTOM/plugins/
-export _Z_DATA="$XDG_CACHE_HOME/.z"
 
 # Load plugins
+# Standard plugins can be found in $ZSH/plugins/
+# Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # git clone https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugins/zsh-autosuggestions
 # git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
-plugins=(z zsh-autosuggestions zsh-syntax-highlighting)
+export _Z_DATA="$XDG_CACHE_HOME/.z"
+plugins=(fzf-tab z zsh-autosuggestions zsh-syntax-highlighting)
 
 if [ -f "$ZSH/oh-my-zsh.sh" ];
 then
   source "$ZSH/oh-my-zsh.sh"
+
+  ZSH_HIGHLIGHT_STYLES[comment]=fg=245  # make comments show up on black bg
+
+  # Enable multi select in tab completions using tab and shift tab
+  zstyle ':fzf-tab:complete:*' fzf-bindings 'tab:toggle+down,shift-tab:toggle+up'
 else
   echo "ohmyzsh not found, try: wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh"
   return  # don't run the rest of the file
 fi
 
 ### User Config ###
-ZSH_HIGHLIGHT_STYLES[comment]=fg=245  # make comments show up on black bg
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # Disable CTRL-S and CTRL-Q
 [[ $- =~ i ]] && stty -ixoff -ixon
 
 setopt globdots
-# Set personal aliases, overriding those provided by oh-my-zsh libs,
-# plugins, and themes. Aliases can be placed here, though oh-my-zsh
-# users are encouraged to define aliases within the ZSH_CUSTOM folder.
-# For a full list of active aliases, run `alias`.
 export EDITOR='nvim'
 export MANPAGER='nvim +Man!'  # Use neovim to read manpages
 
@@ -93,12 +93,14 @@ if [ "$PLATFORM" = 'Darwin' ]; then
   eval "$(direnv hook zsh)"
   [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
 
+  ## oh-my-zsh already autoloads these
+  # autoload -U +X bashcompinit && bashcompinit
+  # autoload -Uz compinit && compinit
+
   # vault autocompletion
-  autoload -U +X bashcompinit && bashcompinit
   complete -o nospace -C /usr/local/bin/vault vault
 
   # AWS autocompletion and auto prompting
-  autoload -Uz compinit && compinit
   complete -C '/usr/local/bin/aws_completer' aws
   export AWS_CLI_AUTO_PROMPT=on-partial
   export AWS_DEFAULT_OUTPUT=table  # use '--output text' in scripts
