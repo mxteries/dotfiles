@@ -1,14 +1,22 @@
 [ -z ${PLATFORM+x} ] && export PLATFORM=$(uname -s)
 
+export LANG=en_US.UTF-8
+
 # Set config home if not already set
 export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:=$HOME/.config}"
 export XDG_DATA_HOME="${XDG_DATA_HOME:=$HOME/.local/share}"
 export XDG_CACHE_HOME="${XDG_CACHE_HOME:=$HOME/.cache}"
 
+# We'll want to set these explicitly, because if oh-my-zsh doesn't run,
+# our history file will truncate to the default value of SAVEHIST (1000)
+export HISTFILE="$XDG_DATA_HOME/.zsh_history"
+export HISTSIZE=50000
+export SAVEHIST=50000
+
 # Include local bin
 export PATH="$PATH:$HOME/.local/bin"
 
-# Path to your oh-my-zsh installation.
+# Path to oh-my-zsh installation
 export ZSH="$XDG_CONFIG_HOME/oh-my-zsh"
 ZSH_THEME="common"
 
@@ -21,14 +29,6 @@ DISABLE_AUTO_UPDATE="true"
 
 # Uncomment the following line to change how often to auto-update (in days).
 export UPDATE_ZSH_DAYS=30
-
-# Uncomment the following line if pasting URLs and other text is messed up.
-# DISABLE_MAGIC_FUNCTIONS="true"
-
-# Uncomment the following line to enable command auto-correction.
-# ENABLE_CORRECTION="true"
-# Uncomment the following line to display red dots whilst waiting for completion.
-# COMPLETION_WAITING_DOTS="true"
 
 # Uncomment the following line if you want to change the command execution time
 # stamp shown in the history command output.
@@ -49,21 +49,19 @@ export _Z_DATA="$XDG_CACHE_HOME/.z"
 # git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
 plugins=(z zsh-autosuggestions zsh-syntax-highlighting)
 
-
 if [ -f "$ZSH/oh-my-zsh.sh" ];
 then
   source "$ZSH/oh-my-zsh.sh"
 else
-  echo 'ohmyzsh not found, try: wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh'
+  echo "ohmyzsh not found, try: wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh"
+  return  # don't run the rest of the file
 fi
 
+### User Config ###
 ZSH_HIGHLIGHT_STYLES[comment]=fg=245  # make comments show up on black bg
-
-## User Config
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-export LANG=en_US.UTF-8
 
-### Disable CTRL-S and CTRL-Q
+# Disable CTRL-S and CTRL-Q
 [[ $- =~ i ]] && stty -ixoff -ixon
 
 setopt globdots
@@ -72,7 +70,6 @@ setopt globdots
 # users are encouraged to define aliases within the ZSH_CUSTOM folder.
 # For a full list of active aliases, run `alias`.
 export EDITOR='nvim'
-export HISTORY_IGNORE="fg"
 export MANPAGER='nvim +Man!'  # Use neovim to read manpages
 
 if command -v fd > /dev/null; then

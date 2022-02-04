@@ -100,6 +100,10 @@ if s:windows
 end
 
 let g:markdown_folding = 1
+
+Plug 'hashivim/vim-terraform'
+Plug 'tommcdo/vim-fubitive'
+
 call plug#end()
 
 " Lua plugin configs
@@ -242,9 +246,11 @@ augroup vimrc
 
     " Filetypes
     autocmd FileType gitcommit setlocal spell textwidth=72
-    autocmd Filetype markdown nmap <buffer> <leader>md ysiW)i[]<c-o>hlink<esc>
-    autocmd Filetype markdown nnoremap <buffer> j gj
-    autocmd Filetype markdown nnoremap <buffer> k gk
+    autocmd Filetype markdown
+                \ nmap <buffer> <leader>md ysiW)i[]<c-o>hlink<esc>
+                \| nnoremap <buffer> j gj
+                \| nnoremap <buffer> k gk
+                \| nnoremap <buffer> <tab> za
     autocmd BufRead,BufNewFile *.cake set filetype=cs
 
     " Turn on hlsearch when searching /? (and also for :s :g)
