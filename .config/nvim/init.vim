@@ -238,6 +238,9 @@ nnoremap f <cmd>Files<cr>
 nnoremap T <Nop>
 nnoremap F <Nop>
 
+nnoremap <F6> <cmd>lua require("FTerm").toggle()<CR>
+tnoremap <F6> <c-\><c-n><cmd>lua require("FTerm").toggle()<CR>
+
 augroup vimrc
     autocmd BufWritePost $MYVIMRC source $MYVIMRC
     autocmd BufWritePre * %s/\s\+$//e
@@ -252,6 +255,7 @@ augroup vimrc
                 \| nnoremap <buffer> k gk
                 \| nnoremap <buffer> <tab> za
     autocmd BufRead,BufNewFile *.cake set filetype=cs
+    autocmd FileType org nnoremap <buffer> <leader>cc <cmd>.w !zsh<cr>
 
     " Turn on hlsearch when searching /? (and also for :s :g)
     autocmd CmdlineEnter :,/,\? set hlsearch
