@@ -255,7 +255,8 @@ augroup vimrc
     autocmd TermOpen * startinsert
 
     " Filetypes
-    autocmd FileType gitcommit setlocal spell textwidth=72
+    autocmd FileType fugitive nmap <buffer> <tab> =
+    autocmd FileType gitcommit setlocal spell textwidth=72 foldmethod=syntax
     autocmd Filetype markdown
                 \ nmap <buffer> <leader>md ysiW)i[]<c-o>hlink<esc>
                 \| nnoremap <buffer> j gj
