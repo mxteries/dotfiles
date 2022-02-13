@@ -56,7 +56,7 @@ then
   ZSH_HIGHLIGHT_STYLES[comment]=fg=245  # make comments show up on black bg
 
   # Enable multi select in tab completions using tab and shift tab
-  zstyle ':fzf-tab:complete:*' fzf-bindings 'tab:toggle+down,shift-tab:toggle+up'
+  # zstyle ':fzf-tab:complete:*' fzf-bindings 'tab:toggle+down,shift-tab:toggle+up'
 else
   echo "ohmyzsh not found, try: wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh"
   return  # don't run the rest of the file

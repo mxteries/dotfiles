@@ -28,7 +28,6 @@ Plug 'nvim-lua/plenary.nvim'
   Plug 'nvim-telescope/telescope.nvim'
   Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
   Plug 'lewis6991/gitsigns.nvim'
-Plug 'numToStr/FTerm.nvim'
 Plug 'neovim/nvim-lspconfig'
 Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-nvim-lsp'
@@ -83,10 +82,6 @@ Plug 'junegunn/fzf.vim'
   nnoremap <leader>fc <cmd>Commands<cr>
   nnoremap <leader>ff <cmd>Files<cr>
   nnoremap <leader>fb <cmd>Buffers<cr>
-  " Rg in the current buffer's directory
-  " command! -bang -nargs=* Rgb
-  "   \ call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case "
-  "   \ .shellescape(<q-args>), 1, {'dir': expand('%:p:h') }, <bang>0)
   " Overwrite <c-t> to not use :tab
   let g:fzf_action = {
     \ 'ctrl-t': 'tabedit',
@@ -175,7 +170,6 @@ function! s:statusline_expr()
 endfunction
 let &statusline = s:statusline_expr()
 
-
 " Mappings
 nnoremap cd <cmd>lcd %:p:h<cr>
 nnoremap cD <cmd>lcd ..<cr>
@@ -228,6 +222,8 @@ nnoremap <right> 3<c-w><c->>
 nnoremap <down> 2<c-w><c-+>
 nnoremap <up> 2<c-w><c-->
 
+nnoremap <PageDown> <c-d>
+nnoremap <PageUp> <c-u>
 " map <leader>\ to prompt for a mapping, "<" has to be escaped via <lt>
 nmap <leader>\ :nmap <buffer> <lt>leader><lt>leader><space>
 
@@ -238,8 +234,9 @@ nnoremap f <cmd>Files<cr>
 nnoremap T <Nop>
 nnoremap F <Nop>
 
-nnoremap <F6> <cmd>lua require("FTerm").toggle()<CR>
-tnoremap <F6> <c-\><c-n><cmd>lua require("FTerm").toggle()<CR>
+" custom floating term
+nnoremap <F6> <cmd>lua require("test").toggle()<CR>
+tnoremap <F6> <c-\><c-n><cmd>lua require("test").toggle()<CR>
 
 augroup vimrc
     autocmd BufWritePost $MYVIMRC source $MYVIMRC
