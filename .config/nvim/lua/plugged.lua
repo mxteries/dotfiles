@@ -263,3 +263,32 @@ require('lint').linters_by_ft = {
 vim.api.nvim_command([[
     autocmd! BufWritePost * lua require('lint').try_lint()
 ]])
+
+-- colorschemes
+require('kanagawa').setup({
+    undercurl = true,           -- enable undercurls
+    commentStyle = "italic",
+    functionStyle = "NONE",
+    keywordStyle = "NONE",
+    statementStyle = "bold",
+    typeStyle = "NONE",
+    variablebuiltinStyle = "NONE",
+    specialReturn = false,       -- special highlight for the return keyword
+    specialException = false,    -- special highlight for exception handling keywords
+    transparent = false,        -- do not set background color
+    dimInactive = true,        -- dim inactive window `:h hl-NormalNC`
+})
+
+require("catppuccin").setup({
+    styles = {
+        comments = "italic",
+        functions = "NONE",
+        keywords = "NONE",
+        strings = "NONE",
+        variables = "NONE",
+    }
+})
+
+-- setup must be called before loading
+vim.cmd("colorscheme kanagawa")
+
