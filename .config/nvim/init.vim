@@ -52,6 +52,10 @@ Plug 'morhetz/gruvbox'
   let g:gruvbox_italic=1
   let g:gruvbox_bold=1
 
+" colorscheme test
+Plug 'catppuccin/nvim'
+Plug 'rebelot/kanagawa.nvim'
+
 Plug 'justinmk/vim-dirvish'
   " disable netrw plugins but keep autoloaded funcs
   let g:loaded_netrwPlugin = 1
@@ -136,10 +140,13 @@ set list listchars+=lead:.  " show leading spaces
 " set scrolloff=5       " scroll before cursor reaches edge of screen
 set foldlevelstart=1
 set pumblend=20
+set signcolumn=yes    " always show sign column
+set termguicolors
 
 " Enable mouse for scrolling only
 set mouse=n
 noremap <LeftMouse> <Nop>
+noremap <RightMouse> <Nop>
 noremap <2-LeftMouse> <Nop>
 noremap <LeftDrag> <Nop>
 noremap <LeftRelease> <Nop>
@@ -245,7 +252,8 @@ augroup vimrc
     autocmd TermOpen * startinsert
 
     " Filetypes
-    autocmd FileType gitcommit setlocal spell textwidth=72
+    autocmd FileType fugitive nmap <buffer> <tab> =
+    autocmd FileType gitcommit setlocal spell textwidth=72 foldmethod=syntax
     autocmd Filetype markdown
                 \ nmap <buffer> <leader>md ysiW)i[]<c-o>hlink<esc>
                 \| nnoremap <buffer> j gj
@@ -263,12 +271,10 @@ augroup vimrc
 augroup END
 
 " Enable true color
-if exists('+termguicolors')
-  let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-  let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
-  set termguicolors
-endif
+" if exists('+termguicolors')
+"   let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+"   let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+"   set termguicolors
+" endif
 
-set background=dark
-colorscheme gruvbox
 set guifont=JetBrains\ Mono:h15
