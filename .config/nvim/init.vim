@@ -252,6 +252,8 @@ augroup vimrc
     autocmd TermOpen * startinsert
 
     " Filetypes
+    autocmd FileType lua set foldmethod=expr foldexpr=nvim_treesitter#foldexpr()
+                \| nnoremap <buffer> <tab> za
     autocmd FileType fugitive nmap <buffer> <tab> =
     autocmd FileType gitcommit setlocal spell textwidth=72 foldmethod=syntax
     autocmd Filetype markdown

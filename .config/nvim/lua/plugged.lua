@@ -265,7 +265,12 @@ vim.api.nvim_command([[
 ]])
 
 -- colorschemes
+-- this will affect all the hl-groups where the redefined colors are used
+local my_colors = {
+    fujiGray = "#8b949e",  -- more readable comment color
+}
 require('kanagawa').setup({
+    colors = my_colors,
     undercurl = true,           -- enable undercurls
     commentStyle = "italic",
     functionStyle = "NONE",
@@ -291,4 +296,5 @@ require("catppuccin").setup({
 
 -- setup must be called before loading
 vim.cmd("colorscheme kanagawa")
+-- vim.cmd("colorscheme catppuccin")
 
