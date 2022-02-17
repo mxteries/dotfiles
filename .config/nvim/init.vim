@@ -201,6 +201,7 @@ nnoremap <A-l> <C-w>l
 nnoremap <leader>ts <cmd>botright split <bar> term<cr>
 nnoremap <leader>tv <cmd>vsplit <bar> term<cr>
 nnoremap <leader>tn <cmd>tabnew <bar> term<cr>
+nnoremap <c-w>O <cmd>Goyo<cr>
 
 nnoremap <leader>Y "+Y
 nnoremap <leader>y "+y
@@ -263,13 +264,16 @@ augroup vimrc
                 \| nnoremap <buffer> <tab> za
     autocmd FileType fugitive nmap <buffer> <tab> =
     autocmd FileType gitcommit setlocal spell textwidth=72 foldmethod=syntax
+    autocmd FileType help nnoremap <buffer> u <c-u>
+                \| nnoremap <buffer> i <c-d>
+                \| nnoremap <buffer> o <cmd>Goyo<cr>
     autocmd Filetype markdown
                 \ nmap <buffer> <leader>md ysiW)i[]<c-o>hlink<esc>
                 \| nnoremap <buffer> j gj
                 \| nnoremap <buffer> k gk
                 \| nnoremap <buffer> <tab> za
-    autocmd BufRead,BufNewFile *.cake set filetype=cs
     autocmd FileType org nnoremap <buffer> <leader>cc <cmd>.w !zsh<cr>
+    autocmd BufRead,BufNewFile *.cake set filetype=cs
 
     " Turn on hlsearch when searching /? (and also for :s :g)
     autocmd CmdlineEnter :,/,\? set hlsearch
