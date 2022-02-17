@@ -142,6 +142,8 @@ set foldlevelstart=1
 set pumblend=20
 set signcolumn=yes    " always show sign column
 set termguicolors
+set nowrapscan
+set guifont=JetBrains\ Mono:h15
 
 " Enable mouse for scrolling only
 set mouse=n
@@ -237,6 +239,11 @@ nmap <leader>\ :nmap <buffer> <lt>leader><lt>leader><space>
 " testing
 " remember 1k filemarks
 set shada=!,'1000,<50,s10,h
+" Don't store file marks for the following paths
+set shada+=rterm
+set shada+=rfugitive
+set shada+=r/private
+
 nnoremap f <cmd>Files<cr>
 nnoremap T <Nop>
 nnoremap F <Nop>
@@ -279,4 +286,11 @@ augroup END
 "   set termguicolors
 " endif
 
-set guifont=JetBrains\ Mono:h15
+" Redirect the output of a Vim or external command into a scratch buffer
+function! Redir(cmd) abort
+    let output = execute(a:cmd)
+    tabnew
+    setlocal nobuflisted buftype=nofile bufhidden=wipe noswapfile
+    call setline(1, split(output, "\n"))
+endfunction
+command! -nargs=1 Redir silent call Redir(<f-args>)
