@@ -1,8 +1,8 @@
 augroup vimrc
   autocmd!
 augroup END
-let mapleader=" "
-let maplocalleader=" "
+let mapleader=","
+let maplocalleader=","
 
 let s:configdir = stdpath('config')
 let s:windows = has('win32') || has('win64')
@@ -68,10 +68,8 @@ Plug 'justinmk/vim-dirvish'
       " map r to lcd then start :Rg
       autocmd FileType dirvish
         \  nnoremap <buffer> t :tabedit <c-r><c-p><CR>
-        \|nnoremap <buffer> f :lcd <c-r><c-p>\|Files<cr>
         \|nnoremap <buffer> R :lcd <c-r><c-p> \| Rg<space>
         \|nnoremap <buffer> r :lcd <c-r><c-p> \| Rg<cr>
-      autocmd FileType dirvish silent! unmap <buffer> /
       autocmd FileType dirvish silent! unmap <buffer> <c-p>
   augroup END
 
@@ -79,13 +77,25 @@ Plug 'justinmk/vim-dirvish'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
   let g:fzf_tags_command = 'ctags -R --exclude=.git --exclude=.terraform'
-  nnoremap <leader>K <cmd>Help<cr>
-  xnoremap <leader>K y:Help<cr><c-\><c-n>pi
-  nnoremap <leader>r <cmd>History:<cr>
-  xnoremap <leader>rg y:Rg <c-r>"<cr>
+  nnoremap <space>K <cmd>Help<cr>
+  xnoremap <space>K y:Help<cr><c-\><c-n>pi
+  nnoremap <space>r <cmd>History:<cr>
+  xnoremap R y:Rg <c-r>"<cr>
   nnoremap <leader>fc <cmd>Commands<cr>
   nnoremap <leader>ff <cmd>Files<cr>
   nnoremap <leader>fb <cmd>Buffers<cr>
+  nnoremap <leader>fo <cmd>Colors<cr>
+  nnoremap <leader>fh <cmd>History<cr>
+  nnoremap <leader>f/ <cmd>History/<cr>
+  nnoremap <leader>fL <cmd>Lines<cr>
+  nnoremap <leader>fl <cmd>BLines<cr>
+  nnoremap <leader>ft <cmd>Tags<cr>
+  nnoremap <leader>fT <cmd>BTags<cr>
+  nnoremap <leader>fw <cmd>Windows<cr>
+  nnoremap <leader>fM <cmd>Marks<cr>
+  nnoremap <leader>fm <cmd>Maps<cr>
+  nnoremap <leader>fp <cmd>Filetypes<cr>
+
   " Overwrite <c-t> to not use :tab
   let g:fzf_action = {
     \ 'ctrl-t': 'tabedit',
@@ -171,21 +181,19 @@ function! s:statusline_expr()
   let ro  = "%{&readonly ? '[RO] ' : ''}"
   " gets branch or commit if detached head (see plugin/fugitive.vim)
   let fug = "%{exists('g:loaded_fugitive') ? FugitiveHead(7) : ''}"
-  let org = " %{v:lua.orgmode.statusline()}"
   let sep = '%='
   let pos = '%-12(%l:%c%V%)'
   let pct = ' %P'
-  return cwd.rel.'%<'.ft.mod.ro.fug.org.sep.pos.'%*'.pct
+  return cwd.rel.'%<'.ft.mod.ro.fug.sep.pos.'%*'.pct
 endfunction
 let &statusline = s:statusline_expr()
 
-" Mappings
-nnoremap cd <cmd>lcd %:p:h<cr>
-nnoremap cD <cmd>lcd ..<cr>
-nnoremap <leader>cg :lcd `git rev-parse --show-toplevel`<CR>:pwd<CR>
+""" Mappings
+" Idea: use <leader> for multi keystrokes with which-key, use <space> for one letter modifier
+nnoremap <space>l <cmd>echo "use ,"<cr>
 
+"" Navigation and windows
 " ':h terminal-input'
-" tnoremap <expr> <Esc> (&filetype == "fzf") ? "<Esc>" : "<c-\><c-n>"
 tnoremap <A-h> <C-\><C-N><C-w>h
 tnoremap <A-j> <C-\><C-N><C-w>j
 tnoremap <A-k> <C-\><C-N><C-w>k
@@ -198,60 +206,77 @@ nnoremap <A-h> <C-w>h
 nnoremap <A-j> <C-w>j
 nnoremap <A-k> <C-w>k
 nnoremap <A-l> <C-w>l
-nnoremap <leader>ts <cmd>botright split <bar> term<cr>
-nnoremap <leader>tv <cmd>vsplit <bar> term<cr>
-nnoremap <leader>tn <cmd>tabnew <bar> term<cr>
+nnoremap 8 <c-d>
+nnoremap 9 <c-u>
+nnoremap <PageDown> <c-d>
+nnoremap <PageUp> <c-u>
 nnoremap <c-w>O <cmd>Goyo<cr>
-
-nnoremap <leader>Y "+Y
-nnoremap <leader>y "+y
-xnoremap <leader>y "+y
-nnoremap <leader>p "+p
-xnoremap <leader>p "+p
-vnoremap P "0p
-
-nnoremap <leader>R :source $MYVIMRC<cr>
-
-" replace every occurrence of word under cursor on this line
-nnoremap <leader>ciw :s/<c-r><c-w>//g<left><left>
-nnoremap <leader>ciW :s/<c-r><c-a>//g<left><left>
-xnoremap <leader>c  y:s/<c-r>"//g<left><left>
-
-nnoremap <leader>lo <cmd>lua vim.diagnostic.open_float()<cr>
-nnoremap <leader>ln <cmd>lua vim.diagnostic.goto_next()<CR>
-nnoremap <leader>lp <cmd>lua vim.diagnostic.goto_prev()<CR>
-
+nnoremap <space>o <cmd>Goyo<cr>
 " Alternative C-i mapping for when tab is mapped over
 nnoremap <A-i> <C-i>
 nnoremap <A-o> <C-o>
 nnoremap <BS> <C-^>
 cnoremap <C-A> <Home>
-
 nnoremap <left> 3<c-w><c-<>
 nnoremap <right> 3<c-w><c->>
 nnoremap <down> 2<c-w><c-+>
 nnoremap <up> 2<c-w><c-->
+nnoremap cd <cmd>lcd %:p:h<cr>
+nnoremap cD <cmd>lcd ..<cr>
+nnoremap <leader>lo <cmd>lua vim.diagnostic.open_float()<cr>
+nnoremap <leader>ln <cmd>lua vim.diagnostic.goto_next()<CR>
+nnoremap <leader>lp <cmd>lua vim.diagnostic.goto_prev()<CR>
 
-nnoremap <PageDown> <c-d>
-nnoremap <PageUp> <c-u>
+"" git
+nnoremap <space>g <cmd>G<cr>
+" <leader>gm is git messenger
+nnoremap <leader>gg :lcd `git rev-parse --show-toplevel`<CR>:pwd<CR>
+nnoremap <leader>gf <cmd>GFiles<cr>
+nnoremap <leader>gs <cmd>GFiles?<cr>
+nnoremap <leader>gc <cmd>Commits<cr>
+nnoremap <leader>gC <cmd>BCommits<cr>
+xnoremap <leader>gc :BCommits<cr>
+
+"" Terminal and Tabs
+" tnoremap <expr> <Esc> (&filetype == "fzf") ? "<Esc>" : "<c-\><c-n>"
+nnoremap <space>t <cmd>botright split <bar> term<cr>
+nnoremap <space>T <cmd>tabedit % <bar> norm '.<cr>
+
+"" Editing
+nnoremap <space>Y "+Y
+nnoremap <space>y "+y
+xnoremap <space>y "+y
+nnoremap <space>p "+p
+xnoremap <space>p "+p
+xnoremap P "0p
+xnoremap <space>@ :norm @
+" replace every occurrence of word under cursor on this line
+xnoremap s y:s/<c-r>"//g<left><left>
+nnoremap <space>s :s/<c-r><c-w>//g<left><left>
+nnoremap <leader>ciw :s/<c-r><c-w>//g<left><left>
+nnoremap <leader>ciW :s/<c-r><c-a>//g<left><left>
+
 " map <leader>\ to prompt for a mapping, "<" has to be escaped via <lt>
-nmap <leader>\ :nmap <buffer> <lt>leader><lt>leader><space>
+nmap <space>\ :nmap <buffer> <lt>space><lt>space><space>
+nnoremap <space>R <cmd>source $MYVIMRC<cr>
 
-" testing
-" remember 1k filemarks
-set shada=!,'1000,<50,s10,h
+"" TESTING start
+" remember 10k filemarks
+set shada=!,'10000,<50,s10,h
 " Don't store file marks for the following paths
 set shada+=rterm
 set shada+=rfugitive
 set shada+=r/private
 
-nnoremap f <cmd>Files<cr>
+nnoremap f <Nop>
 nnoremap T <Nop>
+nnoremap t <Nop>
 nnoremap F <Nop>
 
 " custom floating term
 nnoremap <F6> <cmd>lua require("test").toggle()<CR>
 tnoremap <F6> <c-\><c-n><cmd>lua require("test").toggle()<CR>
+""" TESTING end
 
 augroup vimrc
     autocmd BufWritePost $MYVIMRC source $MYVIMRC
@@ -264,15 +289,13 @@ augroup vimrc
                 \| nnoremap <buffer> <tab> za
     autocmd FileType fugitive nmap <buffer> <tab> =
     autocmd FileType gitcommit setlocal spell textwidth=72 foldmethod=syntax
-    autocmd FileType help nnoremap <buffer> u <c-u>
-                \| nnoremap <buffer> i <c-d>
-                \| nnoremap <buffer> o <cmd>Goyo<cr>
+    autocmd FileType man nnoremap <buffer> ,/ /^\s\+
     autocmd Filetype markdown
                 \ nmap <buffer> <leader>md ysiW)i[]<c-o>hlink<esc>
                 \| nnoremap <buffer> j gj
                 \| nnoremap <buffer> k gk
                 \| nnoremap <buffer> <tab> za
-    autocmd FileType org nnoremap <buffer> <leader>cc <cmd>.w !zsh<cr>
+    autocmd FileType org nnoremap <buffer> <space>c <cmd>.w !zsh<cr>
     autocmd BufRead,BufNewFile *.cake set filetype=cs
 
     " Turn on hlsearch when searching /? (and also for :s :g)
