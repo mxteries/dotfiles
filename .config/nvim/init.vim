@@ -11,7 +11,7 @@ let s:plugdir = s:configdir . '/plugged'
 call plug#begin(s:plugdir)
 Plug 'tpope/vim-speeddating'
 Plug 'tommcdo/vim-lion'
-Plug 'junegunn/goyo.vim'
+Plug 'junegunn/goyo.vim' | let g:goyo_width=88 | let g:goyo_height="100%"
 Plug 'tpope/vim-unimpaired'          " Useful mappings
 Plug 'tpope/vim-commentary'          " for commenting
 Plug 'tpope/vim-repeat'              " for repeating
@@ -19,7 +19,6 @@ Plug 'tpope/vim-surround'            " for adding surrounding characters
 Plug 'iamcco/markdown-preview.nvim', { 'do': ':call mkdp#util#install()', 'for': 'markdown', 'on': 'MarkdownPreview' }
 Plug 'Vimjas/vim-python-pep8-indent'
 Plug 'mbbill/undotree', { 'on': 'UndotreeToggle' }
-
 Plug 'rhysd/git-messenger.vim'  " leader gm to trigger
 " todo: gitconfig make verbose default, add commit template
 
@@ -117,6 +116,8 @@ call plug#end()
 
 " Lua plugin configs
 lua require('plugged')
+" ready for testing!
+lua require('zeal')
 
 " Private stuff
 if !empty(expand(glob(s:configdir . '/local_settings.vim')))
