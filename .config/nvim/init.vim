@@ -116,8 +116,6 @@ call plug#end()
 
 " Lua plugin configs
 lua require('plugged')
-" ready for testing!
-lua require('zeal')
 
 " Private stuff
 if !empty(expand(glob(s:configdir . '/local_settings.vim')))
@@ -241,7 +239,7 @@ xnoremap <leader>gc :BCommits<cr>
 "" Terminal and Tabs
 " tnoremap <expr> <Esc> (&filetype == "fzf") ? "<Esc>" : "<c-\><c-n>"
 nnoremap <space>t <cmd>botright split <bar> term<cr>
-nnoremap <space>T <cmd>tabedit % <bar> norm '.<cr>
+nnoremap <space>T <cmd>split <bar> norm <c-w>T<cr>
 
 "" Editing
 nnoremap <space>Y "+Y
@@ -268,6 +266,8 @@ set shada=!,'10000,<50,s10,h
 set shada+=rterm
 set shada+=rfugitive
 set shada+=r/private
+" ready for testing!
+lua require('zeal')
 
 nnoremap f <Nop>
 nnoremap T <Nop>

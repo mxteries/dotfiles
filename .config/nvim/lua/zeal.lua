@@ -55,11 +55,21 @@ end
 --- Let's just stick with the oldfiles and the undofiles at the very beginning.
 --- That gives us 1 source of recency and 1 source of access/changes
 
-local oldfiles_source = vim.v.oldfiles
-local undofiles_source = nil
+P = function(v)
+    print(vim.inspect(v))
+    return v
+end
+
+-- oldfiles is definitely not populated when this module is loaded lol...
+-- P(vim.v.oldfiles)
+-- log(string.format("what's in here %s", vim.inspect(vim.v.oldfiles)))
+
+
+-- local undofiles_source = nil
 
 -- search_strings is a string with queries separated by a space
 find_file = function(search_strings)
+    local oldfiles_source = vim.v.oldfiles
     -- for query in vim.split(search_strings, ' ', {trimempty=true}) do end
     if search_strings == '' then
         -- Just call fzf if we call 'Z' by itself lol
