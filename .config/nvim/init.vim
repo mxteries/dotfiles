@@ -1,13 +1,14 @@
 augroup vimrc
-  autocmd!
+    autocmd!
 augroup END
 let mapleader=","
 let maplocalleader=","
 
 let s:configdir = stdpath('config')
 let s:windows = has('win32') || has('win64')
-let s:plugdir = s:configdir . '/plugged'
 
+""" Plugins {{{1
+let s:plugdir = s:configdir . '/plugged'
 call plug#begin(s:plugdir)
 Plug 'tpope/vim-speeddating'
 Plug 'tommcdo/vim-lion'
@@ -24,9 +25,9 @@ Plug 'rhysd/git-messenger.vim'  " leader gm to trigger
 
 " nvim plugins
 Plug 'nvim-lua/plenary.nvim'
-  Plug 'nvim-telescope/telescope.nvim'
-  Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
-  Plug 'lewis6991/gitsigns.nvim'
+    Plug 'nvim-telescope/telescope.nvim'
+    Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
+    Plug 'lewis6991/gitsigns.nvim'
 Plug 'neovim/nvim-lspconfig'
 Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-nvim-lsp'
@@ -45,61 +46,63 @@ end
 
 Plug 'tpope/vim-fugitive'
 Plug 'morhetz/gruvbox'
-  let g:gruvbox_invert_selection=0
-  let g:gruvbox_sign_column='bg0'
-  let g:gruvbox_hls_cursor='purple'
-  let g:gruvbox_italic=1
-  let g:gruvbox_bold=1
+    let g:gruvbox_invert_selection=0
+    let g:gruvbox_sign_column='bg0'
+    let g:gruvbox_hls_cursor='purple'
+    let g:gruvbox_italic=1
+    let g:gruvbox_bold=1
 
 " colorscheme test
 Plug 'catppuccin/nvim'
 Plug 'rebelot/kanagawa.nvim'
 
 Plug 'justinmk/vim-dirvish'
-  " disable netrw plugins but keep autoloaded funcs
-  let g:loaded_netrwPlugin = 1
-  command! -nargs=? -complete=dir Explore Dirvish <args>
-  command! -nargs=? -complete=dir Sexplore split | silent Dirvish <args>
-  command! -nargs=? -complete=dir Vexplore vsplit | silent Dirvish <args>
-  augroup vimrc
-      " Map t to open in new tab
-      " map f to lcd then start searching for files
-      " map r to lcd then start :Rg
-      autocmd FileType dirvish
-        \  nnoremap <buffer> t :tabedit <c-r><c-p><CR>
-        \|nnoremap <buffer> R :lcd <c-r><c-p> \| Rg<space>
-        \|nnoremap <buffer> r :lcd <c-r><c-p> \| Rg<cr>
-      autocmd FileType dirvish silent! unmap <buffer> <c-p>
-  augroup END
+    " disable netrw plugins but keep autoloaded funcs
+    let g:loaded_netrwPlugin = 1
+    command! -nargs=? -complete=dir Explore Dirvish <args>
+    command! -nargs=? -complete=dir Sexplore split | silent Dirvish <args>
+    command! -nargs=? -complete=dir Vexplore vsplit | silent Dirvish <args>
+    augroup vimrc
+        " Map t to open in new tab
+        " map f to lcd then start searching for files
+        " map r to lcd then start :Rg
+        autocmd FileType dirvish
+                    \  nnoremap <buffer> t :tabedit <c-r><c-p><CR>
+                    \|nnoremap <buffer> R :lcd <c-r><c-p> \| Rg<space>
+                    \|nnoremap <buffer> r :lcd <c-r><c-p> \| Rg<cr>
+        autocmd FileType dirvish silent! unmap <buffer> <c-p>
+    augroup END
 
 " fzf integration
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+    " let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.8 } }
+    let g:fzf_layout = { 'window': '-tabnew' }
 Plug 'junegunn/fzf.vim'
-  let g:fzf_tags_command = 'ctags -R --exclude=.git --exclude=.terraform'
-  nnoremap <space>K <cmd>Help<cr>
-  xnoremap <space>K y:Help<cr><c-\><c-n>pi
-  nnoremap <space>r <cmd>History:<cr>
-  xnoremap R y:Rg <c-r>"<cr>
-  nnoremap <leader>fc <cmd>Commands<cr>
-  nnoremap <leader>ff <cmd>Files<cr>
-  nnoremap <leader>fb <cmd>Buffers<cr>
-  nnoremap <leader>fo <cmd>Colors<cr>
-  nnoremap <leader>fh <cmd>History<cr>
-  nnoremap <leader>f/ <cmd>History/<cr>
-  nnoremap <leader>fL <cmd>Lines<cr>
-  nnoremap <leader>fl <cmd>BLines<cr>
-  nnoremap <leader>ft <cmd>Tags<cr>
-  nnoremap <leader>fT <cmd>BTags<cr>
-  nnoremap <leader>fw <cmd>Windows<cr>
-  nnoremap <leader>fM <cmd>Marks<cr>
-  nnoremap <leader>fm <cmd>Maps<cr>
-  nnoremap <leader>fp <cmd>Filetypes<cr>
+    let g:fzf_tags_command = 'ctags -R --exclude=.git --exclude=.terraform'
+    nnoremap <space>K <cmd>Help<cr>
+    xnoremap <space>K y:Help<cr><c-\><c-n>pi
+    nnoremap <space>r <cmd>History:<cr>
+    xnoremap R y:Rg <c-r>"<cr>
+    nnoremap <leader>fc <cmd>Commands<cr>
+    nnoremap <leader>ff <cmd>Files<cr>
+    nnoremap <leader>fb <cmd>Buffers<cr>
+    nnoremap <leader>fo <cmd>Colors<cr>
+    nnoremap <leader>fh <cmd>History<cr>
+    nnoremap <leader>f/ <cmd>History/<cr>
+    nnoremap <leader>fL <cmd>Lines<cr>
+    nnoremap <leader>fl <cmd>BLines<cr>
+    nnoremap <leader>ft <cmd>Tags<cr>
+    nnoremap <leader>fT <cmd>BTags<cr>
+    nnoremap <leader>fw <cmd>Windows<cr>
+    nnoremap <leader>fM <cmd>Marks<cr>
+    nnoremap <leader>fm <cmd>Maps<cr>
+    nnoremap <leader>fp <cmd>Filetypes<cr>
 
-  " Overwrite <c-t> to not use :tab
-  let g:fzf_action = {
-    \ 'ctrl-t': 'tabedit',
-    \ 'ctrl-x': 'split',
-    \ 'ctrl-v': 'vsplit' }
+    " Overwrite <c-t> to not use :tab
+    let g:fzf_action = {
+                \ 'ctrl-t': 'tabedit',
+                \ 'ctrl-x': 'split',
+                \ 'ctrl-v': 'vsplit' }
 
 " Windows specific plugin settings
 if s:windows
@@ -122,9 +125,9 @@ if !empty(expand(glob(s:configdir . '/local_settings.vim')))
     execute 'source ' . s:configdir . '/local_settings.vim'
 endif
 
+""" Settings {{{1
 " Indent spaces
 set softtabstop=4 shiftwidth=4 expandtab autoindent copyindent
-
 " Formatting search
 set path=.,**,,  " exclude /usr/include and search ** by default
 augroup vimrc
@@ -147,7 +150,6 @@ set confirm
 set iskeyword+=-      " - counts as part of a word for w and C-]
 set list listchars+=lead:.  " show leading spaces
 " set scrolloff=5       " scroll before cursor reaches edge of screen
-set foldlevelstart=1
 set pumblend=20
 set signcolumn=yes    " always show sign column
 set termguicolors
@@ -172,22 +174,34 @@ if s:windows
 end
 
 function! s:statusline_expr()
-  let cwd = "[%{fnamemodify(getcwd(),':p:~')}]"
-  " Filename relative to cwd
-  let rel = " %{expand('%:~:.')} "
-  let ft  = "%{len(&filetype) ? '['.&filetype.'] ' : ''}"
-  let mod = "%{&modified ? '│ + ' : !&modifiable ? '[x] ' : ''}"
-  let ro  = "%{&readonly ? '[RO] ' : ''}"
-  " gets branch or commit if detached head (see plugin/fugitive.vim)
-  let fug = "%{exists('g:loaded_fugitive') ? FugitiveHead(7) : ''}"
-  let sep = '%='
-  let pos = '%-12(%l:%c%V%)'
-  let pct = ' %P'
-  return cwd.rel.'%<'.ft.mod.ro.fug.sep.pos.'%*'.pct
+    let cwd = "[%{fnamemodify(getcwd(),':p:~')}]"
+    " Filename relative to cwd
+    let rel = " %{expand('%:~:.')} "
+    let ft  = "%{len(&filetype) ? '['.&filetype.'] ' : ''}"
+    let mod = "%{&modified ? '│ + ' : !&modifiable ? '[x] ' : ''}"
+    let ro  = "%{&readonly ? '[RO] ' : ''}"
+    " gets branch or commit if detached head (see plugin/fugitive.vim)
+    let fug = "%{exists('g:loaded_fugitive') ? FugitiveHead(7) : ''}"
+    let sep = '%='
+    let pos = '%-12(%l:%c%V%)'
+    let pct = ' %P'
+    return cwd.rel.'%<'.ft.mod.ro.fug.sep.pos.'%*'.pct
 endfunction
 let &statusline = s:statusline_expr()
 
-""" Mappings
+function! Myfoldtext() abort
+    let line = getline(v:foldstart)
+    let foldsize = (v:foldend - v:foldstart + 1)
+    let linecount = '['.foldsize.' lines]'
+    return line.' '.linecount
+endfunction
+set foldtext=Myfoldtext()
+nnoremap <silent> <tab> @=(foldlevel('.')?'za':"\<tab>")<CR>
+" Use zf for manual folding always
+nnoremap zf <cmd>setl fdm&<CR>zf
+xnoremap zf <cmd>setl fdm&<CR>zf
+
+""" Mappings {{{1
 " Idea: use <leader> for multi keystrokes with which-key, use <space> for one letter modifier
 nnoremap <space>l <cmd>echo "use ,"<cr>
 
@@ -259,7 +273,7 @@ nnoremap <leader>ciW :s/<c-r><c-a>//g<left><left>
 nmap <space>\ :nmap <buffer> <lt>space><lt>space><space>
 nnoremap <space>R <cmd>source $MYVIMRC<cr>
 
-"" TESTING start
+""" Misc and testing {{{1
 " remember 10k filemarks
 set shada=!,'10000,<50,s10,h
 " Don't store file marks for the following paths
@@ -279,6 +293,16 @@ nnoremap <F6> <cmd>lua require("test").toggle()<CR>
 tnoremap <F6> <c-\><c-n><cmd>lua require("test").toggle()<CR>
 """ TESTING end
 
+" Redirect the output of a Vim or external command into a scratch buffer
+function! Redir(cmd) abort
+    let output = execute(a:cmd)
+    tabnew
+    setlocal nobuflisted buftype=nofile bufhidden=wipe noswapfile
+    call setline(1, split(output, "\n"))
+endfunction
+command! -nargs=1 Redir silent call Redir(<f-args>)
+
+""" autocmds {{{1
 augroup vimrc
     autocmd BufWritePost $MYVIMRC source $MYVIMRC
     autocmd BufWritePre * %s/\s\+$//e
@@ -286,11 +310,13 @@ augroup vimrc
     autocmd TermOpen * startinsert
 
     " Filetypes
-    autocmd FileType lua set foldmethod=expr foldexpr=nvim_treesitter#foldexpr()
-                \| nnoremap <buffer> <tab> za
+    " use treesitter folding, 1 fold only
+    autocmd FileType lua,python,terraform setlocal foldnestmax=1 foldmethod=expr foldexpr=nvim_treesitter#foldexpr()
+    autocmd FileType vim setlocal foldmethod=marker
+    autocmd FileType json setlocal foldmethod=syntax
     autocmd FileType fugitive nmap <buffer> <tab> =
-    autocmd FileType gitcommit setlocal spell textwidth=72 foldmethod=syntax
-    autocmd FileType man nnoremap <buffer> ,/ /^\s\+
+    autocmd FileType git,gitcommit setlocal spell textwidth=72 foldmethod=syntax
+    autocmd FileType man nnoremap <buffer> <space>/ /^\s\+
     autocmd Filetype markdown
                 \ nmap <buffer> <leader>md ysiW)i[]<c-o>hlink<esc>
                 \| nnoremap <buffer> j gj
@@ -314,11 +340,3 @@ augroup END
 "   set termguicolors
 " endif
 
-" Redirect the output of a Vim or external command into a scratch buffer
-function! Redir(cmd) abort
-    let output = execute(a:cmd)
-    tabnew
-    setlocal nobuflisted buftype=nofile bufhidden=wipe noswapfile
-    call setline(1, split(output, "\n"))
-endfunction
-command! -nargs=1 Redir silent call Redir(<f-args>)
