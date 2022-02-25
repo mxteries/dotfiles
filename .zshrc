@@ -114,7 +114,14 @@ alias vi="$EDITOR"
 alias vim="$EDITOR"
 alias gst='git status'
 alias gpo='git push origin $(git branch --show-current)'
-alias -g dot='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+# alias -g dot='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+git() {
+    if [ "$PWD" = "$HOME" ]; then
+        command git --git-dir="$HOME/.dotfiles" --work-tree="$HOME" "$@"
+    else
+        command git "$@"
+    fi
+}
 
 # Start in home dir in WSL
 if [ -n "$WSL_DISTRO_NAME" ]; then

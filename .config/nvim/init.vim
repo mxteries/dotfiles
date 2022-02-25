@@ -45,6 +45,7 @@ if !s:windows
 end
 
 Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-rhubarb'
 Plug 'morhetz/gruvbox'
     let g:gruvbox_invert_selection=0
     let g:gruvbox_sign_column='bg0'
@@ -302,6 +303,13 @@ function! Redir(cmd) abort
 endfunction
 command! -nargs=1 Redir silent call Redir(<f-args>)
 
+function! SynStack()
+  if !exists("*synstack")
+    return
+  endif
+  echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
+endfunc
+
 """ autocmds {{{1
 augroup vimrc
     autocmd BufWritePost $MYVIMRC source $MYVIMRC
@@ -339,4 +347,3 @@ augroup END
 "   let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
 "   set termguicolors
 " endif
-
