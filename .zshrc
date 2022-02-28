@@ -133,3 +133,10 @@ fi
 if [ -f "$XDG_DATA_HOME/utils/.bash_aliases" ]; then
   . "$XDG_DATA_HOME/utils/.bash_aliases"
 fi
+
+# fzf z integration
+unalias z
+z() {
+  [ $# -gt 0 ] && _z "$*" && return
+  cd "$(_z -l 2>&1 | fzf --height 40% --nth 2.. --reverse --inline-info +s --tac --query "${*##-* }" | sed 's/^[0-9,.]* *//')"
+}

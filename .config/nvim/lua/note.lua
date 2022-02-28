@@ -12,6 +12,8 @@ local test_diagnostic = {
     col = 5,  -- these col just mostly control the underline
     -- end_col = 10,
     message = 'test diagnostic',
+    code = 'test-code',
+    anything_we_want = 'literally'
 }
 
 vim.cmd [[

@@ -76,8 +76,8 @@ Plug 'justinmk/vim-dirvish'
 
 " fzf integration
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-    " let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.8 } }
-    let g:fzf_layout = { 'window': '-tabnew' }
+    let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.8 } }
+    " let g:fzf_layout = { 'window': '-tabnew' }
 Plug 'junegunn/fzf.vim'
     let g:fzf_tags_command = 'ctags -R --exclude=.git --exclude=.terraform'
     nnoremap <space>K <cmd>Help<cr>
@@ -281,6 +281,7 @@ set shada=!,'10000,<50,s10,h
 set shada+=rterm
 set shada+=rfugitive
 set shada+=r/private
+set shada+=r/tmp
 " ready for testing!
 lua require('zeal')
 
@@ -309,6 +310,15 @@ function! SynStack()
   endif
   echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
 endfunc
+
+function! s:DiffWithSaved()
+    let filetype=&ft
+    diffthis
+    vnew | r # | normal! 1Gdd
+    diffthis
+    exe "setlocal bt=nofile bh=wipe nobl noswf ro ft=" . filetype
+endfunction
+com! DiffSaved call s:DiffWithSaved()
 
 """ autocmds {{{1
 augroup vimrc
