@@ -103,7 +103,6 @@ if [ "$PLATFORM" = 'Darwin' ]; then
   # AWS autocompletion and auto prompting
   complete -C '/usr/local/bin/aws_completer' aws
   export AWS_CLI_AUTO_PROMPT=on-partial
-  export AWS_DEFAULT_OUTPUT=table  # use '--output text' in scripts
 fi
 
 # Generic aliases

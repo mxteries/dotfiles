@@ -267,35 +267,28 @@ vim.api.nvim_command([[
 
 -- colorschemes
 -- this will affect all the hl-groups where the redefined colors are used
-local my_colors = {
-    fujiGray = "#8b949e",  -- more readable comment color
-}
-require('kanagawa').setup({
-    colors = my_colors,
-    undercurl = true,           -- enable undercurls
-    commentStyle = "italic",
-    functionStyle = "NONE",
-    keywordStyle = "NONE",
-    statementStyle = "bold",
-    typeStyle = "NONE",
-    variablebuiltinStyle = "NONE",
-    specialReturn = false,       -- special highlight for the return keyword
-    specialException = false,    -- special highlight for exception handling keywords
-    transparent = false,        -- do not set background color
-    dimInactive = true,        -- dim inactive window `:h hl-NormalNC`
-})
+-- local my_colors = {
+--     fujiGray = "#8b949e",  -- more readable comment color
+-- }
+-- require('kanagawa').setup({
+--     colors = my_colors,
+--     undercurl = true,           -- enable undercurls
+--     commentStyle = "italic",
+--     functionStyle = "NONE",
+--     keywordStyle = "NONE",
+--     statementStyle = "bold",
+--     typeStyle = "NONE",
+--     variablebuiltinStyle = "NONE",
+--     specialReturn = false,       -- special highlight for the return keyword
+--     specialException = false,    -- special highlight for exception handling keywords
+--     transparent = false,        -- do not set background color
+--     dimInactive = true,        -- dim inactive window `:h hl-NormalNC`
+-- })
 
-require("catppuccin").setup({
-    styles = {
-        comments = "italic",
-        functions = "NONE",
-        keywords = "NONE",
-        strings = "NONE",
-        variables = "NONE",
-    }
-})
 
--- setup must be called before loading
-vim.cmd("colorscheme kanagawa")
--- vim.cmd("colorscheme catppuccin")
-
+local hour = tonumber(os.date('%H'))
+if (hour > 8 and hour < 17) then
+    vim.cmd("set background=light")
+end
+-- vim.cmd("colorscheme gruvbox")
+vim.cmd("colorscheme everforest")

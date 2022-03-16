@@ -17,11 +17,13 @@ Plug 'tpope/vim-unimpaired'          " Useful mappings
 Plug 'tpope/vim-commentary'          " for commenting
 Plug 'tpope/vim-repeat'              " for repeating
 Plug 'tpope/vim-surround'            " for adding surrounding characters
+Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-rhubarb'
 Plug 'iamcco/markdown-preview.nvim', { 'do': ':call mkdp#util#install()', 'for': 'markdown', 'on': 'MarkdownPreview' }
 Plug 'Vimjas/vim-python-pep8-indent'
 Plug 'mbbill/undotree', { 'on': 'UndotreeToggle' }
 Plug 'rhysd/git-messenger.vim'  " leader gm to trigger
-" todo: gitconfig make verbose default, add commit template
+Plug 'Sangdol/mintabline.vim'
 
 " nvim plugins
 Plug 'nvim-lua/plenary.nvim'
@@ -44,18 +46,13 @@ if !s:windows
     Plug 'nvim-treesitter/playground'
 end
 
-Plug 'tpope/vim-fugitive'
-Plug 'tpope/vim-rhubarb'
+Plug 'sainnhe/everforest'
 Plug 'morhetz/gruvbox'
     let g:gruvbox_invert_selection=0
     let g:gruvbox_sign_column='bg0'
     let g:gruvbox_hls_cursor='purple'
     let g:gruvbox_italic=1
     let g:gruvbox_bold=1
-
-" colorscheme test
-Plug 'catppuccin/nvim'
-Plug 'rebelot/kanagawa.nvim'
 
 Plug 'justinmk/vim-dirvish'
     " disable netrw plugins but keep autoloaded funcs
@@ -104,6 +101,7 @@ Plug 'junegunn/fzf.vim'
                 \ 'ctrl-t': 'tabedit',
                 \ 'ctrl-x': 'split',
                 \ 'ctrl-v': 'vsplit' }
+    let $BAT_THEME = 'Solarized (dark)'
 
 " Windows specific plugin settings
 if s:windows
@@ -156,6 +154,7 @@ set signcolumn=yes    " always show sign column
 set termguicolors
 set nowrapscan
 set guifont=JetBrains\ Mono:h15
+set foldlevel=1
 
 " Enable mouse for scrolling only
 set mouse=n
@@ -197,7 +196,7 @@ function! Myfoldtext() abort
     return line.' '.linecount
 endfunction
 set foldtext=Myfoldtext()
-nnoremap <silent> <tab> @=(foldlevel('.')?'za':"\<tab>")<CR>
+nnoremap <silent> <tab> za
 " Use zf for manual folding always
 nnoremap zf <cmd>setl fdm&<CR>zf
 xnoremap zf <cmd>setl fdm&<CR>zf
@@ -265,7 +264,7 @@ xnoremap <space>p "+p
 xnoremap P "0p
 xnoremap <space>@ :norm @
 " replace every occurrence of word under cursor on this line
-xnoremap s y:s/<c-r>"//g<left><left>
+xnoremap s "sy:s/<c-r>s//g<left><left>
 nnoremap <space>s :s/<c-r><c-w>//g<left><left>
 nnoremap <leader>ciw :s/<c-r><c-w>//g<left><left>
 nnoremap <leader>ciW :s/<c-r><c-a>//g<left><left>
@@ -290,9 +289,12 @@ nnoremap T <Nop>
 nnoremap t <Nop>
 nnoremap F <Nop>
 
-" custom floating term
-nnoremap <F6> <cmd>lua require("test").toggle()<CR>
-tnoremap <F6> <c-\><c-n><cmd>lua require("test").toggle()<CR>
+" custom floating term stuff
+nnoremap <F6> <cmd>lua require("tabterm").toggle()<CR>
+tnoremap <F6> <c-\><c-n><cmd>lua require("tabterm").toggle()<CR>
+autocmd! TabClosed * lua require("tabterm").delete_term()
+" autocmd! TabClosed * echom "afile:".expand("<afile>")." amatch:".expand("<amatch>")." abuf:".expand("<abuf>")." tabpagenr:".tabpagenr()." tabid:" | lua print(vim.api.nvim_get_current_tabpage())
+" custom floating term stuff end
 """ TESTING end
 
 " Redirect the output of a Vim or external command into a scratch buffer
@@ -331,9 +333,9 @@ augroup vimrc
     " use treesitter folding, 1 fold only
     autocmd FileType lua,python,terraform setlocal foldnestmax=1 foldmethod=expr foldexpr=nvim_treesitter#foldexpr()
     autocmd FileType vim setlocal foldmethod=marker
-    autocmd FileType json setlocal foldmethod=syntax
+    " autocmd FileType json setlocal foldmethod=syntax
     autocmd FileType fugitive nmap <buffer> <tab> =
-    autocmd FileType git,gitcommit setlocal spell textwidth=72 foldmethod=syntax
+    autocmd FileType gitcommit setlocal spell textwidth=72 foldmethod=syntax
     autocmd FileType man nnoremap <buffer> <space>/ /^\s\+
     autocmd Filetype markdown
                 \ nmap <buffer> <leader>md ysiW)i[]<c-o>hlink<esc>
@@ -350,10 +352,3 @@ augroup vimrc
     autocmd CmdlineEnter : set nosmartcase
     autocmd CmdlineLeave : set smartcase
 augroup END
-
-" Enable true color
-" if exists('+termguicolors')
-"   let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-"   let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
-"   set termguicolors
-" endif
