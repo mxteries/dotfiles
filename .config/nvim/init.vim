@@ -1,8 +1,8 @@
 augroup vimrc
     autocmd!
 augroup END
-let mapleader=","
-let maplocalleader=","
+let mapleader=" "
+let maplocalleader=" "
 
 let s:configdir = stdpath('config')
 let s:windows = has('win32') || has('win64')
@@ -40,13 +40,18 @@ Plug 'hrsh7th/cmp-cmdline'
 Plug 'mfussenegger/nvim-lint'
 Plug 'folke/which-key.nvim' | set timeoutlen=350
 Plug 'nvim-orgmode/orgmode'
+Plug 'L3MON4D3/LuaSnip'
 if !s:windows
     Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-    " Plug 'nvim-treesitter/nvim-treesitter-textobjects'
-    Plug 'nvim-treesitter/playground'
+    Plug 'nvim-treesitter/nvim-treesitter-refactor'
 end
 
-Plug 'sainnhe/everforest'
+" TODO:
+" luasnip
+" cmp-buffer get bufnr
+" mappings
+
+Plug 'sainnhe/everforest' | let g:everforest_background = 'hard'
 Plug 'morhetz/gruvbox'
     let g:gruvbox_invert_selection=0
     let g:gruvbox_sign_column='bg0'
@@ -65,9 +70,7 @@ Plug 'justinmk/vim-dirvish'
         " map f to lcd then start searching for files
         " map r to lcd then start :Rg
         autocmd FileType dirvish
-                    \  nnoremap <buffer> t :tabedit <c-r><c-p><CR>
-                    \|nnoremap <buffer> R :lcd <c-r><c-p> \| Rg<space>
-                    \|nnoremap <buffer> r :lcd <c-r><c-p> \| Rg<cr>
+                    \|nnoremap <buffer> r :lcd <c-r><c-p> \| Rg<space>
         autocmd FileType dirvish silent! unmap <buffer> <c-p>
     augroup END
 
@@ -81,10 +84,10 @@ Plug 'junegunn/fzf.vim'
     xnoremap <space>K y:Help<cr><c-\><c-n>pi
     nnoremap <space>r <cmd>History:<cr>
     xnoremap R y:Rg <c-r>"<cr>
-    nnoremap <leader>fc <cmd>Commands<cr>
+    nnoremap <leader>f; <cmd>Commands<cr>
     nnoremap <leader>ff <cmd>Files<cr>
     nnoremap <leader>fb <cmd>Buffers<cr>
-    nnoremap <leader>fo <cmd>Colors<cr>
+    nnoremap <leader>fc <cmd>Colors<cr>
     nnoremap <leader>fh <cmd>History<cr>
     nnoremap <leader>f/ <cmd>History/<cr>
     nnoremap <leader>fL <cmd>Lines<cr>
@@ -95,18 +98,11 @@ Plug 'junegunn/fzf.vim'
     nnoremap <leader>fM <cmd>Marks<cr>
     nnoremap <leader>fm <cmd>Maps<cr>
     nnoremap <leader>fp <cmd>Filetypes<cr>
-
-    " Overwrite <c-t> to not use :tab
-    let g:fzf_action = {
-                \ 'ctrl-t': 'tabedit',
-                \ 'ctrl-x': 'split',
-                \ 'ctrl-v': 'vsplit' }
     let $BAT_THEME = 'Solarized (dark)'
 
 " Windows specific plugin settings
 if s:windows
     let g:fzf_preview_window=''
-    nnoremap <leader>K <cmd>Telescope help_tags<cr>
 end
 
 let g:markdown_folding = 1
@@ -202,8 +198,6 @@ nnoremap zf <cmd>setl fdm&<CR>zf
 xnoremap zf <cmd>setl fdm&<CR>zf
 
 """ Mappings {{{1
-" Idea: use <leader> for multi keystrokes with which-key, use <space> for one letter modifier
-nnoremap <space>l <cmd>echo "use ,"<cr>
 
 "" Navigation and windows
 " ':h terminal-input'
@@ -221,13 +215,11 @@ nnoremap <A-k> <C-w>k
 nnoremap <A-l> <C-w>l
 nnoremap 8 <c-d>
 nnoremap 9 <c-u>
-nnoremap <PageDown> <c-d>
-nnoremap <PageUp> <c-u>
-nnoremap <c-w>O <cmd>Goyo<cr>
-nnoremap <space>o <cmd>Goyo<cr>
+nnoremap <leader>lo <cmd>lua vim.diagnostic.open_float()<cr>
+nnoremap <leader>ln <cmd>lua vim.diagnostic.goto_next()<CR>
+nnoremap <leader>lp <cmd>lua vim.diagnostic.goto_prev()<CR>
 " Alternative C-i mapping for when tab is mapped over
-nnoremap <A-i> <C-i>
-nnoremap <A-o> <C-o>
+nnoremap <A-o> <C-i>
 nnoremap <BS> <C-^>
 cnoremap <C-A> <Home>
 nnoremap <left> 3<c-w><c-<>
@@ -236,42 +228,40 @@ nnoremap <down> 2<c-w><c-+>
 nnoremap <up> 2<c-w><c-->
 nnoremap cd <cmd>lcd %:p:h<cr>
 nnoremap cD <cmd>lcd ..<cr>
-nnoremap <leader>lo <cmd>lua vim.diagnostic.open_float()<cr>
-nnoremap <leader>ln <cmd>lua vim.diagnostic.goto_next()<CR>
-nnoremap <leader>lp <cmd>lua vim.diagnostic.goto_prev()<CR>
+" tnoremap <expr> <Esc> (&filetype == "fzf") ? "<Esc>" : "<c-\><c-n>"
+nnoremap <leader>t <cmd>split <bar> norm <c-w>T<cr>
+nnoremap <leader>O <cmd>Goyo<cr>
+
+" running TODO: make this a func
+nnoremap <leader>c :source<cr>
+xnoremap <leader>c :source<cr>
 
 "" git
-nnoremap <space>g <cmd>G<cr>
 " <leader>gm is git messenger
-nnoremap <leader>gg :lcd `git rev-parse --show-toplevel`<CR>:pwd<CR>
+nnoremap <leader>gg <cmd>G<cr>
+nnoremap <leader>gD :lcd `git rev-parse --show-toplevel`<CR>:pwd<CR>
 nnoremap <leader>gf <cmd>GFiles<cr>
 nnoremap <leader>gs <cmd>GFiles?<cr>
 nnoremap <leader>gc <cmd>Commits<cr>
 nnoremap <leader>gC <cmd>BCommits<cr>
 xnoremap <leader>gc :BCommits<cr>
 
-"" Terminal and Tabs
-" tnoremap <expr> <Esc> (&filetype == "fzf") ? "<Esc>" : "<c-\><c-n>"
-nnoremap <space>t <cmd>botright split <bar> term<cr>
-nnoremap <space>T <cmd>split <bar> norm <c-w>T<cr>
-
 "" Editing
-nnoremap <space>Y "+Y
-nnoremap <space>y "+y
-xnoremap <space>y "+y
-nnoremap <space>p "+p
-xnoremap <space>p "+p
+nnoremap <leader>Y "+Y
+nnoremap <leader>y "+y
+xnoremap <leader>y "+y
+nnoremap <leader>p "+p
+xnoremap <leader>p "+p
 xnoremap P "0p
-xnoremap <space>@ :norm @
+xnoremap <leader>@ :norm @
 " replace every occurrence of word under cursor on this line
 xnoremap s "sy:s/<c-r>s//g<left><left>
-nnoremap <space>s :s/<c-r><c-w>//g<left><left>
-nnoremap <leader>ciw :s/<c-r><c-w>//g<left><left>
-nnoremap <leader>ciW :s/<c-r><c-a>//g<left><left>
+nnoremap <leader>s :s/<c-r><c-w>//g<left><left>
+nnoremap <leader>S :s/<c-r><c-a>//g<left><left>
 
 " map <leader>\ to prompt for a mapping, "<" has to be escaped via <lt>
-nmap <space>\ :nmap <buffer> <lt>space><lt>space><space>
-nnoremap <space>R <cmd>source $MYVIMRC<cr>
+nmap <leader>\ :nmap <buffer> <lt>leader><lt>leader><leader>
+nnoremap <leader>R <cmd>source $MYVIMRC<cr>
 
 """ Misc and testing {{{1
 " remember 10k filemarks
@@ -284,16 +274,10 @@ set shada+=r/tmp
 " ready for testing!
 lua require('zeal')
 
-nnoremap f <Nop>
-nnoremap T <Nop>
-nnoremap t <Nop>
-nnoremap F <Nop>
-
 " custom floating term stuff
 nnoremap <F6> <cmd>lua require("tabterm").toggle()<CR>
 tnoremap <F6> <c-\><c-n><cmd>lua require("tabterm").toggle()<CR>
 autocmd! TabClosed * lua require("tabterm").delete_term()
-" autocmd! TabClosed * echom "afile:".expand("<afile>")." amatch:".expand("<amatch>")." abuf:".expand("<abuf>")." tabpagenr:".tabpagenr()." tabid:" | lua print(vim.api.nvim_get_current_tabpage())
 " custom floating term stuff end
 """ TESTING end
 

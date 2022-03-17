@@ -25,13 +25,13 @@ local on_attach = function(_, bufnr)
     vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>ld', '<cmd>lua vim.lsp.buf.definition()<CR>', opts)
     vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>lh', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
     vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>li', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
-    vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>ls', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
+    vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>lk', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
     vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>lwa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
     vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>lwr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
     vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>lwl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
     vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>lt', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
-    vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>lR', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
-    vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>lr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
+    vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>lr', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
+    vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>ls', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
     vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>lc', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
     vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>ly', [[<cmd>lua require('telescope.builtin').lsp_document_symbols()<CR>]], opts)
     vim.cmd [[ command! Format execute 'lua vim.lsp.buf.formatting()' ]]
@@ -174,9 +174,8 @@ if not windows then
         },
         textobjects = {
             select = {
-                enable = true,
-                -- Automatically jump forward to textobj, similar to targets.vim
-                lookahead = true,
+                enable = false,
+                lookahead = false,
                 keymaps = {
                     -- You can use the capture groups defined in textobjects.scm
                     ["af"] = "@function.outer",
@@ -187,13 +186,6 @@ if not windows then
                     ["ia"] = "@parameter.inner",
                     ["ab"] = "@block.outer",
                     ["ib"] = "@block.inner",
-                    -- Or you can define your own textobjects like this
-                    ["iF"] = {
-                        python = "(function_definition) @function",
-                        cpp = "(function_definition) @function",
-                        c = "(function_definition) @function",
-                        java = "(method_declaration) @function",
-                    },
                 },
             },
         },
@@ -204,24 +196,29 @@ if not windows then
                 node_decremental = '<S-TAB>',
             }
         },
-        playground = {
-            enable = true,
-            disable = {},
-            updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
-            persist_queries = false, -- Whether the query persists across vim sessions
-            keybindings = {
-                toggle_query_editor = 'o',
-                toggle_hl_groups = 'i',
-                toggle_injected_languages = 't',
-                toggle_anonymous_nodes = 'a',
-                toggle_language_display = 'I',
-                focus_language = 'f',
-                unfocus_language = 'F',
-                update = 'R',
-                goto_node = '<cr>',
-                show_help = '?',
+        refactor = {
+            highlight_definitions = {
+                enable = true,
+                -- Set to false if you have an `updatetime` of ~100.
+                clear_on_cursor_move = false,
             },
-        }
+            highlight_current_scope = { enable = false },
+            smart_rename = {
+                enable = true,
+                keymaps = {
+                    smart_rename = "<leader>lr",
+                },
+            },
+            navigation = {
+                enable = false,
+                keymaps = {
+                    goto_definition = "<leader>ld",
+                    list_definitions = "<leader>ls",
+                    goto_next_usage = "<a-*>",
+                    goto_previous_usage = "<a-#>",
+                },
+            },
+        },
     }
 end
 
@@ -253,6 +250,12 @@ require("which-key").setup {
         align = "left", -- align columns left, center or right
     },
 }
+require("which-key").register({
+  ["<leader>f"] = { name = "+fzf" },
+  ["<leader>l"] = { name = "+diag [+lsp +ts]" },
+  ["<leader>o"] = { name = "+org" },
+  ["<leader>g"] = { name = "+git" },
+})
 require('lint').linters_by_ft = {
     python = {'pylint'},
     sh = {'shellcheck'},
@@ -286,9 +289,9 @@ vim.api.nvim_command([[
 -- })
 
 
-local hour = tonumber(os.date('%H'))
-if (hour > 8 and hour < 17) then
-    vim.cmd("set background=light")
-end
+-- local hour = tonumber(os.date('%H'))
+-- if (hour > 8 and hour < 17) then
+--     vim.cmd("set background=light")
+-- end
 -- vim.cmd("colorscheme gruvbox")
 vim.cmd("colorscheme everforest")
