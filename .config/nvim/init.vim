@@ -144,9 +144,9 @@ set list listchars+=lead:.  " show leading spaces
 set pumblend=20
 set signcolumn=yes    " always show sign column
 set termguicolors
-set nowrapscan
 set guifont=JetBrains\ Mono:h15
 set foldlevel=1
+set laststatus=3  " nvim 0.7 only
 
 " Enable mouse for scrolling only
 set mouse=n
@@ -275,7 +275,7 @@ lua require('zeal')
 " custom floating term stuff
 nnoremap <F6> <cmd>lua require("tabterm").toggle()<CR>
 tnoremap <F6> <c-\><c-n><cmd>lua require("tabterm").toggle()<CR>
-autocmd! TabClosed * lua require("tabterm").delete_term()
+" autocmd! TabClosed * lua require("tabterm").delete_term()
 " custom floating term stuff end
 """ TESTING end
 
