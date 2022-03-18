@@ -324,7 +324,10 @@ augroup vimrc
                 \| nnoremap <buffer> j gj
                 \| nnoremap <buffer> k gk
                 \| nnoremap <buffer> <tab> za
-    autocmd FileType org nnoremap <buffer> <space>c <cmd>.w !zsh<cr>
+    autocmd FileType org
+                \ nnoremap <buffer> <space>c <cmd>.w !zsh<cr>
+                \| nmap <buffer> <M-CR> <leader><cr>
+                \| imap <buffer> <M-CR> <C-O><leader><cr>
     autocmd BufRead,BufNewFile *.cake set filetype=cs
 
     " Turn on hlsearch when searching /? (and also for :s :g)
