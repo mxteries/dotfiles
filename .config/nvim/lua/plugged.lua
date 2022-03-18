@@ -89,6 +89,7 @@ end
 
 --- nvim.cmp ---
 local cmp = require'cmp'
+local luasnip = require("luasnip")
 local has_words_before = function()
     local line, col = unpack(vim.api.nvim_win_get_cursor(0))
     return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
@@ -97,6 +98,12 @@ end
 -- Set completeopt to have a better completion experience
 vim.o.completeopt = 'menu,menuone,noselect'
 cmp.setup {
+    snippet = {
+        -- REQUIRED - you must specify a snippet engine
+        expand = function(args)
+            require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
+        end,
+    },
     mapping = {
         ['<S-Up>'] = cmp.mapping(cmp.mapping.scroll_docs(-4), { 'i', 'c' }),
         ['<S-Down>'] = cmp.mapping(cmp.mapping.scroll_docs(4), { 'i', 'c' }),
@@ -114,6 +121,8 @@ cmp.setup {
             i = function(fallback)
                 if cmp.visible() then
                     cmp.select_next_item()
+                elseif luasnip.expand_or_jumpable() then
+                    luasnip.expand_or_jump()
                 elseif has_words_before() then
                     cmp.complete()
                 else
@@ -131,14 +140,23 @@ cmp.setup {
         ['<S-Tab>'] = cmp.mapping(function(fallback)
             if cmp.visible() then
                 cmp.select_prev_item()
+            elseif luasnip.jumpable(-1) then
+                luasnip.jump(-1)
             else
                 fallback()
             end
         end, { 'i', 'c'}),
     },
     sources = {
-        { name = 'buffer', keyword_length = 5,
-            options = { get_bufnrs = function() return vim.api.nvim_list_bufs() end }},
+        {
+            name = 'buffer',
+            keyword_length = 5,
+            option = {
+                get_bufnrs = function()
+                    return vim.api.nvim_list_bufs()
+                end
+            },
+        },
         { name = 'nvim_lua', keyword_length = 5 },
         { name = 'nvim_lsp', keyword_length = 3 },
         { name = 'orgmode', keyword_length = 2 },

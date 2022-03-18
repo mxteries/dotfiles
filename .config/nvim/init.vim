@@ -37,19 +37,15 @@ Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-nvim-lua'
 Plug 'hrsh7th/cmp-path'
 Plug 'hrsh7th/cmp-cmdline'
+Plug 'saadparwaiz1/cmp_luasnip'
+Plug 'L3MON4D3/LuaSnip'
 Plug 'mfussenegger/nvim-lint'
 Plug 'folke/which-key.nvim' | set timeoutlen=350
 Plug 'nvim-orgmode/orgmode'
-Plug 'L3MON4D3/LuaSnip'
 if !s:windows
     Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
     Plug 'nvim-treesitter/nvim-treesitter-refactor'
 end
-
-" TODO:
-" luasnip
-" cmp-buffer get bufnr
-" mappings
 
 Plug 'sainnhe/everforest' | let g:everforest_background = 'hard'
 Plug 'morhetz/gruvbox'
