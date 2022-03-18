@@ -235,6 +235,8 @@ xnoremap <leader>c :source<cr>
 "" git
 " <leader>gm is git messenger
 nnoremap <leader>gg <cmd>G<cr>
+" Requires configuring core.worktree: `git --git-dir=.dotfiles config core.worktree "$HOME"`
+nnoremap <leader>g. <cmd>call FugitiveDetect(expand('~/.dotfiles')) \| G<cr>
 nnoremap <leader>gD :lcd `git rev-parse --show-toplevel`<CR>:pwd<CR>
 nnoremap <leader>gf <cmd>GFiles<cr>
 nnoremap <leader>gs <cmd>GFiles?<cr>

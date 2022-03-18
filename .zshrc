@@ -113,7 +113,19 @@ alias vi="$EDITOR"
 alias vim="$EDITOR"
 alias gst='git status'
 alias gpo='git push origin $(git branch --show-current)'
+
+## Managing dotfiles with vim-fugitive
+# 1. git clone --bare $link-to-repo "$HOME/.dotfiles"
+# 2. vim "$HOME/.dotfiles/config"
+# 3. Add the following 3 options:
+#       bare = false
+#       worktree = /home/mxter
+#   [status]
+#       showUntrackedFiles = no
+# 4. :cd $HOME | call FugitiveDetect(expand('~/.dotfiles'))
+# 5. :G
 alias -g dot='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+
 
 # Start in home dir in WSL
 if [ -n "$WSL_DISTRO_NAME" ]; then
