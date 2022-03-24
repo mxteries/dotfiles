@@ -55,10 +55,6 @@ end
 --- Let's just stick with the oldfiles and the undofiles at the very beginning.
 --- That gives us 1 source of recency and 1 source of access/changes
 
-P = function(v)
-    print(vim.inspect(v))
-    return v
-end
 
 -- oldfiles is definitely not populated when this module is loaded lol...
 -- P(vim.v.oldfiles)
@@ -67,12 +63,18 @@ end
 
 -- local undofiles_source = nil
 
+-- set to results of a search (a list of files ranked)
+last_search = nil
+
 -- search_strings is a string with queries separated by a space
 find_file = function(search_strings)
     local oldfiles_source = vim.v.oldfiles
     -- for query in vim.split(search_strings, ' ', {trimempty=true}) do end
     if search_strings == '' then
-        -- Just call fzf if we call 'Z' by itself lol
+        -- if last_search is not nil, then open the results of the last
+        -- search in vim ui select. Otherwise, open all zeal sources in vim ui select
+
+        -- For now, just call fzf if we call 'Z' by itself lol
         vim.cmd('History')
         return
     end

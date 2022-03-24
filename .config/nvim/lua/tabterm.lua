@@ -35,13 +35,14 @@ function M.toggle()
     local tab_term = tabby_tabby[tab_id]
     if tab_term ~= nil then
         -- Term exists -> toggle visibility
-        if tab_term:is_open() then
-            log("closing open terminal")
-            tab_term:close()
-        else
-            log("open existing terminal")
-            tab_term:open()
-        end
+        tab_term:toggle()
+        -- if tab_term:is_open() then
+        --     log("closing open terminal")
+        --     tab_term:close()
+        -- else
+        --     log("open existing terminal")
+        --     tab_term:open()
+        -- end
     else
         log('creating new terminal')
         -- create a new term for this tab and open it

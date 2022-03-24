@@ -355,3 +355,9 @@ vim.api.nvim_command([[
 -- end
 -- vim.cmd("colorscheme gruvbox")
 vim.cmd("colorscheme everforest")
+
+-- useful global lua funcs
+P = function(v)
+    print(vim.inspect(v))
+    return v
+end
