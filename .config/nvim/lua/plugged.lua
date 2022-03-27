@@ -200,20 +200,21 @@ if not windows then
                 enable = true,
                 lookahead = false,
                 keymaps = {
-                    -- You can use the capture groups defined in textobjects.scm
                     ["af"] = "@function.outer",
                     ["if"] = "@function.inner",
                     ["aa"] = "@parameter.outer",
                     ["ia"] = "@parameter.inner",
+
+                    ["x"] = "@swappable",
                 },
             },
             swap = {
                 enable = true,
                 swap_next = {
-                    ["<c-n>"] = "@parameter.inner",
+                    ["<c-n>"] = "@swappable",
                 },
                 swap_previous = {
-                    ["<c-p>"] = "@parameter.inner",
+                    ["<c-p>"] = "@swappable",
                 },
             },
         },
