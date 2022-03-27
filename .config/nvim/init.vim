@@ -45,6 +45,8 @@ Plug 'nvim-orgmode/orgmode'
 if !s:windows
     Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
     Plug 'nvim-treesitter/nvim-treesitter-refactor'
+    Plug 'nvim-treesitter/nvim-treesitter-textobjects'
+    Plug 'nvim-treesitter/playground'
 end
 
 Plug 'sainnhe/everforest' | let g:everforest_background = 'hard'

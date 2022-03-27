@@ -48,43 +48,48 @@ if mac then
         }
     end
 elseif linux then
-    -- sumneko lua
-    local sumneko_root_path = vim.fn.stdpath('cache')..'/lua-language-server'
-    local sumneko_binary = sumneko_root_path..'/bin/Linux/lua-language-server'
+    local sumneko = function()
+        -- sumneko lua
+        local sumneko_root_path = vim.fn.stdpath('cache')..'/lua-language-server'
+        local sumneko_binary = sumneko_root_path..'/bin/Linux/lua-language-server'
 
-    -- Make runtime files discoverable to the server
-    local runtime_path = vim.split(package.path, ';')
-    table.insert(runtime_path, 'lua/?.lua')
-    table.insert(runtime_path, 'lua/?/init.lua')
+        -- Make runtime files discoverable to the server
+        local runtime_path = vim.split(package.path, ';')
+        table.insert(runtime_path, 'lua/?.lua')
+        table.insert(runtime_path, 'lua/?/init.lua')
 
-    require('lspconfig').sumneko_lua.setup {
-        cmd = { sumneko_binary, '-E', sumneko_root_path .. '/main.lua' },
-        on_attach = on_attach,
-        capabilities = capabilities,
-        settings = {
-            Lua = {
-                runtime = {
-                    version = 'LuaJIT',
-                    -- Setup your lua path
-                    path = runtime_path,
-                },
-                diagnostics = {
-                    -- Get the language server to recognize the `vim` global
-                    globals = { 'vim' },
-                },
-                workspace = {
-                    -- Love2d
-                    library = {
-                        [sumneko_root_path .. '/meta/3rd/love2d/library'] = true
+        require('lspconfig').sumneko_lua.setup {
+            cmd = { sumneko_binary, '-E', sumneko_root_path .. '/main.lua' },
+            on_attach = on_attach,
+            capabilities = capabilities,
+            settings = {
+                Lua = {
+                    runtime = {
+                        version = 'LuaJIT',
+                        -- Setup your lua path
+                        path = runtime_path,
                     },
-                    checkThirdParty = false
-                },
-                telemetry = {
-                    enable = false,
+                    diagnostics = {
+                        -- Get the language server to recognize the `vim` global
+                        globals = { 'vim' },
+                    },
+                    workspace = {
+                        -- Love2d
+                        library = {
+                            [sumneko_root_path .. '/meta/3rd/love2d/library'] = true
+                        },
+                        checkThirdParty = false
+                    },
+                    telemetry = {
+                        enable = false,
+                    },
                 },
             },
-        },
-    }
+        }
+    end
+
+    -- disable
+    -- sumneko()
 end
 
 --- nvim.cmp ---
@@ -192,18 +197,23 @@ if not windows then
         },
         textobjects = {
             select = {
-                enable = false,
+                enable = true,
                 lookahead = false,
                 keymaps = {
                     -- You can use the capture groups defined in textobjects.scm
                     ["af"] = "@function.outer",
                     ["if"] = "@function.inner",
-                    ["ac"] = "@conditional.outer",
-                    ["ic"] = "@conditional.inner",
                     ["aa"] = "@parameter.outer",
                     ["ia"] = "@parameter.inner",
-                    ["ab"] = "@block.outer",
-                    ["ib"] = "@block.inner",
+                },
+            },
+            swap = {
+                enable = true,
+                swap_next = {
+                    ["<c-n>"] = "@parameter.inner",
+                },
+                swap_previous = {
+                    ["<c-p>"] = "@parameter.inner",
                 },
             },
         },
@@ -237,6 +247,12 @@ if not windows then
                 },
             },
         },
+        playground = {
+            enable = true,
+            disable = {},
+            updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
+            persist_queries = false,
+        }
     }
 end
 
