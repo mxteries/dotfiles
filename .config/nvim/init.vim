@@ -230,9 +230,8 @@ nnoremap cD <cmd>lcd ..<cr>
 nnoremap <leader>t <cmd>split <bar> norm <c-w>T<cr>
 nnoremap <leader>O <cmd>Goyo<cr>
 
-" running TODO: make this a func
-nnoremap <leader>c :source<cr>
-xnoremap <leader>c :source<cr>
+nnoremap <leader>c :Run<cr>
+xnoremap <leader>c :Run<cr>
 
 "" git
 " <leader>gm is git messenger

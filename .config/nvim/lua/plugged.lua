@@ -377,3 +377,20 @@ P = function(v)
     print(vim.inspect(v))
     return v
 end
+
+-- Runs something for the current buffer
+-- Can overload functionality by using the 0 range in the future
+Run = function(line1, line2)
+    local range = line1 .. ',' .. line2
+    local command = ''
+    -- local path = '"' .. vim.fn.expand('%') .. '"'
+    if vim.bo.filetype == 'python' then
+        command = range .. 'w !python3'
+    elseif vim.bo.filetype == 'lua' then
+        command = range .. 'source'
+    end
+    vim.notify(command)
+    vim.cmd(command)
+end
+-- Define a "Run" command that acts on the entire file by default
+vim.cmd('command! -range=% Run lua Run(<line1>, <line2>)')
