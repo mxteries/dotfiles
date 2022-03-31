@@ -259,6 +259,13 @@ end
 
 --- everything else ---
 require('telescope').load_extension('fzf')
+require("toggleterm").setup{
+    open_mapping = [[<c-\>]],
+    shade_terminals = false,
+    direction = 'horizontal',
+    persist_size = false,
+    start_in_insert = false,
+}
 require('gitsigns').setup{
   on_attach = function(bufnr)
     local gs = package.loaded.gitsigns
@@ -340,7 +347,6 @@ require('lint').linters_by_ft = {
     yaml = {'yamllint',},
     rb = {'ruby',},
 }
-
 vim.api.nvim_command([[
     autocmd! BufWritePost * lua require('lint').try_lint()
 ]])

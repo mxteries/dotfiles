@@ -25,6 +25,8 @@ Plug 'mbbill/undotree', { 'on': 'UndotreeToggle' }
 Plug 'rhysd/git-messenger.vim'  " leader gm to trigger
 Plug 'Sangdol/mintabline.vim'
 
+Plug 'akinsho/toggleterm.nvim'
+
 " nvim plugins
 Plug 'nvim-lua/plenary.nvim'
     Plug 'nvim-telescope/telescope.nvim'
@@ -199,6 +201,8 @@ xnoremap zf <cmd>setl fdm&<CR>zf
 
 "" Navigation and windows
 " ':h terminal-input'
+" tnoremap <expr> <Esc> (&filetype == "fzf") ? "<Esc>" : "<c-\><c-n>"
+tnoremap <C-z> <C-\><C-N>
 tnoremap <A-h> <C-\><C-N><C-w>h
 tnoremap <A-j> <C-\><C-N><C-w>j
 tnoremap <A-k> <C-\><C-N><C-w>k
@@ -226,7 +230,6 @@ nnoremap <down> 2<c-w><c-+>
 nnoremap <up> 2<c-w><c-->
 nnoremap cd <cmd>lcd %:p:h<cr>
 nnoremap cD <cmd>lcd ..<cr>
-" tnoremap <expr> <Esc> (&filetype == "fzf") ? "<Esc>" : "<c-\><c-n>"
 nnoremap <leader>t <cmd>split <bar> norm <c-w>T<cr>
 nnoremap <leader>O <cmd>Goyo<cr>
 
@@ -278,6 +281,8 @@ nnoremap <F6> <cmd>lua require("tabterm").toggle()<CR>
 tnoremap <F6> <c-\><c-n><cmd>lua require("tabterm").toggle()<CR>
 " autocmd! TabClosed * lua require("tabterm").delete_term()
 " custom floating term stuff end
+
+highlight StatusLine guifg=#e2eac0 guibg=#8c3540
 """ TESTING end
 
 " Redirect the output of a Vim or external command into a scratch buffer
