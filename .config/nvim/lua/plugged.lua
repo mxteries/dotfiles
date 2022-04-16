@@ -390,11 +390,14 @@ end
 Run = function(line1, line2)
     local range = line1 .. ',' .. line2
     local command = ''
+    local ft = vim.bo.filetype
     -- local path = '"' .. vim.fn.expand('%') .. '"'
-    if vim.bo.filetype == 'python' then
+    if ft == 'python' then
         command = range .. 'w !python3'
-    elseif vim.bo.filetype == 'lua' then
+    elseif ft == 'lua' then
         command = range .. 'source'
+    elseif ft == 'sh' or ft == 'bash' or ft == 'zsh' then
+        command = range .. 'w !bash'
     end
     vim.notify(command)
     vim.cmd(command)
