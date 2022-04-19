@@ -121,6 +121,7 @@ if !empty(expand(glob(s:configdir . '/local_settings.vim')))
 endif
 
 """ Settings {{{1
+let g:do_filetype_lua = 1 | let g:did_load_filetypes = 0
 " Indent spaces
 set softtabstop=4 shiftwidth=4 expandtab autoindent copyindent
 " Formatting search
@@ -150,7 +151,7 @@ set signcolumn=yes    " always show sign column
 set termguicolors
 set guifont=JetBrains\ Mono:h15
 set foldlevel=1
-set laststatus=3  " nvim 0.7 only
+set laststatus=3
 
 " Enable mouse for scrolling only
 set mouse=n
@@ -260,6 +261,8 @@ xnoremap <leader>@ :norm @
 xnoremap s "sy:s/<c-r>s//g<left><left>
 nnoremap <leader>s :s/<c-r><c-w>//g<left><left>
 nnoremap <leader>S :s/<c-r><c-a>//g<left><left>
+" split selection to separate file
+xnoremap <leader>n d:new<cr>P
 
 " map <leader>\ to prompt for a mapping, "<" has to be escaped via <lt>
 nmap <leader>\ :nmap <buffer> <lt>leader><lt>leader><leader>
@@ -326,7 +329,7 @@ augroup vimrc
     autocmd FileType gitcommit setlocal spell textwidth=72 foldmethod=syntax
     autocmd FileType man nnoremap <buffer> <space>/ /^\s\+
     autocmd Filetype markdown
-                \ nmap <buffer> <leader>md ysiW)i[]<c-o>hlink<esc>
+                \ nmap <buffer> <leader>md i[text](url)<esc>
                 \| nnoremap <buffer> j gj
                 \| nnoremap <buffer> k gk
                 \| nnoremap <buffer> <tab> za
