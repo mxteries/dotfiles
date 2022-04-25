@@ -12,6 +12,12 @@ local config = {
         bottom = 0,
     },
     audible_bell = "Disabled",
+    keys = {
+        {key="PageUp", mods="CTRL", action="DisableDefaultAssignment"},
+        {key="PageDown", mods="CTRL", action="DisableDefaultAssignment"},
+        {key="Enter", mods="ALT", action="DisableDefaultAssignment"},
+    },
+    -- disable_default_key_bindings = true,
 
     -- -- https://docs.rs/regex/1.3.9/regex/#syntax
     -- hyperlink_rules = {
@@ -22,7 +28,6 @@ local config = {
     --         format = "$0",
     --     },
     -- },
-
 }
 
 local has_private, private = pcall(require, 'private')

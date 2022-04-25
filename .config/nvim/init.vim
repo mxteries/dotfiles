@@ -25,7 +25,6 @@ Plug 'mbbill/undotree', { 'on': 'UndotreeToggle' }
 Plug 'rhysd/git-messenger.vim'  " leader gm to trigger
 Plug 'Sangdol/mintabline.vim'
 
-Plug 'akinsho/toggleterm.nvim'
 
 " nvim plugins
 Plug 'nvim-lua/plenary.nvim'

@@ -144,3 +144,14 @@ z() {
   [ $# -gt 0 ] && _z "$*" && return
   cd "$(_z -l 2>&1 | fzf --height 40% --nth 2.. --reverse --inline-info +s --tac --query "${*##-* }" | sed 's/^[0-9,.]* *//')"
 }
+
+# Make Ctrl-w more like vim - delete a full WORD (including colon, dot, comma, quotes...)
+my-backward-kill-word () {
+    # https://unix.stackexchange.com/a/586378
+    # All characters here are part of a "word", ie. they'll get deleted by ctrl-w
+    local WORDCHARS='*?_-.[]~&;!#$%^(){}<>`:,"'"'"
+    zle -f kill # Append to the kill ring on subsequent kills.
+    zle backward-kill-word
+}
+zle -N my-backward-kill-word
+bindkey '^w' my-backward-kill-word
