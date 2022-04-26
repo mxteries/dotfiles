@@ -1,25 +1,44 @@
 -- vim.cmd('undolist')
 -- vim.cmd('topleft vnew')
 
-P(vim.fn.undotree())
+-- P(vim.fn.undotree())
+local tree = vim.fn.undotree()
 
-local me = vim.api.nvim_get_current_buf()
-local bufn = 55
-local pre_undo = vim.api.nvim_buf_get_lines(55, 0, -1, true)
+-- has to be this function syntax otherwise the recursive call fails
+-- entries is a list of entries (see :h undotree())
+local function print_tree(entries)
+    if entries == nil then
+        return
+    end
 
-vim.api.nvim_set_current_buf(bufn)
-vim.cmd('silent undo 103')
-local post_undo = vim.api.nvim_buf_get_lines(55, 0, -1, true)
-vim.cmd('silent undo 104') -- revert back
-vim.api.nvim_set_current_buf(me)
+    for _, entry in ipairs(entries) do
+        print(string.format('seq: %s, time %s', entry.seq, os.date('%H:%M:%S' ,entry.time)))
+        print_tree(entry.alt)
+    end
+end
+print_tree(tree.entries)
+
+--- Next steps ---
+-- figure out how we want to display the tree (do we even want to display the actual tree?)
+-- look into regional undo
+
+-- local me = vim.api.nvim_get_current_buf()
+-- local bufn = 55
+-- local pre_undo = vim.api.nvim_buf_get_lines(55, 0, -1, true)
+
+-- vim.api.nvim_set_current_buf(bufn)
+-- vim.cmd('silent undo 103')
+-- local post_undo = vim.api.nvim_buf_get_lines(55, 0, -1, true)
+-- vim.cmd('silent undo 104') -- revert back
+-- vim.api.nvim_set_current_buf(me)
 
 
--- diff both buffer states
-local pre_undo_str = table.concat(pre_undo, '\n')
-local post_undo_str = table.concat(post_undo, '\n')
-print(vim.diff(pre_undo_str, post_undo_str, {
-      algorithm = "patience",
-   }))
+-- -- diff both buffer states
+-- local pre_undo_str = table.concat(pre_undo, '\n')
+-- local post_undo_str = table.concat(post_undo, '\n')
+-- print(vim.diff(pre_undo_str, post_undo_str, {
+--       algorithm = "patience",
+--    }))
 
 -- if the tbl is empty, assign empty str. else join the table with new lines
 -- local a = vim.tbl_isempty(fa) and '' or table.concat(fa, '\n') .. '\n'
