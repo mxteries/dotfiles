@@ -9,6 +9,7 @@ if mac then
     servers = {}
     ts_parsers = { "go", "bash", "hcl", "lua", "vim", "python", "ruby", "query", "org" }
 elseif linux then
+    vim.g.python3_host_prog = '/usr/bin/python3'
     ts_parsers = { "lua", "vim", "python", "query", "org" }
 end
 
