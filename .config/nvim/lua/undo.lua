@@ -1,53 +1,82 @@
--- vim.cmd('undolist')
--- vim.cmd('topleft vnew')
-
 -- P(vim.fn.undotree())
 local tree = vim.fn.undotree()
+local bound_buf = vim.api.nvim_get_current_buf()
 
 -- has to be this function syntax otherwise the recursive call fails
 -- entries is a list of entries (see :h undotree())
-local function print_tree(entries)
+local timeline = {}
+local function populate_timeline(entries)
     if entries == nil then
         return
     end
 
     for _, entry in ipairs(entries) do
-        print(string.format('seq: %s, time %s', entry.seq, os.date('%H:%M:%S' ,entry.time)))
-        print_tree(entry.alt)
+        local undo_entry = string.format('%s: %s', entry.seq, os.date('%H:%M:%S', entry.time))
+        table.insert(timeline, undo_entry)
+        populate_timeline(entry.alt)
     end
 end
-print_tree(tree.entries)
+
+local get_undo = function(buf_id, undo_seq)
+    -- would really like the ability to just nvim_get_undo, pass in 0 for seq_cur
+
+    local prev_buf = vim.api.nvim_get_current_buf()
+    vim.api.nvim_set_current_buf(buf_id)
+
+    local prev_undo = vim.fn.undotree().seq_cur
+    vim.cmd(string.format('silent undo %s', undo_seq))
+    local undo_contents = vim.api.nvim_buf_get_lines(buf_id, 0, -1, true)
+
+    -- restore to before this func was called
+    vim.cmd(string.format('silent undo %s', prev_undo))
+    vim.api.nvim_set_current_buf(prev_buf)
+
+    return undo_contents
+end
+
+-- returns a call to vim diff for a given buffer's current state vs undo_seq state
+local undo_diff = function(buf_id, undo_seq)
+    local pre_undo = vim.api.nvim_buf_get_lines(buf_id, 0, -1, true)
+    local post_undo = get_undo(buf_id, undo_seq)
+
+    -- if the tbl is empty, assign empty str. else join the table with new lines
+    local a = vim.tbl_isempty(pre_undo) and '' or table.concat(pre_undo, '\n') .. '\n'
+    local b = vim.tbl_isempty(post_undo) and '' or table.concat(post_undo, '\n') .. '\n'
+    return vim.diff(a, b, { algorithm = "patience", })
+end
+
+populate_timeline(tree.entries)
+table.sort(timeline, function (a,b)
+    -- Sort by first number (the undo sequence)
+    return (tonumber(string.match(a, '%d+')) > tonumber(string.match(b, '%d+')))
+end)
+
+
+vim.cmd('topleft vnew | setlocal nobuflisted buftype=nofile noswapfile')
+local undo_buf = vim.api.nvim_get_current_buf()
+vim.api.nvim_buf_set_lines(undo_buf, 0, -1, true, timeline)
+
+local tab_mapping = function()
+    local this_line = vim.api.nvim_get_current_line()
+    local this_line_num = vim.fn.line('.')
+    diff_str = undo_diff(bound_buf, tonumber(string.match(this_line, '%d+')))
+    buf_lines = vim.split(this_line .. '\n' .. diff_str, '\n')
+    vim.api.nvim_buf_set_lines(vim.api.nvim_get_current_buf(), this_line_num - 1, this_line_num, true, buf_lines)
+end
+vim.keymap.set('n', '<tab>', tab_mapping, { buffer = undo_buf })
+
 
 --- Next steps ---
--- figure out how we want to display the tree (do we even want to display the actual tree?)
+-- tests
 -- look into regional undo
+-- add check to see if current line is a valid undo line format
+    -- once that's done, add metadata, like "YOU ARE HERE" and "w"
 
--- local me = vim.api.nvim_get_current_buf()
--- local bufn = 55
--- local pre_undo = vim.api.nvim_buf_get_lines(55, 0, -1, true)
-
--- vim.api.nvim_set_current_buf(bufn)
--- vim.cmd('silent undo 103')
--- local post_undo = vim.api.nvim_buf_get_lines(55, 0, -1, true)
--- vim.cmd('silent undo 104') -- revert back
--- vim.api.nvim_set_current_buf(me)
-
-
--- -- diff both buffer states
--- local pre_undo_str = table.concat(pre_undo, '\n')
--- local post_undo_str = table.concat(post_undo, '\n')
--- print(vim.diff(pre_undo_str, post_undo_str, {
---       algorithm = "patience",
---    }))
-
--- if the tbl is empty, assign empty str. else join the table with new lines
--- local a = vim.tbl_isempty(fa) and '' or table.concat(fa, '\n') .. '\n'
--- local b = vim.tbl_isempty(fb) and '' or table.concat(fb, '\n') .. '\n'
-
-
---- nvim api feats potentially
+--- nvim api funcs that would make this easier
 -- get undotree of a specific file or buffer (nvim_get_undotree)
---
+-- nvim_get_undo, get the lines for a specific undo seq of a specific buffer. pass in 0 for seq_cur
+
+
 --[[
 {
     entries = { {
