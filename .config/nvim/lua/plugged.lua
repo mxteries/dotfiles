@@ -6,11 +6,14 @@ local servers = {}    -- lsp servers
 local ts_parsers = {} -- treesitter
 if mac then
     -- servers = { 'pyright' }
+    require('orgmode').setup_ts_grammar()
+
     servers = {}
-    ts_parsers = { "go", "bash", "hcl", "lua", "vim", "python", "ruby", "query", "org" }
+    ts_parsers = { "go", "bash", "hcl", "lua", "vim", "python", "ruby", "query"}
 elseif linux then
+    require('orgmode').setup_ts_grammar()
     vim.g.python3_host_prog = '/usr/bin/python3'
-    ts_parsers = { "lua", "vim", "python", "query", "org" }
+    ts_parsers = { "lua", "vim", "python", "query"}
 end
 
 --- lsp ---
@@ -110,40 +113,28 @@ cmp.setup {
             require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
         end,
     },
-    mapping = {
-        ['<S-Up>'] = cmp.mapping(cmp.mapping.scroll_docs(-4), { 'i', 'c' }),
-        ['<S-Down>'] = cmp.mapping(cmp.mapping.scroll_docs(4), { 'i', 'c' }),
-        ['<C-e>'] = cmp.mapping(cmp.mapping.abort(), { 'i', 'c' }),
-        ['<C-Space>'] = cmp.mapping(cmp.mapping.complete(), { 'i', 'c' }),
-        ['<CR>'] = cmp.mapping(
-            cmp.mapping.confirm {
-                behavior = cmp.ConfirmBehavior.Replace
-            },
-            { 'i', 'c' }
-        ),
-        ['<Tab>'] = cmp.mapping({
-            -- Tab trigger completion in insert mode
-            -- Tab only navigates in cmd mode
-            i = function(fallback)
-                if cmp.visible() then
-                    cmp.select_next_item()
-                elseif luasnip.expand_or_jumpable() then
-                    luasnip.expand_or_jump()
-                elseif has_words_before() then
-                    cmp.complete()
-                else
-                    fallback()
-                end
-            end,
-            c = function(fallback)
-                if cmp.visible() then
-                    cmp.select_next_item()
-                else
-                    fallback()
-                end
-            end,
-        }),
-        ['<S-Tab>'] = cmp.mapping(function(fallback)
+    mapping = cmp.mapping.preset.insert({
+        ['<S-Up>'] = cmp.mapping.scroll_docs(-4),
+        ['<S-Down>'] = cmp.mapping.scroll_docs(4),
+        ['<C-e>'] = cmp.mapping.abort(),
+        ['<C-Space>'] = cmp.mapping.complete(),
+        ['<CR>'] = cmp.mapping.confirm {
+            behavior = cmp.ConfirmBehavior.Replace
+        },
+        -- Tab trigger completion in insert mode
+        -- Tab only navigates in cmd mode
+        ['<Tab>'] = function(fallback)
+            if cmp.visible() then
+                cmp.select_next_item()
+            elseif luasnip.expand_or_jumpable() then
+                luasnip.expand_or_jump()
+            elseif has_words_before() then
+                cmp.complete()
+            else
+                fallback()
+            end
+        end,
+        ['<S-Tab>'] = function(fallback)
             if cmp.visible() then
                 cmp.select_prev_item()
             elseif luasnip.jumpable(-1) then
@@ -151,8 +142,8 @@ cmp.setup {
             else
                 fallback()
             end
-        end, { 'i', 'c'}),
-    },
+        end,
+    }),
     sources = {
         {
             name = 'buffer',
@@ -171,17 +162,44 @@ cmp.setup {
 -- Use buffer source for / and ?
 -- trigger with <c-space>
 cmp.setup.cmdline('/', {
+    mapping = cmp.mapping.preset.cmdline({
+        ['<Tab>'] = {
+            c = function()
+                if cmp.visible() then
+                    cmp.select_next_item()
+                else
+                    -- Trigger complete menu and select next
+                    cmp.complete()
+                    cmp.select_next_item()
+                end
+            end,
+        },
+    }),
     sources = {
-        { name = 'buffer', keyword_length = 10 }
+        { name = 'buffer', keyword_length = 4 }
     }
 })
 cmp.setup.cmdline('?', {
+    mapping = cmp.mapping.preset.cmdline({
+        ['<Tab>'] = {
+            c = function()
+                if cmp.visible() then
+                    cmp.select_next_item()
+                else
+                    -- Trigger complete menu and select next
+                    cmp.complete()
+                    cmp.select_next_item()
+                end
+            end,
+        },
+    }),
     sources = {
-        { name = 'buffer', keyword_length = 10 }
+        { name = 'buffer', keyword_length = 4 }
     }
 })
 -- Use path source for ':'
 cmp.setup.cmdline(':', {
+    mapping = cmp.mapping.preset.cmdline(),
     sources = cmp.config.sources({
         { name = 'path' }
     })
