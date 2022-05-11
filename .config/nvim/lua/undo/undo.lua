@@ -71,6 +71,8 @@ vim.keymap.set('n', '<tab>', tab_mapping, { buffer = undo_buf })
 -- look into regional undo
 -- add check to see if current line is a valid undo line format
     -- once that's done, add metadata, like "YOU ARE HERE" and "w"
+-- fuzzy finding in the undo history
+-- something like {range}Gclog
 
 --- nvim api funcs that would make this easier
 -- get undotree of a specific file or buffer (nvim_get_undotree)
