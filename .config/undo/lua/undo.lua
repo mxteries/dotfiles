@@ -1,3 +1,5 @@
+local buf_get_undo = require('undo_api').buf_get_undo
+
 -- P(vim.fn.undotree())
 local tree = vim.fn.undotree()
 local bound_buf = vim.api.nvim_get_current_buf()
@@ -17,27 +19,10 @@ local function populate_timeline(entries)
     end
 end
 
-local get_undo = function(buf_id, undo_seq)
-    -- would really like the ability to just nvim_get_undo, pass in 0 for seq_cur
-
-    local prev_buf = vim.api.nvim_get_current_buf()
-    vim.api.nvim_set_current_buf(buf_id)
-
-    local prev_undo = vim.fn.undotree().seq_cur
-    vim.cmd(string.format('silent undo %s', undo_seq))
-    local undo_contents = vim.api.nvim_buf_get_lines(buf_id, 0, -1, true)
-
-    -- restore to before this func was called
-    vim.cmd(string.format('silent undo %s', prev_undo))
-    vim.api.nvim_set_current_buf(prev_buf)
-
-    return undo_contents
-end
-
 -- returns a call to vim diff for a given buffer's current state vs undo_seq state
 local undo_diff = function(buf_id, undo_seq)
     local pre_undo = vim.api.nvim_buf_get_lines(buf_id, 0, -1, true)
-    local post_undo = get_undo(buf_id, undo_seq)
+    local post_undo = buf_get_undo(buf_id, undo_seq)
 
     -- if the tbl is empty, assign empty str. else join the table with new lines
     local a = vim.tbl_isempty(pre_undo) and '' or table.concat(pre_undo, '\n') .. '\n'
