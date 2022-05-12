@@ -1,54 +1,49 @@
-local buf_get_undo = require('undo_api').buf_get_undo
-
--- P(vim.fn.undotree())
-local tree = vim.fn.undotree()
-local bound_buf = vim.api.nvim_get_current_buf()
+local u_api = require('undo_api')
 
 -- has to be this function syntax otherwise the recursive call fails
 -- entries is a list of entries (see :h undotree())
-local timeline = {}
-local function populate_timeline(entries)
+local function flatten_tree(timeline, entries)
     if entries == nil then
         return
     end
-
     for _, entry in ipairs(entries) do
-        local undo_entry = string.format('%s: %s', entry.seq, os.date('%H:%M:%S', entry.time))
+        local undo_entry = string.format('%s: %s', entry.seq, os.date('%a %B %d %H:%M', entry.time))
         table.insert(timeline, undo_entry)
-        populate_timeline(entry.alt)
+        flatten_tree(timeline, entry.alt)
     end
 end
 
--- returns a call to vim diff for a given buffer's current state vs undo_seq state
-local undo_diff = function(buf_id, undo_seq)
-    local pre_undo = vim.api.nvim_buf_get_lines(buf_id, 0, -1, true)
-    local post_undo = buf_get_undo(buf_id, undo_seq)
+local init = function()
+    -- When called, initializes an undo tree and binds it to the current buffer
+    local tree = vim.fn.undotree()
+    local bound_buf = vim.api.nvim_get_current_buf()
 
-    -- if the tbl is empty, assign empty str. else join the table with new lines
-    local a = vim.tbl_isempty(pre_undo) and '' or table.concat(pre_undo, '\n') .. '\n'
-    local b = vim.tbl_isempty(post_undo) and '' or table.concat(post_undo, '\n') .. '\n'
-    return vim.diff(a, b, { algorithm = "patience", })
+    -- Flatten tree into an array that represents a timeline
+    local timeline = {}
+    flatten_tree(timeline, tree.entries)
+
+    -- Create the undo buffer
+    vim.cmd('topleft vnew | setlocal ft=diff nobuflisted buftype=nofile noswapfile')
+    local undo_buf = vim.api.nvim_get_current_buf()
+    vim.api.nvim_buf_set_lines(undo_buf, 0, -1, true, timeline)
+
+    local tab_mapping = function()
+        local this_line = vim.api.nvim_get_current_line()
+        local this_line_num = vim.fn.line('.')
+        diff_str = u_api.undo_diff(bound_buf, tonumber(string.match(this_line, '%d+')))
+        buf_lines = vim.split(this_line .. '\n' .. diff_str, '\n')
+        vim.api.nvim_buf_set_lines(vim.api.nvim_get_current_buf(), this_line_num - 1, this_line_num, true, buf_lines)
+    end
+    vim.keymap.set('n', '<tab>', tab_mapping, { buffer = undo_buf })
 end
 
-populate_timeline(tree.entries)
-table.sort(timeline, function (a,b)
-    -- Sort by first number (the undo sequence)
-    return (tonumber(string.match(a, '%d+')) > tonumber(string.match(b, '%d+')))
-end)
+init()
 
 
-vim.cmd('topleft vnew | setlocal nobuflisted buftype=nofile noswapfile')
-local undo_buf = vim.api.nvim_get_current_buf()
-vim.api.nvim_buf_set_lines(undo_buf, 0, -1, true, timeline)
-
-local tab_mapping = function()
-    local this_line = vim.api.nvim_get_current_line()
-    local this_line_num = vim.fn.line('.')
-    diff_str = undo_diff(bound_buf, tonumber(string.match(this_line, '%d+')))
-    buf_lines = vim.split(this_line .. '\n' .. diff_str, '\n')
-    vim.api.nvim_buf_set_lines(vim.api.nvim_get_current_buf(), this_line_num - 1, this_line_num, true, buf_lines)
-end
-vim.keymap.set('n', '<tab>', tab_mapping, { buffer = undo_buf })
+-- table.sort(timeline, function (a,b)
+--     -- Sort by first number (the undo sequence)
+--     return (tonumber(string.match(a, '%d+')) > tonumber(string.match(b, '%d+')))
+-- end)
 
 
 --[[

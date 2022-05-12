@@ -20,4 +20,16 @@ M.buf_get_undo = function(buf_id, undo_seq)
     return undo_contents
 end
 
+-- diffs the current buffer's state with a previous undo state
+M.undo_diff = function(buf_id, undo_seq)
+    local pre_undo = vim.api.nvim_buf_get_lines(buf_id, 0, -1, true)
+    local post_undo = M.buf_get_undo(buf_id, undo_seq)
+
+    -- if the tbl is empty, assign empty str. else join the table with new lines
+    local a = vim.tbl_isempty(pre_undo) and '' or table.concat(pre_undo, '\n') .. '\n'
+    local b = vim.tbl_isempty(post_undo) and '' or table.concat(post_undo, '\n') .. '\n'
+    return vim.diff(a, b, { algorithm = "patience", })
+end
+
+
 return M
