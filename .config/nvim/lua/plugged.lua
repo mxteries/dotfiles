@@ -116,7 +116,7 @@ cmp.setup {
     mapping = cmp.mapping.preset.insert({
         ['<S-Up>'] = cmp.mapping.scroll_docs(-4),
         ['<S-Down>'] = cmp.mapping.scroll_docs(4),
-        ['<C-e>'] = cmp.mapping.abort(),
+        ['<C-c>'] = cmp.mapping.abort(),
         ['<C-Space>'] = cmp.mapping.complete(),
         ['<CR>'] = cmp.mapping.confirm {
             behavior = cmp.ConfirmBehavior.Replace
@@ -130,6 +130,7 @@ cmp.setup {
                 luasnip.expand_or_jump()
             elseif has_words_before() then
                 cmp.complete()
+                cmp.select_next_item()
             else
                 fallback()
             end

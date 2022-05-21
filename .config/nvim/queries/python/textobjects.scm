@@ -4,3 +4,4 @@
 (list (_) @swappable)
 (set (_) @swappable)
 (tuple (_) @swappable)
+; (subscript (_) @swappable)

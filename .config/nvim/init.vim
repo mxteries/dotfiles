@@ -25,6 +25,8 @@ Plug 'mbbill/undotree', { 'on': 'UndotreeToggle' }
 Plug 'rhysd/git-messenger.vim'  " leader gm to trigger
 Plug 'Sangdol/mintabline.vim'
 
+Plug 'FooSoft/vim-argwrap'
+    nnoremap <leader>J <cmd>ArgWrap<cr>
 
 " nvim plugins
 Plug 'nvim-lua/plenary.nvim'
@@ -279,9 +281,9 @@ set shada+=r/tmp
 lua require('zeal')
 
 " custom floating term stuff
-nnoremap <F6> <cmd>lua require("tabterm").toggle()<CR>
-tnoremap <F6> <c-\><c-n><cmd>lua require("tabterm").toggle()<CR>
-" autocmd! TabClosed * lua require("tabterm").delete_term()
+nnoremap <C-\> <cmd>lua require("tabterm").toggle()<CR>
+tnoremap <C-\> <c-\><c-n><cmd>lua require("tabterm").toggle()<CR>
+autocmd! TabClosed * lua require("tabterm").delete_term()
 " custom floating term stuff end
 
 highlight StatusLine guifg=#e2eac0 guibg=#8c3540
@@ -341,7 +343,7 @@ augroup vimrc
     " autocmd FileType json setlocal foldmethod=syntax
     autocmd FileType fugitive nmap <buffer> <tab> =
     autocmd FileType gitcommit setlocal spell textwidth=72 foldmethod=syntax
-    autocmd FileType man nnoremap <buffer> <space>/ /^\s\+
+    autocmd FileType man setlocal scrolloff=5 | nnoremap <buffer> <space>/ /^\s\+
     autocmd Filetype markdown
                 \ nmap <buffer> <leader>md i[text](url)<esc>
                 \| nnoremap <buffer> j gj
