@@ -46,15 +46,8 @@ augroup vimrc
       \ |xnoremap <silent><buffer> t :call dirvish#open('tabedit', 0) \| tabdo tcd %:h<CR>
 augroup END
 
-Plug 'iamcco/markdown-preview.nvim', { 'do': ':call mkdp#util#install()', 'for': 'markdown', 'on': 'MarkdownPreview' }
-Plug 'tommcdo/vim-exchange'          " for swapping text
-Plug 'tommcdo/vim-lion'
-Plug 'mbbill/undotree', { 'on': 'UndotreeToggle' }
-  nnoremap U :UndotreeToggle<CR>
-  let g:undotree_WindowLayout = 2
-
 " fzf integration
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf'
 Plug 'junegunn/fzf.vim'
 let g:fzf_buffers_jump = 1  " open existing windows in :Buffers
 let g:fzf_action = {
@@ -63,23 +56,14 @@ let g:fzf_action = {
   \ 'ctrl-x': 'split',
   \ 'ctrl-v': 'vsplit' }
 nnoremap <leader>r <cmd>History:<cr>
-nnoremap <leader>fc <cmd>Commands<cr>
 nnoremap <leader>K  <cmd>Help<cr>
-nnoremap <leader>fb <cmd>Buffers<cr>
-nnoremap <leader>fw <cmd>Windows<cr>
-" Rg in the current buffer's directory
-command! -bang -nargs=* Rgb
-  \ call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case "
-  \ .shellescape(<q-args>), 1, {'dir': expand('%:p:h') }, <bang>0)
-
-" restore original c-w functionality (my termwinkey)
-autocmd! FileType fzf
-autocmd  FileType fzf tnoremap <buffer> <c-w> <c-w>
 
 " List ends here. Plugins become visible to Vim after this call.
 call plug#end()
 
-set backup     " keep a copy of the original file (vimrc~)
+" no backup no swap, yes undo
+set nobackup
+set noswapfile
 set undofile   " keep an undo file (%home%...%vimrc)
 
 " Store everything in the .vim directory
@@ -150,7 +134,7 @@ let &statusline = s:statusline_expr()
 nnoremap Y y$
 nnoremap <BS> <C-^>
 nnoremap gt :tabs<CR>:tabnext<Space>
-" vnoremap P "0p
+vnoremap P "0p
 unmap Q
 nnoremap <leader>y "+y
 nnoremap <leader>cc :cclose<bar>lclose<cr>
