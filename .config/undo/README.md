@@ -1,5 +1,17 @@
 # Feature wishlist
-* look into regional undo
+## look into regional undo
+* user presses eg. U on a line
+* interate backwards through undo history until we find one whose contents
+  are different. subsequent `U` must interate from where we left off (extmark maybe?)
+
+MVP:
+* global variable stores undo_seq for a given line in a buffer
+* pressing U starts from that line's undo_seq and goes backwards until it finds a change
+
+use :UndoTree to help debug
+
+---
+
 * add check to see if current line is a valid undo line format
     * once that's done, add metadata, like "YOU ARE HERE" and "w"
 * fuzzy finding in the undo history
