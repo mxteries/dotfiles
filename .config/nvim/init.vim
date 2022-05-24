@@ -222,8 +222,6 @@ nnoremap 9 <c-u>
 nnoremap <leader>lo <cmd>lua vim.diagnostic.open_float()<cr>
 nnoremap <leader>ln <cmd>lua vim.diagnostic.goto_next()<CR>
 nnoremap <leader>lp <cmd>lua vim.diagnostic.goto_prev()<CR>
-" Alternative C-i mapping for when tab is mapped over
-nnoremap <A-o> <C-i>
 nnoremap <BS> <C-^>
 cnoremap <C-A> <Home>
 nnoremap <left> 3<c-w><c-<>
@@ -281,9 +279,9 @@ set shada+=r/tmp
 lua require('zeal')
 
 " custom floating term stuff
-nnoremap <C-\> <cmd>lua require("tabterm").toggle()<CR>
-tnoremap <C-\> <c-\><c-n><cmd>lua require("tabterm").toggle()<CR>
-autocmd! TabClosed * lua require("tabterm").delete_term()
+" nnoremap <C-\> <cmd>lua require("tabterm").toggle()<CR>
+" tnoremap <C-\> <c-\><c-n><cmd>lua require("tabterm").toggle()<CR>
+" autocmd! TabClosed * lua require("tabterm").delete_term()
 " custom floating term stuff end
 
 highlight StatusLine guifg=#e2eac0 guibg=#8c3540
