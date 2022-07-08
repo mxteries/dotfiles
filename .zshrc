@@ -14,6 +14,10 @@ export HISTSIZE=50000
 export SAVEHIST=50000
 # see more history options here https://zsh.sourceforge.io/Doc/Release/Options.html
 
+# Output time and disk stats for processes that run longer than REPORTTIME
+REPORTTIME=60
+TIMEFMT="${TIMEFMT}; total disk %K KB; max RSS %M KB"
+
 # Include local bin
 export PATH="$PATH:$HOME/.local/bin"
 
@@ -155,3 +159,80 @@ my-backward-kill-word () {
 }
 zle -N my-backward-kill-word
 bindkey '^w' my-backward-kill-word
+
+# fzf stuffs
+# usage: bat_fzf <file paths>
+# sends given files or stdin to fzf with bat syntax highlighting
+bat_fzf () {
+    if [ $# -gt 0 ]; then
+        bat "$@" --color=always -p | fzf --ansi --color='hl:#ffffff,hl+:#ffffff'
+    else
+        bat --color=always -p | fzf --ansi --color='hl:#ffffff,hl+:#ffffff'
+    fi
+}
+
+# fzf completion example
+# https://github.com/junegunn/fzf#custom-fuzzy-completion
+
+_fzf_complete_doge() {
+    _fzf_complete --multi --reverse --prompt="doge> " -- "$@" < <(
+        echo very
+        echo wow
+        echo such
+        echo doge
+    )
+}
+
+# fzf ssh
+# this will override the default fzf autocompletion provided for ssh
+# _fzf_complete_ssh() {
+#     # shellcheck disable=SC2016
+
+#     # grab instance id, ip, launch time, and name
+#     # set aws profile for this command only
+#     # https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html
+#     machines="$(AWS_PROFILE="example" aws ec2 describe-instances \
+#         --query 'Reservations[*].Instances[*].{Name: Tags[?Key==`Name`]|[0].Value, Launch: LaunchTime, Ip: PrivateIpAddress, Instance: InstanceId}' \
+#         --filters Name=instance-state-name, Values=running \
+#         --output text \
+#     )" || return
+#     _fzf_complete --reverse --prompt="ssh " -- "$@" < <(
+#         echo "$machines"
+#     )
+# }
+
+# _fzf_complete_ssh_post() {
+#     # include the name of the instance as a comment (#), super important
+#     awk '{ printf "%s  # %s\n", $2, $4 }'
+# }
+
+# fzf open (macOS)
+_fzf_complete_open() {
+    # global var so it can be used in the "post" func below
+    open_service=$(
+        printf "%s\n%s\n" \
+            "jira ticket" \
+            "another" \
+        | fzf --no-multi --reverse
+    )
+
+    local open_choices
+    if [ "$open_service" = "jira ticket" ]; then
+        # prompt for jira ticket
+        # open_choices="$(bat --color=always -p "$XDG_CACHE_HOME/jira.csv")"
+        open_choices="there is no choice"
+    elif [ "$open_service" = "jira ticket" ]; then
+        echo "lol"
+    fi
+
+    _fzf_complete --ansi --color='hl:#ffffff,hl+:#ffffff' --reverse --prompt="open " -- "$@" < <(
+        echo "$open_choices"
+    )
+}
+
+_fzf_complete_open_post() {
+    # post processing func that reads from "open_service" var set above
+    if [ "$open_service" = "jira ticket" ]; then
+        awk -F, '{ printf "\"https://my_jira_link.net/browse/%s\"\n", $1 }'
+    fi
+}

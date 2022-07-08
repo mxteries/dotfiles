@@ -24,13 +24,14 @@ Plug 'Vimjas/vim-python-pep8-indent'
 Plug 'mbbill/undotree', { 'on': 'UndotreeToggle' }
 Plug 'rhysd/git-messenger.vim'  " leader gm to trigger
 Plug 'Sangdol/mintabline.vim'
-
 Plug 'FooSoft/vim-argwrap'
     nnoremap <leader>J <cmd>ArgWrap<cr>
+Plug 'whiteinge/diffconflicts'
 
 " nvim plugins
 Plug 'nvim-lua/plenary.nvim'
     Plug 'nvim-telescope/telescope.nvim'
+        nnoremap <leader>r <cmd>Telescope command_history<cr>
     Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
     Plug 'lewis6991/gitsigns.nvim'
 Plug 'neovim/nvim-lspconfig'
@@ -38,7 +39,6 @@ Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-nvim-lua'
-Plug 'hrsh7th/cmp-path'
 Plug 'hrsh7th/cmp-cmdline'
 Plug 'saadparwaiz1/cmp_luasnip'
 Plug 'L3MON4D3/LuaSnip'
@@ -83,7 +83,7 @@ Plug 'junegunn/fzf.vim'
     let g:fzf_tags_command = 'ctags -R --exclude=.git --exclude=.terraform'
     nnoremap <space>K <cmd>Help<cr>
     xnoremap <space>K y:Help<cr><c-\><c-n>pi
-    nnoremap <space>r <cmd>History:<cr>
+    " nnoremap <space>r <cmd>History:<cr>
     xnoremap R y:Rg <c-r>"<cr>
     nnoremap <leader>f; <cmd>Commands<cr>
     nnoremap <leader>ff <cmd>Files<cr>
@@ -108,7 +108,6 @@ end
 
 let g:markdown_folding = 1
 
-Plug 'hashivim/vim-terraform'
 Plug 'tommcdo/vim-fubitive'
 
 call plug#end()
@@ -233,9 +232,6 @@ nnoremap cD <cmd>lcd ..<cr>
 nnoremap <leader>t <cmd>split <bar> norm <c-w>T<cr>
 nnoremap <leader>O <cmd>Goyo<cr>
 
-nnoremap <leader>c :Run<cr>
-xnoremap <leader>c :Run<cr>
-
 "" git
 " <leader>gm is git messenger
 nnoremap <leader>gg <cmd>G<cr>
@@ -266,6 +262,11 @@ xnoremap <leader>n d:new<cr>P
 " map <leader>\ to prompt for a mapping, "<" has to be escaped via <lt>
 nmap <leader>\ :nmap <buffer> <lt>leader><lt>leader><leader>
 nnoremap <leader>R <cmd>source $MYVIMRC<cr>
+nnoremap <leader>c :Run<cr>
+xnoremap <leader>c :Run<cr>
+
+" select last yanked/changed text
+nnoremap gy `[v`]
 
 """ Misc and testing {{{1
 " remember 10k filemarks
@@ -337,11 +338,14 @@ augroup vimrc
     " Filetypes
     " use treesitter folding, 1 fold only
     autocmd FileType lua,python,terraform setlocal foldnestmax=1 foldmethod=expr foldexpr=nvim_treesitter#foldexpr()
+    " don't continue comments in lua files (optionally -=r as well)
+    autocmd FileType lua setlocal formatoptions-=o
     autocmd FileType vim setlocal foldmethod=marker
     " autocmd FileType json setlocal foldmethod=syntax
     autocmd FileType fugitive nmap <buffer> <tab> =
     autocmd FileType gitcommit setlocal spell textwidth=72 foldmethod=syntax
     autocmd FileType man setlocal scrolloff=5 | nnoremap <buffer> <space>/ /^\s\+
+    autocmd InsertLeave *.md,*.org update
     autocmd Filetype markdown
                 \ nmap <buffer> <leader>md i[text](url)<esc>
                 \| nnoremap <buffer> j gj
