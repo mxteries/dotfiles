@@ -10,38 +10,33 @@ let s:windows = has('win32') || has('win64')
 """ Plugins {{{1
 let s:plugdir = s:configdir . '/plugged'
 call plug#begin(s:plugdir)
-Plug 'tpope/vim-speeddating'
 Plug 'tommcdo/vim-lion'
 Plug 'junegunn/goyo.vim' | let g:goyo_width=88 | let g:goyo_height="100%"
-Plug 'tpope/vim-unimpaired'          " Useful mappings
-Plug 'tpope/vim-commentary'          " for commenting
-Plug 'tpope/vim-repeat'              " for repeating
-Plug 'tpope/vim-surround'            " for adding surrounding characters
-Plug 'tpope/vim-fugitive'
-Plug 'tpope/vim-rhubarb'
+Plug 'tpope/vim-speeddating'
+Plug 'tpope/vim-unimpaired'
+Plug 'tpope/vim-commentary' | Plug 'tpope/vim-repeat' | Plug 'tpope/vim-surround'
+Plug 'tpope/vim-fugitive' | Plug 'tpope/vim-rhubarb'
+" Plug 'kylechui/nvim-surround'
+Plug 'tpope/vim-apathy'
 Plug 'iamcco/markdown-preview.nvim', { 'do': ':call mkdp#util#install()', 'for': 'markdown', 'on': 'MarkdownPreview' }
 Plug 'Vimjas/vim-python-pep8-indent'
 Plug 'mbbill/undotree', { 'on': 'UndotreeToggle' }
 Plug 'rhysd/git-messenger.vim'  " leader gm to trigger
 Plug 'Sangdol/mintabline.vim'
 Plug 'FooSoft/vim-argwrap'
-    nnoremap <leader>J <cmd>ArgWrap<cr>
+  nnoremap <leader>J <cmd>ArgWrap<cr>
 Plug 'whiteinge/diffconflicts'
 
 " nvim plugins
 Plug 'nvim-lua/plenary.nvim'
-    Plug 'nvim-telescope/telescope.nvim'
-        nnoremap <leader>r <cmd>Telescope command_history<cr>
-    Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
-    Plug 'lewis6991/gitsigns.nvim'
-Plug 'neovim/nvim-lspconfig'
+Plug 'nvim-telescope/telescope.nvim'
+    nnoremap <leader>r <cmd>Telescope command_history<cr>
+Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
+Plug 'lewis6991/gitsigns.nvim'
 Plug 'hrsh7th/nvim-cmp'
-Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-nvim-lua'
 Plug 'hrsh7th/cmp-cmdline'
-Plug 'saadparwaiz1/cmp_luasnip'
-Plug 'L3MON4D3/LuaSnip'
 Plug 'mfussenegger/nvim-lint'
 Plug 'folke/which-key.nvim' | set timeoutlen=350
 Plug 'nvim-orgmode/orgmode'
@@ -107,8 +102,6 @@ if s:windows
 end
 
 let g:markdown_folding = 1
-
-Plug 'tommcdo/vim-fubitive'
 
 call plug#end()
 
@@ -252,22 +245,34 @@ nnoremap <leader>p "+p
 xnoremap <leader>p "+p
 xnoremap P "0p
 xnoremap <leader>@ :norm @
+
+"" cool mappings
 " replace every occurrence of word under cursor on this line
 xnoremap s "sy:s/<c-r>s//g<left><left>
 nnoremap <leader>s :s/<c-r><c-w>//g<left><left>
 nnoremap <leader>S :s/<c-r><c-a>//g<left><left>
+
 " split selection to separate file
-xnoremap <leader>n d:new<cr>P
+xnoremap <leader>n y:new<cr>P
 
 " map <leader>\ to prompt for a mapping, "<" has to be escaped via <lt>
 nmap <leader>\ :nmap <buffer> <lt>leader><lt>leader><leader>
-nnoremap <leader>R <cmd>source $MYVIMRC<cr>
-nnoremap <leader>c :Run<cr>
-xnoremap <leader>c :Run<cr>
 
 " select last yanked/changed text
 nnoremap gy `[v`]
 
+" qi starts recording a macro and enters insert mode, and allows "esc" to stop the macro
+function! RecordInsert()
+    inoremap <esc> <esc>q:iunmap <lt>esc><cr>
+    " autocmd RecordingLeave * ++once iunmap <esc>
+    " use the i register. 'nt' is crucial here
+    " norm! doesn't work because it leaves insert mode
+    call feedkeys('qii', 'nt')
+endfunc
+nnoremap qi :call RecordInsert()<cr>
+nnoremap <leader>R <cmd>source $MYVIMRC<cr>
+nnoremap <leader>c :Run<cr>
+xnoremap <leader>c :Run<cr>
 """ Misc and testing {{{1
 " remember 10k filemarks
 set shada=!,'10000,<50,s10,h

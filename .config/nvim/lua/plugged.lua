@@ -2,12 +2,9 @@ local windows = vim.fn.has('win64') == 1
 local mac = vim.fn.has('mac') == 1
 local linux = vim.fn.has('unix') == 1
 
-local servers = {}    -- lsp servers
 local ts_parsers = {} -- treesitter
 if mac then
-    -- servers = { 'pyright' }
     require('orgmode').setup_ts_grammar()
-
     servers = {}
     ts_parsers = { "go", "bash", "hcl", "lua", "vim", "python", "ruby", "query"}
 elseif linux then
@@ -16,89 +13,8 @@ elseif linux then
     ts_parsers = { "lua", "vim", "python", "query"}
 end
 
---- lsp ---
-local nvim_lsp = require('lspconfig')
-
-
--- LSP Keybindings
-local on_attach = function(_, bufnr)
-    vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-
-    local opts = { noremap = true, silent = true }
-    vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>lD', '<cmd>lua vim.lsp.buf.declaration()<CR>', opts)
-    vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>ld', '<cmd>lua vim.lsp.buf.definition()<CR>', opts)
-    vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>lh', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
-    vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>li', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
-    vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>lk', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
-    vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>lwa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
-    vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>lwr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
-    vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>lwl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
-    vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>lt', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
-    vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>lr', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
-    vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>ls', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
-    vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>lc', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
-    vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>ly', [[<cmd>lua require('telescope.builtin').lsp_document_symbols()<CR>]], opts)
-    vim.cmd [[ command! Format execute 'lua vim.lsp.buf.formatting()' ]]
-end
-
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
-
-if mac then
-    for _, lsp in ipairs(servers) do
-        nvim_lsp[lsp].setup {
-            on_attach = on_attach,
-            capabilities = capabilities,
-        }
-    end
-elseif linux then
-    local sumneko = function()
-        -- sumneko lua
-        local sumneko_root_path = vim.fn.stdpath('cache')..'/lua-language-server'
-        local sumneko_binary = sumneko_root_path..'/bin/Linux/lua-language-server'
-
-        -- Make runtime files discoverable to the server
-        local runtime_path = vim.split(package.path, ';')
-        table.insert(runtime_path, 'lua/?.lua')
-        table.insert(runtime_path, 'lua/?/init.lua')
-
-        require('lspconfig').sumneko_lua.setup {
-            cmd = { sumneko_binary, '-E', sumneko_root_path .. '/main.lua' },
-            on_attach = on_attach,
-            capabilities = capabilities,
-            settings = {
-                Lua = {
-                    runtime = {
-                        version = 'LuaJIT',
-                        -- Setup your lua path
-                        path = runtime_path,
-                    },
-                    diagnostics = {
-                        -- Get the language server to recognize the `vim` global
-                        globals = { 'vim' },
-                    },
-                    workspace = {
-                        -- Love2d
-                        library = {
-                            [sumneko_root_path .. '/meta/3rd/love2d/library'] = true
-                        },
-                        checkThirdParty = false
-                    },
-                    telemetry = {
-                        enable = false,
-                    },
-                },
-            },
-        }
-    end
-
-    -- disable
-    -- sumneko()
-end
-
 --- nvim.cmp ---
 local cmp = require'cmp'
-local luasnip = require("luasnip")
 local has_words_before = function()
     local line, col = unpack(vim.api.nvim_win_get_cursor(0))
     return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
@@ -110,7 +26,8 @@ cmp.setup {
     snippet = {
         -- REQUIRED - you must specify a snippet engine
         expand = function(args)
-            require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
+            print('lol no')
+            -- require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
         end,
     },
     mapping = cmp.mapping.preset.insert({
@@ -126,8 +43,6 @@ cmp.setup {
         ['<Tab>'] = function(fallback)
             if cmp.visible() then
                 cmp.select_next_item()
-            elseif luasnip.expand_or_jumpable() then
-                luasnip.expand_or_jump()
             elseif has_words_before() then
                 cmp.complete()
                 cmp.select_next_item()
@@ -138,8 +53,6 @@ cmp.setup {
         ['<S-Tab>'] = function(fallback)
             if cmp.visible() then
                 cmp.select_prev_item()
-            elseif luasnip.jumpable(-1) then
-                luasnip.jump(-1)
             else
                 fallback()
             end
@@ -156,7 +69,6 @@ cmp.setup {
             },
         },
         { name = 'nvim_lua', keyword_length = 5 },
-        { name = 'nvim_lsp', keyword_length = 3 },
         { name = 'orgmode', keyword_length = 2 },
     },
 }
@@ -269,7 +181,7 @@ if not windows then
             },
         },
         playground = {
-            enable = true,
+            enable = false,
             disable = {},
             updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
             persist_queries = false,
@@ -366,33 +278,10 @@ vim.api.nvim_command([[
 
 -- colorschemes
 -- this will affect all the hl-groups where the redefined colors are used
--- local my_colors = {
---     fujiGray = "#8b949e",  -- more readable comment color
--- }
--- require('kanagawa').setup({
---     colors = my_colors,
---     undercurl = true,           -- enable undercurls
---     commentStyle = "italic",
---     functionStyle = "NONE",
---     keywordStyle = "NONE",
---     statementStyle = "bold",
---     typeStyle = "NONE",
---     variablebuiltinStyle = "NONE",
---     specialReturn = false,       -- special highlight for the return keyword
---     specialException = false,    -- special highlight for exception handling keywords
---     transparent = false,        -- do not set background color
---     dimInactive = true,        -- dim inactive window `:h hl-NormalNC`
--- })
 
-
--- local hour = tonumber(os.date('%H'))
--- if (hour > 8 and hour < 17) then
---     vim.cmd("set background=light")
--- end
--- vim.cmd("colorscheme gruvbox")
 vim.cmd("colorscheme everforest")
 
--- useful global lua funcs
+-- custom lua funcs here
 P = function(v)
     print(vim.inspect(v))
     return v
