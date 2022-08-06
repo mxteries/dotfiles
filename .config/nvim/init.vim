@@ -16,8 +16,7 @@ Plug 'tpope/vim-speeddating'
 Plug 'tpope/vim-unimpaired'
 Plug 'tpope/vim-commentary' | Plug 'tpope/vim-repeat' | Plug 'tpope/vim-surround'
 Plug 'tpope/vim-fugitive' | Plug 'tpope/vim-rhubarb'
-Plug 'tpope/vim-markdown'
-" Plug 'kylechui/nvim-surround'
+Plug 'tpope/vim-markdown' | let g:markdown_folding = 1
 Plug 'tpope/vim-apathy'
 Plug 'iamcco/markdown-preview.nvim', { 'do': ':call mkdp#util#install()', 'for': 'markdown', 'on': 'MarkdownPreview' }
 Plug 'Vimjas/vim-python-pep8-indent'
@@ -30,21 +29,16 @@ Plug 'whiteinge/diffconflicts'
 
 " nvim plugins
 Plug 'nvim-lua/plenary.nvim'
-Plug 'nvim-telescope/telescope.nvim'
-    nnoremap <leader>r <cmd>Telescope command_history<cr>
-Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
 Plug 'lewis6991/gitsigns.nvim'
 Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-nvim-lua'
 Plug 'hrsh7th/cmp-cmdline'
 Plug 'mfussenegger/nvim-lint'
-Plug 'folke/which-key.nvim' | set timeoutlen=350
+Plug 'folke/which-key.nvim' | set timeoutlen=450
 if !s:windows
     Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
     Plug 'nvim-treesitter/nvim-treesitter-refactor'
-    Plug 'nvim-treesitter/nvim-treesitter-textobjects'
-    Plug 'nvim-treesitter/playground'
 end
 
 Plug 'sainnhe/everforest' | let g:everforest_background = 'hard'
@@ -59,15 +53,10 @@ Plug 'justinmk/vim-dirvish'
     " disable netrw plugins but keep autoloaded funcs
     let g:loaded_netrwPlugin = 1
     command! -nargs=? -complete=dir Explore Dirvish <args>
-    command! -nargs=? -complete=dir Sexplore split | silent Dirvish <args>
-    command! -nargs=? -complete=dir Vexplore vsplit | silent Dirvish <args>
     augroup vimrc
-        " Map t to open in new tab
-        " map f to lcd then start searching for files
         " map r to lcd then start :Rg
         autocmd FileType dirvish
-                    \|nnoremap <buffer> r :lcd <c-r><c-p> \| Rg<space>
-        autocmd FileType dirvish silent! unmap <buffer> <c-p>
+                    \ nnoremap <buffer> r :lcd <c-r><c-p> \| Rg<space>
     augroup END
 
 " fzf integration
@@ -75,38 +64,35 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
     let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.8 } }
     " let g:fzf_layout = { 'window': '-tabnew' }
 Plug 'junegunn/fzf.vim'
+    let g:fzf_command_prefix = 'Fzf'
     let g:fzf_tags_command = 'ctags -R --exclude=.git --exclude=.terraform'
-    nnoremap <space>K <cmd>Help<cr>
-    xnoremap <space>K y:Help<cr><c-\><c-n>pi
-    " nnoremap <space>r <cmd>History:<cr>
-    xnoremap R y:Rg <c-r>"<cr>
-    nnoremap <leader>f; <cmd>Commands<cr>
-    nnoremap <leader>ff <cmd>Files<cr>
-    nnoremap <leader>fb <cmd>Buffers<cr>
-    nnoremap <leader>fc <cmd>Colors<cr>
-    nnoremap <leader>fh <cmd>History<cr>
-    nnoremap <leader>f/ <cmd>History/<cr>
-    nnoremap <leader>fL <cmd>Lines<cr>
-    nnoremap <leader>fl <cmd>BLines<cr>
-    nnoremap <leader>ft <cmd>Tags<cr>
-    nnoremap <leader>fT <cmd>BTags<cr>
-    nnoremap <leader>fw <cmd>Windows<cr>
-    nnoremap <leader>fM <cmd>Marks<cr>
-    nnoremap <leader>fm <cmd>Maps<cr>
-    nnoremap <leader>fp <cmd>Filetypes<cr>
-    let $BAT_THEME = 'Solarized (dark)'
+    nnoremap <leader>K <cmd>FzfHelp<cr>
+    xnoremap <leader>K y:FzfHelp<cr><c-\><c-n>pi
+    nnoremap <leader>r <cmd>FzfRg<cr>
+    nnoremap R <cmd>FzfRg<cr>
+    xnoremap <leader>r y:FzfRg <c-r>"<cr>
+    xnoremap R y:FzfRg <c-r>"<cr>
+    nnoremap <leader>f; <cmd>FzfCommands<cr>
+    nnoremap <leader>ff <cmd>FzfFiles<cr>
+    nnoremap <leader>fb <cmd>FzfBuffers<cr>
+    nnoremap <leader>fh <cmd>FzfHistory:<cr>
+    nnoremap <leader>fr <cmd>FzfHistory<cr>
+    nnoremap <leader>f/ <cmd>FzfHistory/<cr>
+    nnoremap <leader>fl <cmd>FzfBLines<cr>
+    nnoremap <leader>fw <cmd>FzfWindows<cr>
+    let $BAT_THEME = 'gruvbox'
 
 " Windows specific plugin settings
 if s:windows
     let g:fzf_preview_window=''
-end
-
-let g:markdown_folding = 1
+else
+endif
 
 call plug#end()
 
 " Lua plugin configs
 lua require('plugged')
+colorscheme everforest
 
 " if !empty(expand(glob(s:configdir . '/local_settings.vim')))
 "     execute 'source ' . s:configdir . '/local_settings.vim'
@@ -117,12 +103,7 @@ let g:do_filetype_lua = 1 | let g:did_load_filetypes = 0
 " Indent spaces
 set softtabstop=4 shiftwidth=4 expandtab autoindent copyindent
 " Formatting search
-set path=.,**,,  " exclude /usr/include and search ** by default
-augroup vimrc
-    autocmd FileType c,cpp      setlocal path+=/usr/include
-augroup END
-" ignore patterns for :find
-set wildignore+=.git,.hg,.svn
+set wildignore+=.git,.hg
 set wildignore+=*__pycache__
 set wildignore+=*/node_modules/*
 set wildignore+=*/tools/*
@@ -141,15 +122,15 @@ set list listchars+=lead:.  " show leading spaces
 set pumblend=20
 set signcolumn=yes    " always show sign column
 set termguicolors
-set guifont=JetBrains\ Mono:h15
+set guifont=JetBrains\ Mono:h14
 set foldlevel=1
 set laststatus=3
 
-" Enable mouse for scrolling only
+" Enable mouse primarily for scrolling
 set mouse=n
 noremap <LeftMouse> <Nop>
 noremap <RightMouse> <Nop>
-noremap <2-LeftMouse> <Nop>
+noremap <2-LeftMouse> <3-LeftMouse>
 noremap <LeftDrag> <Nop>
 noremap <LeftRelease> <Nop>
 
@@ -273,19 +254,17 @@ nnoremap qi :call RecordInsert()<cr>
 nnoremap <leader>R <cmd>source $MYVIMRC<cr>
 nnoremap <leader>c :Run<cr>
 xnoremap <leader>c :Run<cr>
-""" Misc and testing {{{1
-" remember 10k filemarks
-set shada=!,'10000,<50,s10,h
+""" Misc
+" remember 3k filemarks
+set shada=!,'3000,<50,s10,h
 " Don't store file marks for the following paths
 set shada+=rterm
 set shada+=rfugitive
 set shada+=r/private
 set shada+=r/tmp
-" ready for testing!
 lua require('zeal')
 
 " highlight StatusLine guifg=#e2eac0 guibg=#8c3540
-""" TESTING end
 
 " Redirect the output of a Vim or external command into a scratch buffer
 function! Redir(cmd) abort
@@ -343,10 +322,6 @@ augroup vimrc
                 \| nnoremap <buffer> j gj
                 \| nnoremap <buffer> k gk
                 \| nnoremap <buffer> <tab> za
-    " autocmd FileType org
-    "             \ nnoremap <buffer> <space>c <cmd>.w !zsh<cr>
-    "             \| nmap <buffer> <M-CR> <leader><cr>
-    "             \| imap <buffer> <M-CR> <C-O><leader><cr>
     autocmd BufRead,BufNewFile *.cake set filetype=cs
 
     " Turn on hlsearch when searching /? (and also for :s :g)

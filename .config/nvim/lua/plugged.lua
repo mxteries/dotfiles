@@ -107,14 +107,6 @@ cmp.setup.cmdline('?', {
         { name = 'buffer', keyword_length = 4 }
     }
 })
--- Use path source for ':'
-cmp.setup.cmdline(':', {
-    mapping = cmp.mapping.preset.cmdline(),
-    sources = cmp.config.sources({
-        { name = 'path' }
-    })
-})
-
 --- Tree-sitter ---
 if not windows then
     require'nvim-treesitter.configs'.setup {
@@ -177,17 +169,10 @@ if not windows then
                 },
             },
         },
-        playground = {
-            enable = false,
-            disable = {},
-            updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
-            persist_queries = false,
-        }
     }
 end
 
 --- everything else ---
-require('telescope').load_extension('fzf')
 require('gitsigns').setup{
   on_attach = function(bufnr)
     local gs = package.loaded.gitsigns
@@ -219,13 +204,13 @@ require('gitsigns').setup{
     map({'o', 'x'}, 'ih', ':<C-U>Gitsigns select_hunk<CR>')
   end
 }
-local presets = require("which-key.plugins.presets")
-presets.operators = {}
+-- local presets = require("which-key.plugins.presets")
+-- presets.operators = {}
 require("which-key").setup {
     presets = {
-        operators = true,
-        motions = true, -- adds help for motions
-        text_objects = true, -- help for text objects triggered after entering an operator
+        operators = false,
+        motions = false, -- adds help for motions
+        text_objects = false, -- help for text objects triggered after entering an operator
         windows = true, -- default bindings on <c-w>
         nav = true, -- misc bindings to work with windows
         z = true, -- bindings for folds, spelling and others prefixed with z
@@ -272,11 +257,6 @@ vim.api.nvim_command([[
     autocmd! BufWritePost * lua require('lint').try_lint()
 ]])
 
--- colorschemes
--- this will affect all the hl-groups where the redefined colors are used
-
-vim.cmd("colorscheme everforest")
-
 -- custom lua funcs here
 P = function(v)
     print(vim.inspect(v))
@@ -302,3 +282,42 @@ Run = function(line1, line2)
 end
 -- Define a "Run" command that acts on the entire file by default
 vim.cmd('command! -range=% Run lua Run(<line1>, <line2>)')
+
+vim.keymap.set('n', 'yp', function()
+    vim.cmd [[
+        let @+=expand("%:p:~") . ':' . line(".")
+        let @"=expand("%:p:~") . ':' . line(".")
+    ]]
+end)
+vim.keymap.set('n', '!d', '!!date<cr>')
+
+local strike = function()
+    -- check if syntax below cursor is 'markdownStrike' or 'markdownStrikeDelimiter'
+    local line, col = vim.fn.line('.'), vim.fn.col('.')
+    local syn_under_cursor = vim.fn.synID(line, col, 1)
+    local is_md_strike = syn_under_cursor == 2418 or syn_under_cursor == 2419
+
+    if not is_md_strike then
+        -- strikeout, start on first "word" character
+        vim.cmd [[s/\w.\+/\~\~\0\~\~]]
+    else
+        -- unstrike
+        vim.cmd [[s/\~\~\(.*\)\~\~/\1/]]
+        -- vimL func version:
+        -- echo substitute('~~TODO: set up markdown filetype autocmd that crosses out a line on <c-s>~~', '\~\~\(.*\)\~\~', '\1', '')
+    end
+    vim.fn.cursor(line, col) -- restore cursor
+end
+-- markdown stuff
+vim.api.nvim_create_autocmd('FileType', {
+    group = vim.api.nvim_create_augroup('my_markdown', { clear = true }),
+    pattern = 'markdown',
+    callback = function()
+        vim.opt.conceallevel = 3
+        vim.keymap.set({'n'}, '<space><space>', strike, {buffer=true})
+        vim.cmd [[
+            hi def my_markdown_strike guifg=#859289 term=strikethrough cterm=strikethrough gui=strikethrough
+            hi link markdownStrike my_markdown_strike
+        ]]
+    end,
+})
