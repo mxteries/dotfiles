@@ -16,6 +16,7 @@ Plug 'tpope/vim-speeddating'
 Plug 'tpope/vim-unimpaired'
 Plug 'tpope/vim-commentary' | Plug 'tpope/vim-repeat' | Plug 'tpope/vim-surround'
 Plug 'tpope/vim-fugitive' | Plug 'tpope/vim-rhubarb'
+Plug 'tpope/vim-markdown'
 " Plug 'kylechui/nvim-surround'
 Plug 'tpope/vim-apathy'
 Plug 'iamcco/markdown-preview.nvim', { 'do': ':call mkdp#util#install()', 'for': 'markdown', 'on': 'MarkdownPreview' }
@@ -39,7 +40,6 @@ Plug 'hrsh7th/cmp-nvim-lua'
 Plug 'hrsh7th/cmp-cmdline'
 Plug 'mfussenegger/nvim-lint'
 Plug 'folke/which-key.nvim' | set timeoutlen=350
-Plug 'nvim-orgmode/orgmode'
 if !s:windows
     Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
     Plug 'nvim-treesitter/nvim-treesitter-refactor'
@@ -108,10 +108,9 @@ call plug#end()
 " Lua plugin configs
 lua require('plugged')
 
-" Private stuff
-if !empty(expand(glob(s:configdir . '/local_settings.vim')))
-    execute 'source ' . s:configdir . '/local_settings.vim'
-endif
+" if !empty(expand(glob(s:configdir . '/local_settings.vim')))
+"     execute 'source ' . s:configdir . '/local_settings.vim'
+" endif
 
 """ Settings {{{1
 let g:do_filetype_lua = 1 | let g:did_load_filetypes = 0
@@ -262,6 +261,7 @@ nmap <leader>\ :nmap <buffer> <lt>leader><lt>leader><leader>
 nnoremap gy `[v`]
 
 " qi starts recording a macro and enters insert mode, and allows "esc" to stop the macro
+" this means you can use `qi` and `Q` to do more advanced repeats
 function! RecordInsert()
     inoremap <esc> <esc>q:iunmap <lt>esc><cr>
     " autocmd RecordingLeave * ++once iunmap <esc>
@@ -284,13 +284,7 @@ set shada+=r/tmp
 " ready for testing!
 lua require('zeal')
 
-" custom floating term stuff
-" nnoremap <C-\> <cmd>lua require("tabterm").toggle()<CR>
-" tnoremap <C-\> <c-\><c-n><cmd>lua require("tabterm").toggle()<CR>
-" autocmd! TabClosed * lua require("tabterm").delete_term()
-" custom floating term stuff end
-
-highlight StatusLine guifg=#e2eac0 guibg=#8c3540
+" highlight StatusLine guifg=#e2eac0 guibg=#8c3540
 """ TESTING end
 
 " Redirect the output of a Vim or external command into a scratch buffer
@@ -301,13 +295,6 @@ function! Redir(cmd) abort
     call setline(1, split(output, "\n"))
 endfunction
 command! -nargs=1 Redir silent call Redir(<f-args>)
-
-function! SynStack()
-  if !exists("*synstack")
-    return
-  endif
-  echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
-endfunc
 
 function! s:DiffWithSaved()
     let filetype=&ft
@@ -350,16 +337,16 @@ augroup vimrc
     autocmd FileType fugitive nmap <buffer> <tab> =
     autocmd FileType gitcommit setlocal spell textwidth=72 foldmethod=syntax
     autocmd FileType man setlocal scrolloff=5 | nnoremap <buffer> <space>/ /^\s\+
-    autocmd InsertLeave *.md,*.org update
+    autocmd BufLeave *.md update
     autocmd Filetype markdown
                 \ nmap <buffer> <leader>md i[text](url)<esc>
                 \| nnoremap <buffer> j gj
                 \| nnoremap <buffer> k gk
                 \| nnoremap <buffer> <tab> za
-    autocmd FileType org
-                \ nnoremap <buffer> <space>c <cmd>.w !zsh<cr>
-                \| nmap <buffer> <M-CR> <leader><cr>
-                \| imap <buffer> <M-CR> <C-O><leader><cr>
+    " autocmd FileType org
+    "             \ nnoremap <buffer> <space>c <cmd>.w !zsh<cr>
+    "             \| nmap <buffer> <M-CR> <leader><cr>
+    "             \| imap <buffer> <M-CR> <C-O><leader><cr>
     autocmd BufRead,BufNewFile *.cake set filetype=cs
 
     " Turn on hlsearch when searching /? (and also for :s :g)

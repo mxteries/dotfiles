@@ -4,11 +4,9 @@ local linux = vim.fn.has('unix') == 1
 
 local ts_parsers = {} -- treesitter
 if mac then
-    require('orgmode').setup_ts_grammar()
     servers = {}
     ts_parsers = { "go", "bash", "hcl", "lua", "vim", "python", "ruby", "query"}
 elseif linux then
-    require('orgmode').setup_ts_grammar()
     vim.g.python3_host_prog = '/usr/bin/python3'
     ts_parsers = { "lua", "vim", "python", "query"}
 end
@@ -69,7 +67,6 @@ cmp.setup {
             },
         },
         { name = 'nvim_lua', keyword_length = 5 },
-        { name = 'orgmode', keyword_length = 2 },
     },
 }
 -- Use buffer source for / and ?
@@ -124,8 +121,8 @@ if not windows then
         ensure_installed = ts_parsers,
         highlight = {
             enable = true,
-            disable = {'org', 'ruby'},
-            additional_vim_regex_highlighting = {'org'}, -- Required since TS highlighter doesn't support all syntax features (conceal)
+            disable = {'ruby'},
+            additional_vim_regex_highlighting = {}, -- Required since TS highlighter doesn't support all syntax features (conceal)
         },
         textobjects = {
             select = {
@@ -250,7 +247,6 @@ require("which-key").setup {
 require("which-key").register({
   ["<leader>f"] = { name = "+fzf" },
   ["<leader>l"] = { name = "+diag [+lsp +ts]" },
-  ["<leader>o"] = { name = "+org" },
   ["<leader>g"] = { name = "+git" },
   ["<leader>h"] = {
       name = "+gitsigns",
