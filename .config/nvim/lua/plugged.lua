@@ -291,26 +291,28 @@ vim.keymap.set('n', 'yp', function()
 end)
 vim.keymap.set('n', '!d', '!!date<cr>')
 
+
+-- markdown stuff
 local strike = function()
     -- check if syntax below cursor is 'markdownStrike' or 'markdownStrikeDelimiter'
     local line, col = vim.fn.line('.'), vim.fn.col('.')
-    local syn_under_cursor = vim.fn.synID(line, col, 1)
-    local is_md_strike = syn_under_cursor == 2418 or syn_under_cursor == 2419
+    local syn_under_cursor = vim.fn.synIDattr(vim.fn.synID(line, col, 1), 'name')
+    local is_md_strike = syn_under_cursor == 'markdownStrike' or syn_under_cursor == 'markdownStrikeDelimiter'
 
     if not is_md_strike then
         -- strikeout, start on first "word" character
-        vim.cmd [[s/\w.\+/\~\~\0\~\~]]
+        vim.cmd [[s/\w.\+/\~\~\0\~\~/e]]
     else
         -- unstrike
-        vim.cmd [[s/\~\~\(.*\)\~\~/\1/]]
+        vim.cmd [[s/\~\~\(.*\)\~\~/\1/e]]
         -- vimL func version:
         -- echo substitute('~~TODO: set up markdown filetype autocmd that crosses out a line on <c-s>~~', '\~\~\(.*\)\~\~', '\1', '')
     end
     vim.fn.cursor(line, col) -- restore cursor
 end
--- markdown stuff
+local my_md_group = vim.api.nvim_create_augroup('my_markdown', { clear = true }),
 vim.api.nvim_create_autocmd('FileType', {
-    group = vim.api.nvim_create_augroup('my_markdown', { clear = true }),
+    group = my_md_group,
     pattern = 'markdown',
     callback = function()
         vim.opt.conceallevel = 3
@@ -318,6 +320,8 @@ vim.api.nvim_create_autocmd('FileType', {
         vim.cmd [[
             hi def my_markdown_strike guifg=#859289 term=strikethrough cterm=strikethrough gui=strikethrough
             hi link markdownStrike my_markdown_strike
+            syn match MyTodo /\v\C<(TODO|REMIND):?/  " ignore case, optional :
+            hi def link MyTodo TODO
         ]]
     end,
 })
