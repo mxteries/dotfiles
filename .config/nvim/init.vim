@@ -35,11 +35,15 @@ Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-nvim-lua'
 Plug 'hrsh7th/cmp-cmdline'
 Plug 'mfussenegger/nvim-lint'
-Plug 'folke/which-key.nvim' | set timeoutlen=450
+Plug 'folke/which-key.nvim' | set timeoutlen=500
 if !s:windows
     Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
     Plug 'nvim-treesitter/nvim-treesitter-refactor'
 end
+" Plug 'folke/noice.nvim'
+"   Plug 'MunifTanjim/nui.nvim'
+"   Plug 'rcarriga/nvim-notify'
+Plug 'gbprod/yanky.nvim'
 
 Plug 'sainnhe/everforest' | let g:everforest_background = 'hard'
 Plug 'morhetz/gruvbox'
@@ -99,7 +103,6 @@ colorscheme everforest
 " endif
 
 """ Settings {{{1
-let g:do_filetype_lua = 1 | let g:did_load_filetypes = 0
 " Indent spaces
 set softtabstop=4 shiftwidth=4 expandtab autoindent copyindent
 " Formatting search
@@ -125,6 +128,7 @@ set termguicolors
 set guifont=JetBrains\ Mono:h14
 set foldlevel=1
 set laststatus=3
+set number
 
 " Enable mouse primarily for scrolling
 set mouse=n
@@ -254,6 +258,11 @@ nnoremap qi :call RecordInsert()<cr>
 nnoremap <leader>R <cmd>source $MYVIMRC<cr>
 nnoremap <leader>c :Run<cr>
 xnoremap <leader>c :Run<cr>
+
+" ins mode
+inoremap <c-f> <C-g>u<Esc>[s1z=`]a<C-g>u
+inoremap <c-b> <C-g>U<esc>b~hea
+inoremap <c-b> <Esc>blgulhea
 """ Misc
 " remember 3k filemarks
 set shada=!,'3000,<50,s10,h

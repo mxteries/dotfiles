@@ -71,50 +71,48 @@ cmp.setup {
 }
 -- Use buffer source for / and ?
 -- trigger with <c-space>
-cmp.setup.cmdline('/', {
-    mapping = cmp.mapping.preset.cmdline({
-        ['<Tab>'] = {
-            c = function()
-                if cmp.visible() then
-                    cmp.select_next_item()
-                else
-                    -- Trigger complete menu and select next
-                    cmp.complete()
-                    cmp.select_next_item()
-                end
-            end,
-        },
-    }),
-    sources = {
-        { name = 'buffer', keyword_length = 4 }
-    }
-})
-cmp.setup.cmdline('?', {
-    mapping = cmp.mapping.preset.cmdline({
-        ['<Tab>'] = {
-            c = function()
-                if cmp.visible() then
-                    cmp.select_next_item()
-                else
-                    -- Trigger complete menu and select next
-                    cmp.complete()
-                    cmp.select_next_item()
-                end
-            end,
-        },
-    }),
-    sources = {
-        { name = 'buffer', keyword_length = 4 }
-    }
-})
+-- cmp.setup.cmdline('/', {
+--     mapping = cmp.mapping.preset.cmdline({
+--         ['<Tab>'] = {
+--             c = function()
+--                 if cmp.visible() then
+--                     cmp.select_next_item()
+--                 else
+--                     -- Trigger complete menu and select next
+--                     cmp.complete()
+--                     cmp.select_next_item()
+--                 end
+--             end,
+--         },
+--     }),
+--     sources = {
+--         { name = 'buffer', keyword_length = 4 }
+--     }
+-- })
+-- cmp.setup.cmdline('?', {
+--     mapping = cmp.mapping.preset.cmdline({
+--         ['<Tab>'] = {
+--             c = function()
+--                 if cmp.visible() then
+--                     cmp.select_next_item()
+--                 else
+--                     -- Trigger complete menu and select next
+--                     cmp.complete()
+--                     cmp.select_next_item()
+--                 end
+--             end,
+--         },
+--     }),
+--     sources = {
+--         { name = 'buffer', keyword_length = 4 }
+--     }
+-- })
 --- Tree-sitter ---
 if not windows then
     require'nvim-treesitter.configs'.setup {
         ensure_installed = ts_parsers,
         highlight = {
-            enable = true,
-            disable = {'ruby'},
-            additional_vim_regex_highlighting = {}, -- Required since TS highlighter doesn't support all syntax features (conceal)
+            enable = false,
         },
         textobjects = {
             select = {
@@ -256,6 +254,30 @@ require('lint').linters_by_ft = {
 vim.api.nvim_command([[
     autocmd! BufWritePost * lua require('lint').try_lint()
 ]])
+-- require("noice").setup()
+require("yanky").setup({
+    ring = {
+        history_length = 100,
+        storage = "shada",
+        sync_with_numbered_registers = true,
+        cancel_event = "update",
+    },
+    system_clipboard = {
+        sync_with_ring = true,
+    },
+    highlight = {
+        on_put = false,
+        on_yank = false,
+        timer = 500,
+    },
+})
+vim.keymap.set({"n","x"}, "p", "<Plug>(YankyPutAfter)")
+vim.keymap.set({"n","x"}, "P", "<Plug>(YankyPutBefore)")
+vim.keymap.set({"n","x"}, "gp", "<Plug>(YankyGPutAfter)")
+vim.keymap.set({"n","x"}, "gP", "<Plug>(YankyGPutBefore)")
+vim.keymap.set("n", "<c-p>", "<Plug>(YankyCycleForward)")  -- or ]y, [y?
+vim.keymap.set("n", "<c-n>", "<Plug>(YankyCycleBackward)")
+require("yanky.picker").actions.set_register(regname)
 
 -- custom lua funcs here
 P = function(v)
@@ -302,6 +324,7 @@ local strike = function()
     if not is_md_strike then
         -- strikeout, start on first "word" character
         vim.cmd [[s/\w.\+/\~\~\0\~\~/e]]
+        vim.cmd [[s/TODO/DONE/e]]
     else
         -- unstrike
         vim.cmd [[s/\~\~\(.*\)\~\~/\1/e]]
@@ -317,6 +340,7 @@ vim.api.nvim_create_autocmd('FileType', {
     callback = function()
         vim.opt.conceallevel = 3
         vim.keymap.set({'n'}, '<space><space>', strike, {buffer=true})
+        vim.keymap.set({'n'}, ',', '<cmd>Grep TODO %<cr>', {buffer=true})
         vim.cmd [[
             hi def my_markdown_strike guifg=#859289 term=strikethrough cterm=strikethrough gui=strikethrough
             hi link markdownStrike my_markdown_strike
@@ -325,3 +349,83 @@ vim.api.nvim_create_autocmd('FileType', {
         ]]
     end,
 })
+
+-- vim.api.nvim_create_autocmd('InsertLeave', {
+--     group = my_md_group,
+--     pattern = '*.md',
+--     command = 'norm gygq',
+-- })
+
+
+-- a way of grouping related files together
+-- require("tabby").setup {
+--     groups = {
+--         python = {
+--             identifier = function(filename)
+--                 -- determines which files opened will be added to this tab group
+--                 return filename.endswith('.py')
+--             end
+--         }, -- min and max height of the columns
+--         width = { min = 20, max = 100 }, -- min and max width of the columns
+--     },
+-- }
+
+-- ffi = require('ffi')
+-- ffi.cdef('bool is_showcmd_clear(void);')
+
+ffi = require('ffi')
+ffi.cdef[[
+bool KeyTyped;
+int maptick;
+]]
+-- -- keep timestamps down to the ms and do some calc on the (t)timeoutlen to figure out sequences
+my_key_presses = {}
+vim.on_key(function(key)
+    -- vim.loop.sleep(200)
+    -- vim.schedule(function()
+    local entry = {
+        vim.loop.now(),
+        key,
+        vim.api.nvim_get_mode()['mode'],
+        ffi.C.KeyTyped,  -- whether a user (not a mapping) entered a key
+        ffi.C.maptick    -- whether this key is part of a mapping
+    }
+    table.insert(my_key_presses, entry)
+    -- end)
+    -- TODO I need something here to tell me if this keystroke awaits further
+    -- keystrokes (eg. d, <c-w>, etc.) or if it's just a one off (x, j, k,
+    -- etc.)
+end)
+
+for _, e in ipairs(my_key_presses) do
+    if e[3] ~= 'i' then
+        P(e)
+    end
+end
+
+-- TODO: mode changes should automatically start a new group
+-- function cluster(data, maxgap)
+--     -- where data is a list of entries: { {time, keystroke, mode, keyTyped, maptick}, ... }
+--     groups = {{data[1]}}
+--     -- for i, entry in ipairs(data) do
+--     vim.notify('there are ' .. #data .. ' number of entries')
+--     for i=2,#data do
+--         local entry = data[i]
+--         entry[2] = vim.fn.keytrans(entry[2])  -- translate the key into internal codes
+--         local time, key, mode, keytyped, maptick = unpack(entry)
+
+--         if mode ~= 'i' then
+--             local last_group = groups[#groups]
+--             local group_leader = last_group[1][5] -- get the maptick of this group
+
+--             if group_leader == maptick then
+--                 table.insert(last_group, entry)
+--             else
+--                 -- create new group
+--                 table.insert(groups, {entry})
+--             end
+--         end
+--     end
+--     return groups
+-- end
+
