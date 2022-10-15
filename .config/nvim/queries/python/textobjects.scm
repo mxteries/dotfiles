@@ -1,3 +1,5 @@
+; extends
+
 (argument_list (_) @swappable)
 (parameters (_) @swappable)
 (dictionary (_) @swappable)

@@ -69,44 +69,7 @@ cmp.setup {
         { name = 'nvim_lua', keyword_length = 5 },
     },
 }
--- Use buffer source for / and ?
--- trigger with <c-space>
--- cmp.setup.cmdline('/', {
---     mapping = cmp.mapping.preset.cmdline({
---         ['<Tab>'] = {
---             c = function()
---                 if cmp.visible() then
---                     cmp.select_next_item()
---                 else
---                     -- Trigger complete menu and select next
---                     cmp.complete()
---                     cmp.select_next_item()
---                 end
---             end,
---         },
---     }),
---     sources = {
---         { name = 'buffer', keyword_length = 4 }
---     }
--- })
--- cmp.setup.cmdline('?', {
---     mapping = cmp.mapping.preset.cmdline({
---         ['<Tab>'] = {
---             c = function()
---                 if cmp.visible() then
---                     cmp.select_next_item()
---                 else
---                     -- Trigger complete menu and select next
---                     cmp.complete()
---                     cmp.select_next_item()
---                 end
---             end,
---         },
---     }),
---     sources = {
---         { name = 'buffer', keyword_length = 4 }
---     }
--- })
+
 --- Tree-sitter ---
 if not windows then
     require'nvim-treesitter.configs'.setup {
@@ -123,8 +86,7 @@ if not windows then
                     ["if"] = "@function.inner",
                     ["aa"] = "@parameter.outer",
                     ["ia"] = "@parameter.inner",
-
-                    ["x"] = "@swappable",
+                    ["ix"] = "@swappable",
                 },
             },
             swap = {
@@ -134,6 +96,16 @@ if not windows then
                 },
                 swap_previous = {
                     ["<c-p>"] = "@swappable",
+                },
+            },
+            move = {
+                enable = true,
+                set_jumps = false,
+                goto_next_start = {
+                    ["<C-j>"] = "@swappable",
+                },
+                goto_previous_start = {
+                    ["<C-k>"] = "@swappable",
                 },
             },
         },
@@ -166,6 +138,12 @@ if not windows then
                     goto_previous_usage = "<a-#>",
                 },
             },
+        },
+        playground = {
+            enable = true,
+            disable = {},
+            updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
+            persist_queries = false,
         },
     }
 end
@@ -275,9 +253,36 @@ vim.keymap.set({"n","x"}, "p", "<Plug>(YankyPutAfter)")
 vim.keymap.set({"n","x"}, "P", "<Plug>(YankyPutBefore)")
 vim.keymap.set({"n","x"}, "gp", "<Plug>(YankyGPutAfter)")
 vim.keymap.set({"n","x"}, "gP", "<Plug>(YankyGPutBefore)")
-vim.keymap.set("n", "<c-p>", "<Plug>(YankyCycleForward)")  -- or ]y, [y?
-vim.keymap.set("n", "<c-n>", "<Plug>(YankyCycleBackward)")
+vim.keymap.set("n", "[y", "<Plug>(YankyCycleForward)")  -- or ]y, [y?
+vim.keymap.set("n", "]y", "<Plug>(YankyCycleBackward)")
 require("yanky.picker").actions.set_register(regname)
+
+local nm = require("neo-minimap")
+-- Lua
+nm.set("zi", "lua", {
+    query = [[
+        ;; query
+        ((for_statement) @cap)
+        ((function_call (dot_index_expression) @field (#eq? @field "vim.keymap.set")) @cap)
+        ((function_declaration) @cap)
+        ((function_definition) @cap)
+        ((assignment_statement(expression_list((function_definition) @cap))))
+        ((function_call (identifier)) @cap (#vim-match? @cap "^__*" ))
+    ]],
+    regex = {'^require'}
+})
+
+-- python
+nm.set("zi", "python", {
+    query = [[
+        ;; query
+        ((for_statement) @cap)
+        ((function_definition) @cap)
+    ]],
+    -- regex = {'^require'}
+})
+
+require('leap').add_default_mappings()
 
 -- custom lua funcs here
 P = function(v)
@@ -350,13 +355,6 @@ vim.api.nvim_create_autocmd('FileType', {
     end,
 })
 
--- vim.api.nvim_create_autocmd('InsertLeave', {
---     group = my_md_group,
---     pattern = '*.md',
---     command = 'norm gygq',
--- })
-
-
 -- a way of grouping related files together
 -- require("tabby").setup {
 --     groups = {
@@ -373,59 +371,8 @@ vim.api.nvim_create_autocmd('FileType', {
 -- ffi = require('ffi')
 -- ffi.cdef('bool is_showcmd_clear(void);')
 
-ffi = require('ffi')
-ffi.cdef[[
-bool KeyTyped;
-int maptick;
-]]
--- -- keep timestamps down to the ms and do some calc on the (t)timeoutlen to figure out sequences
-my_key_presses = {}
-vim.on_key(function(key)
-    -- vim.loop.sleep(200)
-    -- vim.schedule(function()
-    local entry = {
-        vim.loop.now(),
-        key,
-        vim.api.nvim_get_mode()['mode'],
-        ffi.C.KeyTyped,  -- whether a user (not a mapping) entered a key
-        ffi.C.maptick    -- whether this key is part of a mapping
-    }
-    table.insert(my_key_presses, entry)
-    -- end)
-    -- TODO I need something here to tell me if this keystroke awaits further
-    -- keystrokes (eg. d, <c-w>, etc.) or if it's just a one off (x, j, k,
-    -- etc.)
-end)
-
-for _, e in ipairs(my_key_presses) do
-    if e[3] ~= 'i' then
-        P(e)
-    end
-end
-
--- TODO: mode changes should automatically start a new group
--- function cluster(data, maxgap)
---     -- where data is a list of entries: { {time, keystroke, mode, keyTyped, maptick}, ... }
---     groups = {{data[1]}}
---     -- for i, entry in ipairs(data) do
---     vim.notify('there are ' .. #data .. ' number of entries')
---     for i=2,#data do
---         local entry = data[i]
---         entry[2] = vim.fn.keytrans(entry[2])  -- translate the key into internal codes
---         local time, key, mode, keytyped, maptick = unpack(entry)
-
---         if mode ~= 'i' then
---             local last_group = groups[#groups]
---             local group_leader = last_group[1][5] -- get the maptick of this group
-
---             if group_leader == maptick then
---                 table.insert(last_group, entry)
---             else
---                 -- create new group
---                 table.insert(groups, {entry})
---             end
---         end
---     end
---     return groups
--- end
-
+-- ffi = require('ffi')
+-- ffi.cdef[[
+-- bool KeyTyped;
+-- int maptick;
+-- ]]

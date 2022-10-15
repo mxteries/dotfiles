@@ -10,13 +10,15 @@ let s:windows = has('win32') || has('win64')
 """ Plugins {{{1
 let s:plugdir = s:configdir . '/plugged'
 call plug#begin(s:plugdir)
-Plug 'tommcdo/vim-lion'
+Plug 'junegunn/vim-easy-align'  " use <c-p> to preview
+  xmap ga <Plug>(EasyAlign)
+  nmap ga <Plug>(EasyAlign)
 Plug 'junegunn/goyo.vim' | let g:goyo_width=88 | let g:goyo_height="100%"
 Plug 'tpope/vim-speeddating'
 Plug 'tpope/vim-unimpaired'
 Plug 'tpope/vim-commentary' | Plug 'tpope/vim-repeat' | Plug 'tpope/vim-surround'
-Plug 'tpope/vim-fugitive' | Plug 'tpope/vim-rhubarb'
-Plug 'tpope/vim-markdown' | let g:markdown_folding = 1
+Plug 'tpope/vim-fugitive'   | Plug 'tpope/vim-rhubarb'
+Plug 'tpope/vim-markdown'   | let g:markdown_folding = 1
 Plug 'tpope/vim-apathy'
 Plug 'iamcco/markdown-preview.nvim', { 'do': ':call mkdp#util#install()', 'for': 'markdown', 'on': 'MarkdownPreview' }
 Plug 'Vimjas/vim-python-pep8-indent'
@@ -39,11 +41,12 @@ Plug 'folke/which-key.nvim' | set timeoutlen=500
 if !s:windows
     Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
     Plug 'nvim-treesitter/nvim-treesitter-refactor'
+    Plug 'nvim-treesitter/nvim-treesitter-textobjects'
+    Plug 'nvim-treesitter/playground'
 end
-" Plug 'folke/noice.nvim'
-"   Plug 'MunifTanjim/nui.nvim'
-"   Plug 'rcarriga/nvim-notify'
 Plug 'gbprod/yanky.nvim'
+Plug 'ggandor/leap.nvim'
+Plug 'ziontee113/neo-minimap'
 
 Plug 'sainnhe/everforest' | let g:everforest_background = 'hard'
 Plug 'morhetz/gruvbox'
@@ -170,7 +173,7 @@ function! Myfoldtext() abort
     return line.' '.linecount
 endfunction
 set foldtext=Myfoldtext()
-nnoremap <silent> <tab> za
+nnoremap <silent> <space><tab> za
 " Use zf for manual folding always
 nnoremap zf <cmd>setl fdm&<CR>zf
 xnoremap zf <cmd>setl fdm&<CR>zf
@@ -215,11 +218,6 @@ nnoremap <leader>gg <cmd>G<cr>
 " Requires configuring core.worktree: `git --git-dir=.dotfiles config core.worktree "$HOME"`
 nnoremap <leader>g. <cmd>call FugitiveDetect(expand('~/.dotfiles')) \| G<cr>
 nnoremap <leader>gD :lcd `git rev-parse --show-toplevel`<CR>:pwd<CR>
-nnoremap <leader>gf <cmd>GFiles<cr>
-nnoremap <leader>gs <cmd>GFiles?<cr>
-nnoremap <leader>gc <cmd>Commits<cr>
-nnoremap <leader>gC <cmd>BCommits<cr>
-xnoremap <leader>gc :BCommits<cr>
 
 "" Editing
 nnoremap <leader>Y "+Y
@@ -229,6 +227,13 @@ nnoremap <leader>p "+p
 xnoremap <leader>p "+p
 xnoremap P "0p
 xnoremap <leader>@ :norm @
+nnoremap <space><cr> <cmd>update<cr>
+
+"" hx like mappings
+nnoremap gs ^
+onoremap gs ^
+nnoremap gl $
+onoremap gl $
 
 "" cool mappings
 " replace every occurrence of word under cursor on this line
@@ -245,6 +250,13 @@ nmap <leader>\ :nmap <buffer> <lt>leader><lt>leader><leader>
 " select last yanked/changed text
 nnoremap gy `[v`]
 
+" correct spelling OR capitalize if it's spelled right
+nnoremap <c-s> 1z=
+
+"" ins mode
+" correct last misspelled word
+inoremap <c-s> <c-g>u<esc><cmd>setlocal spell<cr>[s1z=`]<cmd>setlocal nospell<cr>a<c-g>u
+
 " qi starts recording a macro and enters insert mode, and allows "esc" to stop the macro
 " this means you can use `qi` and `Q` to do more advanced repeats
 function! RecordInsert()
@@ -259,10 +271,6 @@ nnoremap <leader>R <cmd>source $MYVIMRC<cr>
 nnoremap <leader>c :Run<cr>
 xnoremap <leader>c :Run<cr>
 
-" ins mode
-inoremap <c-f> <C-g>u<Esc>[s1z=`]a<C-g>u
-inoremap <c-b> <C-g>U<esc>b~hea
-inoremap <c-b> <Esc>blgulhea
 """ Misc
 " remember 3k filemarks
 set shada=!,'3000,<50,s10,h
@@ -340,3 +348,4 @@ augroup vimrc
     autocmd CmdlineEnter : set nosmartcase
     autocmd CmdlineLeave : set smartcase
 augroup END
+
