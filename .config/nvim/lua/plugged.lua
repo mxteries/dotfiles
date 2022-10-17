@@ -87,6 +87,7 @@ if not windows then
                     ["aa"] = "@parameter.outer",
                     ["ia"] = "@parameter.inner",
                     ["ix"] = "@swappable",
+                    ["ic"] = "@control",
                 },
             },
             swap = {
@@ -102,18 +103,21 @@ if not windows then
                 enable = true,
                 set_jumps = false,
                 goto_next_start = {
-                    ["<C-j>"] = "@swappable",
+                    ["<C-l>"] = "@swappable",
+                    ["<C-j>"] = "@control",
                 },
                 goto_previous_start = {
-                    ["<C-k>"] = "@swappable",
+                    ["<C-h>"] = "@swappable",
+                    ["<C-k>"] = "@control",
                 },
             },
         },
         incremental_selection = {
             enable = true,
             keymaps = {
-                node_incremental = '<TAB>',
-                node_decremental = '<S-TAB>',
+                init_selection = "<M-o>",
+                node_incremental = '<M-o>',
+                node_decremental = '<M-i>',
             }
         },
         refactor = {
@@ -147,6 +151,11 @@ if not windows then
         },
     }
 end
+vim.cmd[[
+xnoremap <c-j> <cmd>lua require'nvim-treesitter.textobjects.move'.goto_next_start('@control')<CR>
+xnoremap <c-k> <cmd>lua require'nvim-treesitter.textobjects.move'.goto_previous_start('@control')<CR>
+]]
+
 
 --- everything else ---
 require('gitsigns').setup{

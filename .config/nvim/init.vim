@@ -35,7 +35,7 @@ Plug 'lewis6991/gitsigns.nvim'
 Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-nvim-lua'
-Plug 'hrsh7th/cmp-cmdline'
+" Plug 'hrsh7th/cmp-cmdline'
 Plug 'mfussenegger/nvim-lint'
 Plug 'folke/which-key.nvim' | set timeoutlen=500
 if !s:windows
