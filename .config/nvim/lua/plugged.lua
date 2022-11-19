@@ -237,6 +237,7 @@ require('lint').linters_by_ft = {
     zsh = {'shellcheck'},
     yaml = {'yamllint',},
     rb = {'ruby',},
+    -- lua = {'luacheck',},
 }
 vim.api.nvim_command([[
     autocmd! BufWritePost * lua require('lint').try_lint()
@@ -268,7 +269,7 @@ require("yanky.picker").actions.set_register(regname)
 
 local nm = require("neo-minimap")
 -- Lua
-nm.set("zi", "lua", {
+nm.set("gO", "lua", {
     query = [[
         ;; query
         ((for_statement) @cap)
@@ -282,7 +283,7 @@ nm.set("zi", "lua", {
 })
 
 -- python
-nm.set("zi", "python", {
+nm.set("gO", "python", {
     query = [[
         ;; query
         ((for_statement) @cap)
@@ -290,8 +291,25 @@ nm.set("zi", "python", {
     ]],
     -- regex = {'^require'}
 })
+require('dressing').setup({
+    select = {
+        -- Set to false to disable the vim.ui.select implementation
+        enabled = true,
 
-require('leap').add_default_mappings()
+        -- Priority list of preferred vim.select implementations
+        backend = { "fzf" },
+
+        -- Trim trailing `:` from prompt
+        trim_prompt = true,
+        -- Options for fzf selector
+        fzf = {
+            window = {
+                width = 0.5,
+                height = 0.4,
+            },
+        },
+    }
+})
 
 -- custom lua funcs here
 P = function(v)
@@ -320,6 +338,12 @@ end
 vim.cmd('command! -range=% Run lua Run(<line1>, <line2>)')
 
 vim.keymap.set('n', 'yp', function()
+    vim.cmd [[
+        let @+=expand("%:p:~")
+        let @"=expand("%:p:~")
+    ]]
+end)
+vim.keymap.set('n', 'yP', function()
     vim.cmd [[
         let @+=expand("%:p:~") . ':' . line(".")
         let @"=expand("%:p:~") . ':' . line(".")
@@ -364,6 +388,26 @@ vim.api.nvim_create_autocmd('FileType', {
     end,
 })
 
+-- maps a string to a lua func, used to create a cmd palette
+local choice_func_map = {
+    ['test'] = function()
+        vim.cmd[[
+            tabnew
+            tcd test
+            e ./test.lua
+        ]]
+    end
+}
+-- create a cmd palette of sorts
+vim.keymap.set({'n'}, '<f1>',
+    function()
+        vim.ui.select(vim.tbl_keys(choice_func_map), {
+            prompt = 'Choose option:',
+        }, function(choice)
+            choice_func_map[choice]()
+        end)
+    end
+)
 -- a way of grouping related files together
 -- require("tabby").setup {
 --     groups = {
@@ -377,11 +421,3 @@ vim.api.nvim_create_autocmd('FileType', {
 --     },
 -- }
 
--- ffi = require('ffi')
--- ffi.cdef('bool is_showcmd_clear(void);')
-
--- ffi = require('ffi')
--- ffi.cdef[[
--- bool KeyTyped;
--- int maptick;
--- ]]

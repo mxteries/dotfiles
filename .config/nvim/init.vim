@@ -45,8 +45,15 @@ if !s:windows
     Plug 'nvim-treesitter/playground'
 end
 Plug 'gbprod/yanky.nvim'
-Plug 'ggandor/leap.nvim'
+Plug 'rlane/pounce.nvim'
+nmap s <cmd>Pounce<CR>
+nmap S <cmd>PounceRepeat<CR>
+vmap s <cmd>Pounce<CR>
+" omap gs <cmd>Pounce<CR>
 Plug 'ziontee113/neo-minimap'
+Plug 'stevearc/dressing.nvim'
+
+" Plug '~/.config/nvim/plugged/lytics'
 
 Plug 'sainnhe/everforest' | let g:everforest_background = 'hard'
 Plug 'morhetz/gruvbox'
@@ -338,7 +345,8 @@ augroup vimrc
                 \ nmap <buffer> <leader>md i[text](url)<esc>
                 \| nnoremap <buffer> j gj
                 \| nnoremap <buffer> k gk
-                \| nnoremap <buffer> <tab> za
+                \| nnoremap <buffer> <space><tab> za
+                \| setlocal shiftwidth=2
     autocmd BufRead,BufNewFile *.cake set filetype=cs
 
     " Turn on hlsearch when searching /? (and also for :s :g)
