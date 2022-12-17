@@ -5,22 +5,22 @@ local linux = vim.fn.has('unix') == 1
 local ts_parsers = {} -- treesitter
 if mac then
     servers = {}
-    ts_parsers = { "go", "bash", "hcl", "lua", "vim", "python", "ruby", "query"}
+    ts_parsers = { 'go', 'bash', 'hcl', 'lua', 'vim', 'python', 'ruby', 'query' }
 elseif linux then
     vim.g.python3_host_prog = '/usr/bin/python3'
-    ts_parsers = { "lua", "vim", "python", "query"}
+    ts_parsers = { 'lua', 'vim', 'python', 'query' }
 end
 
 --- nvim.cmp ---
-local cmp = require'cmp'
+local cmp = require('cmp')
 local has_words_before = function()
     local line, col = unpack(vim.api.nvim_win_get_cursor(0))
-    return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
+    return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match('%s') == nil
 end
 
 -- Set completeopt to have a better completion experience
 vim.o.completeopt = 'menu,menuone,noselect'
-cmp.setup {
+cmp.setup({
     snippet = {
         -- REQUIRED - you must specify a snippet engine
         expand = function(args)
@@ -33,9 +33,9 @@ cmp.setup {
         ['<S-Down>'] = cmp.mapping.scroll_docs(4),
         ['<C-c>'] = cmp.mapping.abort(),
         ['<C-Space>'] = cmp.mapping.complete(),
-        ['<CR>'] = cmp.mapping.confirm {
-            behavior = cmp.ConfirmBehavior.Replace
-        },
+        ['<CR>'] = cmp.mapping.confirm({
+            behavior = cmp.ConfirmBehavior.Replace,
+        }),
         -- Tab trigger completion in insert mode
         -- Tab only navigates in cmd mode
         ['<Tab>'] = function(fallback)
@@ -63,16 +63,16 @@ cmp.setup {
             option = {
                 get_bufnrs = function()
                     return vim.api.nvim_list_bufs()
-                end
+                end,
             },
         },
         { name = 'nvim_lua', keyword_length = 5 },
     },
-}
+})
 
 --- Tree-sitter ---
 if not windows then
-    require'nvim-treesitter.configs'.setup {
+    require('nvim-treesitter.configs').setup({
         ensure_installed = ts_parsers,
         highlight = {
             enable = false,
@@ -82,43 +82,43 @@ if not windows then
                 enable = true,
                 lookahead = false,
                 keymaps = {
-                    ["af"] = "@function.outer",
-                    ["if"] = "@function.inner",
-                    ["aa"] = "@parameter.outer",
-                    ["ia"] = "@parameter.inner",
-                    ["ix"] = "@swappable",
-                    ["ic"] = "@control",
+                    ['af'] = '@function.outer',
+                    ['if'] = '@function.inner',
+                    ['aa'] = '@parameter.outer',
+                    ['ia'] = '@parameter.inner',
+                    ['ix'] = '@swappable',
+                    ['ic'] = '@control',
                 },
             },
             swap = {
                 enable = true,
                 swap_next = {
-                    ["<c-n>"] = "@swappable",
+                    ['<c-n>'] = '@swappable',
                 },
                 swap_previous = {
-                    ["<c-p>"] = "@swappable",
+                    ['<c-p>'] = '@swappable',
                 },
             },
             move = {
                 enable = true,
                 set_jumps = false,
                 goto_next_start = {
-                    ["<C-l>"] = "@swappable",
-                    ["<C-j>"] = "@control",
+                    ['<C-l>'] = '@swappable',
+                    ['<C-j>'] = '@control',
                 },
                 goto_previous_start = {
-                    ["<C-h>"] = "@swappable",
-                    ["<C-k>"] = "@control",
+                    ['<C-h>'] = '@swappable',
+                    ['<C-k>'] = '@control',
                 },
             },
         },
         incremental_selection = {
             enable = true,
             keymaps = {
-                init_selection = "<M-o>",
+                init_selection = '<M-o>',
                 node_incremental = '<M-o>',
                 node_decremental = '<M-i>',
-            }
+            },
         },
         refactor = {
             highlight_definitions = {
@@ -130,16 +130,16 @@ if not windows then
             smart_rename = {
                 enable = true,
                 keymaps = {
-                    smart_rename = "<leader>lr",
+                    smart_rename = '<leader>lr',
                 },
             },
             navigation = {
                 enable = false,
                 keymaps = {
-                    goto_definition = "<leader>ld",
-                    list_definitions = "<leader>ls",
-                    goto_next_usage = "<a-*>",
-                    goto_previous_usage = "<a-#>",
+                    goto_definition = '<leader>ld',
+                    list_definitions = '<leader>ls',
+                    goto_next_usage = '<a-*>',
+                    goto_previous_usage = '<a-#>',
                 },
             },
         },
@@ -149,49 +149,52 @@ if not windows then
             updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
             persist_queries = false,
         },
-    }
+    })
 end
-vim.cmd[[
+vim.cmd([[
 xnoremap <c-j> <cmd>lua require'nvim-treesitter.textobjects.move'.goto_next_start('@control')<CR>
 xnoremap <c-k> <cmd>lua require'nvim-treesitter.textobjects.move'.goto_previous_start('@control')<CR>
-]]
-
+]])
 
 --- everything else ---
-require('gitsigns').setup{
-  on_attach = function(bufnr)
-    local gs = package.loaded.gitsigns
+require('gitsigns').setup({
+    on_attach = function(bufnr)
+        local gs = package.loaded.gitsigns
 
-    local function map(mode, l, r, opts)
-      opts = opts or {}
-      opts.buffer = bufnr
-      vim.keymap.set(mode, l, r, opts)
-    end
+        local function map(mode, l, r, opts)
+            opts = opts or {}
+            opts.buffer = bufnr
+            vim.keymap.set(mode, l, r, opts)
+        end
 
-    -- Navigation
-    map('n', ']c', "&diff ? ']c' : '<cmd>Gitsigns next_hunk<CR>'", {expr=true})
-    map('n', '[c', "&diff ? '[c' : '<cmd>Gitsigns prev_hunk<CR>'", {expr=true})
+        -- Navigation
+        map('n', ']c', "&diff ? ']c' : '<cmd>Gitsigns next_hunk<CR>'", { expr = true })
+        map('n', '[c', "&diff ? '[c' : '<cmd>Gitsigns prev_hunk<CR>'", { expr = true })
 
-    -- Actions
-    map({'n', 'v'}, '<leader>hs', ':Gitsigns stage_hunk<CR>')
-    map({'n', 'v'}, '<leader>hr', ':Gitsigns reset_hunk<CR>')
-    map('n', '<leader>hS', gs.stage_buffer)
-    map('n', '<leader>hu', gs.undo_stage_hunk)
-    map('n', '<leader>hR', gs.reset_buffer)
-    map('n', '<leader>hp', gs.preview_hunk)
-    map('n', '<leader>hb', function() gs.blame_line{full=true} end)
-    map('n', '<leader>htb', gs.toggle_current_line_blame)
-    map('n', '<leader>hd', gs.diffthis)
-    map('n', '<leader>hD', function() gs.diffthis('~') end)
-    map('n', '<leader>htd', gs.toggle_deleted)
+        -- Actions
+        map({ 'n', 'v' }, '<leader>hs', ':Gitsigns stage_hunk<CR>')
+        map({ 'n', 'v' }, '<leader>hr', ':Gitsigns reset_hunk<CR>')
+        map('n', '<leader>hS', gs.stage_buffer)
+        map('n', '<leader>hu', gs.undo_stage_hunk)
+        map('n', '<leader>hR', gs.reset_buffer)
+        map('n', '<leader>hp', gs.preview_hunk)
+        map('n', '<leader>hb', function()
+            gs.blame_line({ full = true })
+        end)
+        map('n', '<leader>htb', gs.toggle_current_line_blame)
+        map('n', '<leader>hd', gs.diffthis)
+        map('n', '<leader>hD', function()
+            gs.diffthis('~')
+        end)
+        map('n', '<leader>htd', gs.toggle_deleted)
 
-    -- Text object
-    map({'o', 'x'}, 'ih', ':<C-U>Gitsigns select_hunk<CR>')
-  end
-}
+        -- Text object
+        map({ 'o', 'x' }, 'ih', ':<C-U>Gitsigns select_hunk<CR>')
+    end,
+})
 -- local presets = require("which-key.plugins.presets")
 -- presets.operators = {}
-require("which-key").setup {
+require('which-key').setup({
     presets = {
         operators = false,
         motions = false, -- adds help for motions
@@ -202,53 +205,53 @@ require("which-key").setup {
         g = true, -- bindings for prefixed with g
     },
     window = {
-        border = "single", -- none, single, double, shadow
+        border = 'single', -- none, single, double, shadow
         margin = { 0, 0, 0, 0 }, -- extra window margin [top, right, bottom, left]
         padding = { 1, 1, 1, 1 }, -- extra window padding [top, right, bottom, left]
-        winblend = 20
+        winblend = 20,
     },
     layout = {
         height = { min = 4, max = 40 }, -- min and max height of the columns
         width = { min = 20, max = 100 }, -- min and max width of the columns
         spacing = 3, -- spacing between columns
-        align = "left", -- align columns left, center or right
+        align = 'left', -- align columns left, center or right
     },
-}
-require("which-key").register({
-  ["<leader>f"] = { name = "+fzf" },
-  ["<leader>l"] = { name = "+diag [+lsp +ts]" },
-  ["<leader>g"] = { name = "+git" },
-  ["<leader>h"] = {
-      name = "+gitsigns",
-      ['S'] = "gs.stage_buffer",
-      ['u'] = "gs.undo_stage_hunk",
-      ['R'] = "gs.reset_buffer",
-      ['p'] = "gs.preview_hunk",
-      ['b'] = "budget git messenger",
-      ['tb'] = "gs.toggle_current_line_blame",
-      ['d'] = "gs.diffthis",
-      ['D'] = "function() gs.diffthis('~') end",
-      ['td'] = "gs.toggle_deleted",
-  },
+})
+require('which-key').register({
+    ['<leader>f'] = { name = '+fzf' },
+    ['<leader>l'] = { name = '+diag [+lsp +ts]' },
+    ['<leader>g'] = { name = '+git' },
+    ['<leader>h'] = {
+        name = '+gitsigns',
+        ['S'] = 'gs.stage_buffer',
+        ['u'] = 'gs.undo_stage_hunk',
+        ['R'] = 'gs.reset_buffer',
+        ['p'] = 'gs.preview_hunk',
+        ['b'] = 'budget git messenger',
+        ['tb'] = 'gs.toggle_current_line_blame',
+        ['d'] = 'gs.diffthis',
+        ['D'] = "function() gs.diffthis('~') end",
+        ['td'] = 'gs.toggle_deleted',
+    },
 })
 require('lint').linters_by_ft = {
-    python = {'pylint'},
-    sh = {'shellcheck'},
-    zsh = {'shellcheck'},
-    yaml = {'yamllint',},
-    rb = {'ruby',},
+    python = { 'pylint' },
+    sh = { 'shellcheck' },
+    zsh = { 'shellcheck' },
+    yaml = { 'yamllint' },
+    rb = { 'ruby' },
     -- lua = {'luacheck',},
 }
 vim.api.nvim_command([[
     autocmd! BufWritePost * lua require('lint').try_lint()
 ]])
 -- require("noice").setup()
-require("yanky").setup({
+require('yanky').setup({
     ring = {
         history_length = 100,
-        storage = "shada",
+        storage = 'shada',
         sync_with_numbered_registers = true,
-        cancel_event = "update",
+        cancel_event = 'update',
     },
     system_clipboard = {
         sync_with_ring = true,
@@ -259,17 +262,18 @@ require("yanky").setup({
         timer = 500,
     },
 })
-vim.keymap.set({"n","x"}, "p", "<Plug>(YankyPutAfter)")
-vim.keymap.set({"n","x"}, "P", "<Plug>(YankyPutBefore)")
-vim.keymap.set({"n","x"}, "gp", "<Plug>(YankyGPutAfter)")
-vim.keymap.set({"n","x"}, "gP", "<Plug>(YankyGPutBefore)")
-vim.keymap.set("n", "[y", "<Plug>(YankyCycleForward)")  -- or ]y, [y?
-vim.keymap.set("n", "]y", "<Plug>(YankyCycleBackward)")
-require("yanky.picker").actions.set_register(regname)
+vim.keymap.set({ 'n', 'x' }, 'p', '<Plug>(YankyPutAfter)')
+vim.keymap.set({ 'n', 'x' }, 'P', '<Plug>(YankyPutBefore)')
+vim.keymap.set({ 'n', 'x' }, 'gp', '<Plug>(YankyGPutAfter)')
+vim.keymap.set({ 'n', 'x' }, 'gP', '<Plug>(YankyGPutBefore)')
+vim.keymap.set('n', '[y', '<Plug>(YankyCycleForward)') -- or ]y, [y?
+vim.keymap.set('n', ']y', '<Plug>(YankyCycleBackward)')
+require('yanky.picker').actions.set_register(regname)
+vim.keymap.set('n', '<leader>Y', '<cmd>YankyRingHistory<cr>')
 
-local nm = require("neo-minimap")
+local nm = require('neo-minimap')
 -- Lua
-nm.set("gO", "lua", {
+nm.set('gO', 'lua', {
     query = [[
         ;; query
         ((for_statement) @cap)
@@ -279,11 +283,11 @@ nm.set("gO", "lua", {
         ((assignment_statement(expression_list((function_definition) @cap))))
         ((function_call (identifier)) @cap (#vim-match? @cap "^__*" ))
     ]],
-    regex = {'^require'}
+    regex = { '^require' },
 })
 
 -- python
-nm.set("gO", "python", {
+nm.set('gO', 'python', {
     query = [[
         ;; query
         ((for_statement) @cap)
@@ -297,7 +301,7 @@ require('dressing').setup({
         enabled = true,
 
         -- Priority list of preferred vim.select implementations
-        backend = { "fzf" },
+        backend = { 'fzf' },
 
         -- Trim trailing `:` from prompt
         trim_prompt = true,
@@ -308,19 +312,25 @@ require('dressing').setup({
                 height = 0.4,
             },
         },
-    }
+    },
 })
 
 -- custom lua funcs here
-P = function(v)
-    print(vim.inspect(v))
-    return v
+P = function(...)
+    local objects = {}
+    for i = 1, select('#', ...) do
+        local v = select(i, ...)
+        table.insert(objects, vim.inspect(v))
+    end
+
+    print(table.concat(objects, '    '))
+    return ...
 end
 
 -- Runs something for the current buffer
 -- Can overload functionality by using the 0 range in the future
-Run = function(line1, line2)
-    local range = line1 .. ',' .. line2
+local run_buf = function(cmd_args)
+    local range = cmd_args.line1 .. ',' .. cmd_args.line2
     local command = ''
     local ft = vim.bo.filetype
     -- local path = '"' .. vim.fn.expand('%') .. '"'
@@ -333,24 +343,61 @@ Run = function(line1, line2)
     end
     vim.notify(command)
     vim.cmd(command)
+    -- local ok, v = pcall(vim.cmd(command))
+    -- if not ok then
+    --     P(v)
+    -- end
 end
 -- Define a "Run" command that acts on the entire file by default
-vim.cmd('command! -range=% Run lua Run(<line1>, <line2>)')
+-- vim.cmd('command! -range=% Run lua Run(<line1>, <line2>)')
+vim.api.nvim_create_user_command('Run', run_buf, { range = '%' })
+vim.keymap.set({ 'n', 'x' }, '<leader>c', ':Run<cr>')
 
 vim.keymap.set('n', 'yp', function()
-    vim.cmd [[
+    vim.cmd([[
         let @+=expand("%:p:~")
         let @"=expand("%:p:~")
-    ]]
+    ]])
 end)
 vim.keymap.set('n', 'yP', function()
-    vim.cmd [[
+    vim.cmd([[
         let @+=expand("%:p:~") . ':' . line(".")
         let @"=expand("%:p:~") . ':' . line(".")
-    ]]
+    ]])
 end)
-vim.keymap.set('n', '!d', '!!date<cr>')
+vim.keymap.set('n', '!d', '!!date<cr>I## <esc>')
 
+-- "[g]et search [m]atch"
+-- usage: search for something eg. /".*"
+-- then hit "gm" to get all search matches and store in unnamed register
+local function get_search_match(cmd_args)
+    local range = cmd_args.line1 .. ',' .. cmd_args.line2
+    -- empty out unnamed register, then store matches in unnamed register
+    vim.fn.setreg('"', '')
+    vim.cmd(range .. [[s//\=setreg('"', submatch(v:count), 'la')/n]]) -- linewise and append
+end
+vim.api.nvim_create_user_command('GetMatch', get_search_match, { range = '%' })
+vim.keymap.set({ 'n' }, 'gm', '<cmd>GetMatch<cr>') -- ignore count ranges using <cmd>, meaning we can use 1gm, 2gm and still search the whole file
+vim.keymap.set({ 'x' }, 'gm', ':GetMatch<cr>') -- if you use a count here, visual mode range overrides
+
+-- maps a string to a lua func, used to create a cmd palette
+local choice_func_map = {
+    ['test'] = function()
+        vim.cmd([[
+            tabnew
+            tcd test
+            e ./test.lua
+        ]])
+    end,
+}
+-- create a cmd palette of sorts
+vim.keymap.set({ 'n' }, '<f1>', function()
+    vim.ui.select(vim.tbl_keys(choice_func_map), {
+        prompt = 'Choose option:',
+    }, function(choice)
+        choice_func_map[choice]()
+    end)
+end)
 
 -- markdown stuff
 local strike = function()
@@ -361,63 +408,29 @@ local strike = function()
 
     if not is_md_strike then
         -- strikeout, start on first "word" character
-        vim.cmd [[s/\w.\+/\~\~\0\~\~/e]]
-        vim.cmd [[s/TODO/DONE/e]]
+        vim.cmd([[s/\w.\+/\~\~\0\~\~/e]])
+        vim.cmd([[s/TODO/DONE/e]])
     else
         -- unstrike
-        vim.cmd [[s/\~\~\(.*\)\~\~/\1/e]]
+        vim.cmd([[s/\~\~\(.*\)\~\~/\1/e]])
         -- vimL func version:
         -- echo substitute('~~TODO: set up markdown filetype autocmd that crosses out a line on <c-s>~~', '\~\~\(.*\)\~\~', '\1', '')
     end
     vim.fn.cursor(line, col) -- restore cursor
 end
-local my_md_group = vim.api.nvim_create_augroup('my_markdown', { clear = true }),
-vim.api.nvim_create_autocmd('FileType', {
-    group = my_md_group,
-    pattern = 'markdown',
-    callback = function()
-        vim.opt.conceallevel = 3
-        vim.keymap.set({'n'}, '<space><space>', strike, {buffer=true})
-        vim.keymap.set({'n'}, ',', '<cmd>Grep TODO %<cr>', {buffer=true})
-        vim.cmd [[
+local my_md_group =
+    vim.api.nvim_create_augroup('my_markdown', { clear = true }), vim.api.nvim_create_autocmd('FileType', {
+        group = my_md_group,
+        pattern = 'markdown',
+        callback = function()
+            vim.opt.conceallevel = 3
+            vim.keymap.set({ 'n' }, '<space><space>', strike, { buffer = true })
+            vim.keymap.set({ 'n' }, ',', '<cmd>Grep TODO %<cr>', { buffer = true })
+            vim.cmd([[
             hi def my_markdown_strike guifg=#859289 term=strikethrough cterm=strikethrough gui=strikethrough
             hi link markdownStrike my_markdown_strike
             syn match MyTodo /\v\C<(TODO|REMIND):?/  " ignore case, optional :
             hi def link MyTodo TODO
-        ]]
-    end,
-})
-
--- maps a string to a lua func, used to create a cmd palette
-local choice_func_map = {
-    ['test'] = function()
-        vim.cmd[[
-            tabnew
-            tcd test
-            e ./test.lua
-        ]]
-    end
-}
--- create a cmd palette of sorts
-vim.keymap.set({'n'}, '<f1>',
-    function()
-        vim.ui.select(vim.tbl_keys(choice_func_map), {
-            prompt = 'Choose option:',
-        }, function(choice)
-            choice_func_map[choice]()
-        end)
-    end
-)
--- a way of grouping related files together
--- require("tabby").setup {
---     groups = {
---         python = {
---             identifier = function(filename)
---                 -- determines which files opened will be added to this tab group
---                 return filename.endswith('.py')
---             end
---         }, -- min and max height of the columns
---         width = { min = 20, max = 100 }, -- min and max width of the columns
---     },
--- }
-
+        ]])
+        end,
+    })

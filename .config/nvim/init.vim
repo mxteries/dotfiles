@@ -227,7 +227,6 @@ nnoremap <leader>g. <cmd>call FugitiveDetect(expand('~/.dotfiles')) \| G<cr>
 nnoremap <leader>gD :lcd `git rev-parse --show-toplevel`<CR>:pwd<CR>
 
 "" Editing
-nnoremap <leader>Y "+Y
 nnoremap <leader>y "+y
 xnoremap <leader>y "+y
 nnoremap <leader>p "+p
@@ -244,9 +243,8 @@ onoremap gl $
 
 "" cool mappings
 " replace every occurrence of word under cursor on this line
-xnoremap s "sy:s/<c-r>s//g<left><left>
+xnoremap <leader>s "sy:s/<c-r>s//g<left><left>
 nnoremap <leader>s :s/<c-r><c-w>//g<left><left>
-nnoremap <leader>S :s/<c-r><c-a>//g<left><left>
 
 " split selection to separate file
 xnoremap <leader>n y:new<cr>P
@@ -275,8 +273,6 @@ function! RecordInsert()
 endfunc
 nnoremap qi :call RecordInsert()<cr>
 nnoremap <leader>R <cmd>source $MYVIMRC<cr>
-nnoremap <leader>c :Run<cr>
-xnoremap <leader>c :Run<cr>
 
 """ Misc
 " remember 3k filemarks
