@@ -36,6 +36,8 @@ Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-nvim-lua'
 " Plug 'hrsh7th/cmp-cmdline'
+Plug 'dcampos/nvim-snippy'
+Plug 'dcampos/cmp-snippy'
 Plug 'mfussenegger/nvim-lint'
 Plug 'folke/which-key.nvim' | set timeoutlen=500
 if !s:windows
@@ -235,6 +237,10 @@ xnoremap P "0p
 xnoremap <leader>@ :norm @
 nnoremap <space><cr> <cmd>update<cr>
 
+" match ins mode indenting
+xnoremap <c-t> >gv^
+xnoremap <c-d> <gv^
+
 "" hx like mappings
 nnoremap gs ^
 onoremap gs ^
@@ -274,6 +280,7 @@ endfunc
 nnoremap qi :call RecordInsert()<cr>
 nnoremap <leader>R <cmd>source $MYVIMRC<cr>
 
+nmap gC <cmd>s/\S.*/-- \0 --<cr>
 """ Misc
 " remember 3k filemarks
 set shada=!,'3000,<50,s10,h
@@ -336,13 +343,14 @@ augroup vimrc
     autocmd FileType fugitive nmap <buffer> <tab> =
     autocmd FileType gitcommit setlocal spell textwidth=72 foldmethod=syntax
     autocmd FileType man setlocal scrolloff=5 | nnoremap <buffer> <space>/ /^\s\+
-    autocmd BufLeave *.md update
+    autocmd Filetype snippets setlocal tabstop=4
     autocmd Filetype markdown
                 \ nmap <buffer> <leader>md i[text](url)<esc>
                 \| nnoremap <buffer> j gj
                 \| nnoremap <buffer> k gk
                 \| nnoremap <buffer> <space><tab> za
                 \| setlocal shiftwidth=2
+    autocmd BufLeave *.md update
     autocmd BufRead,BufNewFile *.cake set filetype=cs
 
     " Turn on hlsearch when searching /? (and also for :s :g)

@@ -13,6 +13,7 @@ end
 
 --- nvim.cmp ---
 local cmp = require('cmp')
+local snippy = require("snippy")
 local has_words_before = function()
     local line, col = unpack(vim.api.nvim_win_get_cursor(0))
     return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match('%s') == nil
@@ -24,8 +25,7 @@ cmp.setup({
     snippet = {
         -- REQUIRED - you must specify a snippet engine
         expand = function(args)
-            print('lol no')
-            -- require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
+            snippy.expand_snippet(args.body)
         end,
     },
     mapping = cmp.mapping.preset.insert({
@@ -51,6 +51,8 @@ cmp.setup({
         ['<S-Tab>'] = function(fallback)
             if cmp.visible() then
                 cmp.select_prev_item()
+            elseif snippy.can_jump(-1) then
+                snippy.previous()
             else
                 fallback()
             end
@@ -67,6 +69,7 @@ cmp.setup({
             },
         },
         { name = 'nvim_lua', keyword_length = 5 },
+        { name = 'snippy' },
     },
 })
 
@@ -271,6 +274,18 @@ vim.keymap.set('n', ']y', '<Plug>(YankyCycleBackward)')
 require('yanky.picker').actions.set_register(regname)
 vim.keymap.set('n', '<leader>Y', '<cmd>YankyRingHistory<cr>')
 
+
+require('snippy').setup({
+    mappings = {
+        is = {
+            ['<cr>'] = 'expand_or_advance',
+        },
+        nx = {
+            ['<leader>x'] = 'cut_text',
+        },
+    },
+})
+
 local nm = require('neo-minimap')
 -- Lua
 nm.set('gO', 'lua', {
@@ -395,6 +410,7 @@ vim.keymap.set({ 'n' }, '<f1>', function()
     vim.ui.select(vim.tbl_keys(choice_func_map), {
         prompt = 'Choose option:',
     }, function(choice)
+        if choice == nil then return end
         choice_func_map[choice]()
     end)
 end)
@@ -418,8 +434,7 @@ local strike = function()
     end
     vim.fn.cursor(line, col) -- restore cursor
 end
-local my_md_group =
-    vim.api.nvim_create_augroup('my_markdown', { clear = true }), vim.api.nvim_create_autocmd('FileType', {
+local my_md_group = vim.api.nvim_create_augroup('my_markdown', { clear = true }), vim.api.nvim_create_autocmd('FileType', {
         group = my_md_group,
         pattern = 'markdown',
         callback = function()
